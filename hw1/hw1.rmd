@@ -49,7 +49,7 @@ Use Linux shell commands to answer following questions.
 wc -l /home/m280-data/hw1/merge-geno.fam
 ```
 
-answer 1
+answer 123
 
 2. Which chromosomes does this data set contain? How many SNPs are in each chromosome?
 
