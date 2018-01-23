@@ -75,6 +75,7 @@ awk '!a[$1]++' /home/m280-data/hw1/merge-geno.bim
     echo "8348674 = NUMBER OF SNPS LISTED HERE" >> mendel_snpdef.txt
     head mendel_snpdef.txt
     ```
+    Need to append `awk` to this file.
     
     - Mendel's pedigree file is similar to the plink `fam` file but has format  
     `Family ID`, `Person ID`, `Father ID`, `Mother ID`, `Sex` coded as M or F, `Twin Status`  
