@@ -71,6 +71,8 @@ awk '!a[$1]++' /home/m280-data/hw1/merge-geno.bim
       `SNP ID`, `Chromosome`, `Base Pair Position`  
       with each field separated by a comma. Write a Linux shell command to convert `merge-geno.bim` to Mendel SNP definition file. The first few lines of the Mendel SNP definition file should look like
     ```{bash, echo=FALSE, eval=TRUE}
+    echo "2.40 = FILE FORMAT VERSION NUMBER." > mendel_snpdef.txt
+    echo "8348674 = NUMBER OF SNPS LISTED HERE" > mendel_snpdef.txt
     head mendel_snpdef.txt
     ```
     
