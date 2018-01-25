@@ -174,10 +174,9 @@ knitr::opts_chunk$set(eval = TRUE)
     ```{bash, echo=FALSE, eval=TRUE}
 
 
-awk '$3==0 {$3=""} $4==0 {$4=""} $5==1 {$5="M"} $5==2 {$5="F"} $6==0 {$6=""}1' /home/m280-data/hw1/merge-geno.fam | gawk 'BEGIN {OFS = ","} {print}' | sed 's/T2DG//g' > mendel_ped.txt
+awk '{OFS = ","} {print $1, $2, $3, $4, $5, $6}'  /home/m280-data/hw1/merge-geno.fam | sed 's/,1/,M/' | sed 's/,2/,F/' | sed 's/,0/,/g' | sed 's/T2DG//g'  > mendel_ped.txt
 
-
-     head -20 mendel_ped.txt
+head -20 mendel_ped.txt
     ```
 
 ## Q3. R Batch Run
