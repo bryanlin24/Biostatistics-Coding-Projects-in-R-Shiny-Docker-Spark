@@ -26,3 +26,43 @@ x = rnorm(n)
 
 # estimate mean
 estMeanPrimes(x)
+
+
+
+mse_function <- function(seed, n, distr, rep){
+  
+  set.seed(seed)
+  trueMean = 0
+  
+  classic_mean <- vector()
+  prime_mean <- vector()
+  
+  
+  for (i in 1:rep){
+    
+    if(dist == "gaussian") {
+      x <- rnorm(n)
+      
+      
+    } else if (dist == "t1"){
+      x <- rt(n, df=1)
+      
+      
+    } else if (dist == "t5"){
+      x <- rt(n, df=5)
+      
+    }
+    classic_mean[i] <- mean(x)
+    prime_mean[i] <- estMeanPrimes(x)
+  }
+  mse_prime <- sum(prime_mean)^2 / rep
+  mse_classic <- sum(classic_mean)^2 / rep
+  return(c(mse_prime, mse_classic))
+}
+
+
+
+mse <- mse_function(seed=280,n=100,dist="gaussian",rep=50)
+mse
+
+
