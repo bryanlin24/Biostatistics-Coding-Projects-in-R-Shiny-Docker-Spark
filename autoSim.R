@@ -11,7 +11,7 @@ for (n in nVals) {
   oFile = paste(dist, "n", n, ".txt", sep="")
   
   #modify arg
-  arg = paste("n=", n, sep="", "seed=", seed, sep="", )
+  arg = paste("n=", n, sep="", "seed=", seed, sep="", "distr=",dist, sep="", "rep=", rep, sep="")
   arg = paste("n=", n, sep="")
   
   #no change

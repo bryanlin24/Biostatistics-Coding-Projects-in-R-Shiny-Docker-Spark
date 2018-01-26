@@ -21,21 +21,16 @@ estMeanPrimes = function (x) {
   return (mean(x[ind]))
 }
 
-# simulate data
-x = rnorm(n)
 
-# estimate mean
-estMeanPrimes(x)
-
-
-
-
-mse_function <- function(seed, n, distr, rep){
+mse_function <- function(seed, n, dist, rep){
+  
   set.seed(seed)
   trueMean = 0
   
   classic_mean <- vector()
   prime_mean <- vector()
+  
+  
   for (i in 1:rep){
     
     if(dist == "gaussian") {
@@ -53,12 +48,12 @@ mse_function <- function(seed, n, distr, rep){
     classic_mean[i] <- mean(x)
     prime_mean[i] <- estMeanPrimes(x)
   }
-  mse_prime <- sum(prime_mean)^2 / rep
-  mse_classic <- sum(classic_mean)^2 / rep
+  mse_prime <- sum(prime_mean^2- trueMean) / rep
+  mse_classic <- sum(classic_mean^2 - trueMean) / rep
   return(c(mse_prime, mse_classic))
 }
 
+
+
 mse <- mse_function(seed=280,n=100,dist="gaussian",rep=50)
 mse
-
-
