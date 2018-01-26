@@ -29,15 +29,13 @@ estMeanPrimes(x)
 
 
 
+
 mse_function <- function(seed, n, distr, rep){
-  
   set.seed(seed)
   trueMean = 0
   
   classic_mean <- vector()
   prime_mean <- vector()
-  
-  
   for (i in 1:rep){
     
     if(dist == "gaussian") {
@@ -59,8 +57,6 @@ mse_function <- function(seed, n, distr, rep){
   mse_classic <- sum(classic_mean)^2 / rep
   return(c(mse_prime, mse_classic))
 }
-
-
 
 mse <- mse_function(seed=280,n=100,dist="gaussian",rep=50)
 mse

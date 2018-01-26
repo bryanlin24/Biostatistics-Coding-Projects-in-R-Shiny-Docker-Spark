@@ -126,28 +126,28 @@ $(document).ready(function () {
 <!-- ## Q1. Git/GitHub -->
 <!-- **No handwritten homework reports are accepted for this course.** We work with Git and GitHub. Efficient and abundant use of Git, e.g., frequent and well-documented commits, is an important criterion for grading your homework. -->
 <!-- 1. Apply for the [Student Developer Pack](https://education.github.com/pack) at GitHub using your UCLA email. -->
-<!--   Yes I did. My GitHub handle is @bryanlin24 -->
+<!--   Yes I applied for student pack and my GitHub handle is @bryanlin24 -->
 <!-- 2. Create a **private** repository `biostat-m280-2018-winter` and add `Hua-Zhou` and `juhkim111` as your collaborators with write permission. -->
-<!--   Yes I did -->
+<!--   I created a private repository -->
 <!-- 3. Top directories of the repository should be `hw1`, `hw2`, ... Maintain two branches `master` and `develop`. The `develop` branch will be your main playground, the place where you develop solution (code) to homework problems and write up report. The `master` branch will be your presentation area. Submit your homework files (R markdown file `Rmd`, `html` file converted from R markdown, all code and data sets to reproduce results) in `master` branch. -->
-<!--   Yes I did -->
+<!-- I did this step and will submit homework in master branch. -->
 <!-- 4. After each homework due date, teaching assistant and instructor will check out your master branch for grading. Tag each of your homework submissions with tag names `hw1`, `hw2`, ... Tagging time will be used as your submission time. That means if you tag your `hw1` submission after deadline, penalty points will be deducted for late submission. -->
 <!-- ## Q2. Linux Shell Commands -->
 <!-- The `35.227.165.60:/home/m280-data/hw1` folder contains a typical genetic data set in plink format. If interested, you can read plink documentation at <http://zzz.bwh.harvard.edu/plink/>. But it's definitely not necessary for this homework. -->
-<!-- - `merge-geno.bim` contains information of each genetic marker (SNP). Each line is a SNP and has 6 fields:   -->
+<!-- - `merge-geno.bim` contains information of each genetic marker (SNP). Each line is a SNP and has 6 fields: -->
 <!-- `Chromosome`, `SNP ID`, `Genetic Distance (morgan)`, `Base Pair Position (bp)`, `Allele 1`, `Allele 2`. -->
 <!--     ```{bash} -->
 <!--     head /home/m280-data/hw1/merge-geno.bim -->
 <!--     ``` -->
-<!-- - `merge-geno.fam` contains individual information. Each line is one individual and has 6 fields:   -->
-<!-- `Family ID`, `Person ID`, `Father ID`, `Mother ID`, `Sex` coded as 1 (male) or 2 (female), `Affection Status`   -->
+<!-- - `merge-geno.fam` contains individual information. Each line is one individual and has 6 fields: -->
+<!-- `Family ID`, `Person ID`, `Father ID`, `Mother ID`, `Sex` coded as 1 (male) or 2 (female), `Affection Status` -->
 <!-- `Father ID = 0` means that person's father is not in this data set. Similarly `Mother ID` = 0 means that person's mother is not in this data set. -->
 <!--     ```{bash} -->
 <!--     head -20 /home/m280-data/hw1/merge-geno.fam -->
 <!--     ``` -->
 <!-- - `merge-geno.bed` contains genotypes of each individual in binary format. We don't need this file for this homework. -->
 <!-- Please, do **not** put these data files into Git; they are huge. You even don't need to copy them into your directory. Just read from the data folder `/home/m280-data/hw1` directly. -->
-<!-- Use Linux shell commands to answer following questions.  -->
+<!-- Use Linux shell commands to answer following questions. -->
 <!-- 1. How many persons are in the data set (statisticians call this `n`)? How many SNPs are in the data set (statisticians call this `p`)? -->
 <!-- ```{bash} -->
 <!-- wc -l /home/m280-data/hw1/merge-geno.fam -->
@@ -156,13 +156,13 @@ $(document).ready(function () {
 <!-- ```{bash} -->
 <!-- wc -l /home/m280-data/hw1/merge-geno.bim -->
 <!-- ``` -->
-<!-- *There are 8,348,674 SNPs in this data set*     -->
-<!-- 2. Which chromosomes does this data set contain?  -->
+<!-- *There are 8,348,674 SNPs in this data set* -->
+<!-- 2. Which chromosomes does this data set contain? -->
 <!-- ```{bash} -->
 <!-- awk '!a[$1]++' /home/m280-data/hw1/merge-geno.bim | awk '{print $1}' -->
 <!-- ``` -->
 <!-- *This data set contains 11 choromosomes (1,3,5,7,9,11,13,15,17,19,21)* -->
-<!-- 2. How many SNPs are in each chromosome?   -->
+<!-- 2. How many SNPs are in each chromosome? -->
 <!-- Chromosome 1 -->
 <!-- ```{bash} -->
 <!-- awk '{if ($1 == 1) print}' /home/m280-data/hw1/merge-geno.bim | wc -l -->
@@ -222,43 +222,50 @@ $(document).ready(function () {
 <!-- ```{bash} -->
 <!-- awk '{if ($1 == 3 && $4 >= 47892180 && $4 <= 48130769) print}' /home/m280-data/hw1/merge-geno.bim | wc -l -->
 <!-- ``` -->
-<!-- *There are 894 SNPs located within the MAP4 gene*     -->
-<!-- 4. Statistical geneticists often have to reformat a data set to feed into various analysis programs. For example, to use the Mendel software <http://www.genetics.ucla.edu/software/mendel>, we have to reformat the data set to be read by Mendel. -->
-<!--       - Mendel's SNP definition file is similar to the plink `bim` file but has format -->
-<!--       `SNP ID`, `Chromosome`, `Base Pair Position` -->
-<!--       with each field separated by a comma. Write a Linux shell command to convert `merge-geno.bim` to Mendel SNP definition file. The first few lines of the Mendel SNP definition file should look like -->
-<!-- ```{bash, echo=FALSE, eval=TRUE} -->
-<!-- echo "2.40 = FILE FORMAT VERSION NUMBER." > mendel_snpdef.txt -->
-<!-- echo "8348674 = NUMBER OF SNPS LISTED HERE" >> mendel_snpdef.txt -->
-<!-- awk '{OFS = ","} {print $2, $1, $4}' /home/m280-data/hw1/merge-geno.bim >> mendel_snpdef.txt -->
-<!-- head mendel_snpdef.txt -->
-<!-- ``` -->
-<pre><code>- Mendel's pedigree file is similar to the plink `fam` file but has format  
-`Family ID`, `Person ID`, `Father ID`, `Mother ID`, `Sex` coded as M or F, `Twin Status`  
-with each field separated by a comma. Write a Linux shell command to convert `merge-geno.fam` to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string `T2DG` from the IDs. First few lines of the Mendel pedigree should look like
-
-```
-## 2 0200001   M 
-## 2 0200002   F 
-## 2 0200003   F 
-## 2 0200004   F 
-## 2 0200005   M 
-## 2 0200006   M 
-## 2 0200007   F 
-## 2 0200008   F 
-## 2 0200009   F 
-## 2 0200012   M 
-## 2 0200013   M 
-## 2 0200018   M 
-## 2 0200023   F 
-## 2 0200024   M 
-## 2 0200027   F 
-## 2 0200031 0200001 0200015 M 
-## 2 0200032 0200001 0200015 F 
-## 2 0200033 0200001 0200015 F 
-## 2 0200034 0200001 0200015 F 
-## 2 0200035 0200001 0200015 F
-```</code></pre>
+<!-- *There are 894 SNPs located within the MAP4 gene* -->
+<ol start="4" style="list-style-type: decimal">
+<li><p>Statistical geneticists often have to reformat a data set to feed into various analysis programs. For example, to use the Mendel software <a href="http://www.genetics.ucla.edu/software/mendel" class="uri">http://www.genetics.ucla.edu/software/mendel</a>, we have to reformat the data set to be read by Mendel.</p>
+<ul>
+<li>Mendel’s SNP definition file is similar to the plink <code>bim</code> file but has format<br />
+<code>SNP ID</code>, <code>Chromosome</code>, <code>Base Pair Position</code><br />
+with each field separated by a comma. Write a Linux shell command to convert <code>merge-geno.bim</code> to Mendel SNP definition file. The first few lines of the Mendel SNP definition file should look like</li>
+</ul>
+<pre><code>## 2.40 = FILE FORMAT VERSION NUMBER.
+## 8348674 = NUMBER OF SNPS LISTED HERE
+## 1-54490,1,54490
+## 1-55550,1,55550
+## 1-57033,1,57033
+## 1-57064,1,57064
+## 1-57818,1,57818
+## 1-58432,1,58432
+## 1-58448,1,58448
+## 1-58814,1,58814</code></pre>
+<ul>
+<li>Mendel’s pedigree file is similar to the plink <code>fam</code> file but has format<br />
+<code>Family ID</code>, <code>Person ID</code>, <code>Father ID</code>, <code>Mother ID</code>, <code>Sex</code> coded as M or F, <code>Twin Status</code><br />
+with each field separated by a comma. Write a Linux shell command to convert <code>merge-geno.fam</code> to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string <code>T2DG</code> from the IDs. First few lines of the Mendel pedigree should look like</li>
+</ul>
+<pre><code>## 2,0200001,,,M,
+## 2,0200002,,,F,
+## 2,0200003,,,F,
+## 2,0200004,,,F,
+## 2,0200005,,,M,
+## 2,0200006,,,M,
+## 2,0200007,,,F,
+## 2,0200008,,,F,
+## 2,0200009,,,F,
+## 2,0200012,,,M,
+## 2,0200013,,,M,
+## 2,0200018,,,M,
+## 2,0200023,,,F,
+## 2,0200024,,,M,
+## 2,0200027,,,F,
+## 2,0200031,0200001,0200015,M,
+## 2,0200032,0200001,0200015,F,
+## 2,0200033,0200001,0200015,F,
+## 2,0200034,0200001,0200015,F,
+## 2,0200035,0200001,0200015,F,</code></pre></li>
+</ol>
 <div id="q3.-r-batch-run" class="section level2">
 <h2>Q3. R Batch Run</h2>
 <p>In class we discussed using R to organize simulation studies.</p>
