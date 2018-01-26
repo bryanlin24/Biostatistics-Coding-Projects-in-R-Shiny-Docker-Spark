@@ -11,7 +11,8 @@ for (n in nVals) {
   oFile = paste(dist,"n", n, ".txt", sep=",")
   
   #modify arg
-  arg = paste(paste("n=", n, sep=","), paste("seed=", seed, sep=","), paste("distr=",dist, sep=","), paste("rep=", rep, sep=""))
+  arg = paste(paste("n=", n, sep=""), paste("seed=", seed, sep=""), 
+              paste("distr=",distr, sep=""), paste("rep=", rep, sep=""))
 
   sysCall = paste("nohup Rscript runSim.R ", arg, " > ", oFile)
   
