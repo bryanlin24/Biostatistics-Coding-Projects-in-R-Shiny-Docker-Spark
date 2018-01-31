@@ -1,12 +1,12 @@
 # autoSim.R
 rep = 50
 seed = 280
-distrribution = c("gaussian", "t1", "t5")
+distribution = c("gaussian", "t1", "t5")
 nVals = seq(100, 500, by=100)
 
 
 for (n in nVals) {
-  for (distr in distrribution){
+  for (distr in distribution){
  
   oFile <- paste(distr,"n", n, ".txt", sep=",")
   
