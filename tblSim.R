@@ -9,7 +9,7 @@ data <- lapply(file.list, fread, header = FALSE)
 View(data)
 
 
-
+s
 
 data1 <- do.call("rbind", data)
 

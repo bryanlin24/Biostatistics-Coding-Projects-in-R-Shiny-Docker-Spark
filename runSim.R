@@ -22,7 +22,7 @@ estMeanPrimes = function (x) {
 }
 
 
-mse_function <- function(seed, n, dist, rep){
+mse_function <- function(seed, n, distrr, rep){
   
   set.seed(seed)
   trueMean = 0
@@ -33,15 +33,15 @@ mse_function <- function(seed, n, dist, rep){
   
   for (i in 1:rep){
     
-    if(dist == "gaussian") {
+    if(distr == "gaussian") {
       x <- rnorm(n)
       
       
-    } else if (dist == "t1"){
+    } else if (distrr == "t1"){
       x <- rt(n, df=1)
       
       
-    } else if (dist == "t5"){
+    } else if (distr == "t5"){
       x <- rt(n, df=5)
       
     }
@@ -55,5 +55,5 @@ mse_function <- function(seed, n, dist, rep){
 
 
 
-mse <- mse_function(seed=280,n=100,dist="gaussian",rep=50)
+mse <- mse_function(seed,n,distr,rep)
 mse
