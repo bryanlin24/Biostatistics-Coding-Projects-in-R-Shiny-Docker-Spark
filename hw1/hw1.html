@@ -131,24 +131,17 @@ $(document).ready(function () {
 </ol>
 <p><em>I applied for student pack and my GitHub handle is <span class="citation">@bryanlin24</span>.</em></p>
 <ol start="2" style="list-style-type: decimal">
-<li>Create a <strong>private</strong> repository <code>biostat-m280-2018-winter</code> and add <code>Hua-Zhou</code> and <code>juhkim111</code> as your collaborators with write permission.</li>
-</ol>
-<p><em>I created a private repository and added Hua-Zhou and Juhyun Kim.</em></p>
-<ol start="3" style="list-style-type: decimal">
-<li>Top directories of the repository should be <code>hw1</code>, <code>hw2</code>, … Maintain two branches <code>master</code> and <code>develop</code>. The <code>develop</code> branch will be your main playground, the place where you develop solution (code) to homework problems and write up report. The <code>master</code> branch will be your presentation area. Submit your homework files (R markdown file <code>Rmd</code>, <code>html</code> file converted from R markdown, all code and data sets to reproduce results) in <code>master</code> branch.</li>
-</ol>
-<p><em>I did this step and will submit homework in master branch.</em></p>
-<ol start="4" style="list-style-type: decimal">
-<li>After each homework due date, teaching assistant and instructor will check out your master branch for grading. Tag each of your homework submissions with tag names <code>hw1</code>, <code>hw2</code>, … Tagging time will be used as your submission time. That means if you tag your <code>hw1</code> submission after deadline, penalty points will be deducted for late submission.</li>
+<li><p>Create a <strong>private</strong> repository <code>biostat-m280-2018-winter</code> and add <code>Hua-Zhou</code> and <code>juhkim111</code> as your collaborators with write permission. <em>I created a private repository and added Hua-Zhou and Juhyun Kim.</em></p></li>
+<li><p>Top directories of the repository should be <code>hw1</code>, <code>hw2</code>, … Maintain two branches <code>master</code> and <code>develop</code>. The <code>develop</code> branch will be your main playground, the place where you develop solution (code) to homework problems and write up report. The <code>master</code> branch will be your presentation area. Submit your homework files (R markdown file <code>Rmd</code>, <code>html</code> file converted from R markdown, all code and data sets to reproduce results) in <code>master</code> branch. <em>I did this step and will submit homework in master branch.</em></p></li>
+<li><p>After each homework due date, teaching assistant and instructor will check out your master branch for grading. Tag each of your homework submissions with tag names <code>hw1</code>, <code>hw2</code>, … Tagging time will be used as your submission time. That means if you tag your <code>hw1</code> submission after deadline, penalty points will be deducted for late submission.</p></li>
 </ol>
 </div>
 <div id="q2.-linux-shell-commands" class="section level2">
 <h2>Q2. Linux Shell Commands</h2>
 <p>The <code>35.227.165.60:/home/m280-data/hw1</code> folder contains a typical genetic data set in plink format. If interested, you can read plink documentation at <a href="http://zzz.bwh.harvard.edu/plink/" class="uri">http://zzz.bwh.harvard.edu/plink/</a>. But it’s definitely not necessary for this homework.</p>
 <ul>
-<li><code>merge-geno.bim</code> contains information of each genetic marker (SNP). Each line is a SNP and has 6 fields:<br />
-<code>Chromosome</code>, <code>SNP ID</code>, <code>Genetic Distance (morgan)</code>, <code>Base Pair Position (bp)</code>, <code>Allele 1</code>, <code>Allele 2</code>.</li>
-</ul>
+<li><p><code>merge-geno.bim</code> contains information of each genetic marker (SNP). Each line is a SNP and has 6 fields:<br />
+<code>Chromosome</code>, <code>SNP ID</code>, <code>Genetic Distance (morgan)</code>, <code>Base Pair Position (bp)</code>, <code>Allele 1</code>, <code>Allele 2</code>.</p>
 <pre class="bash"><code>head /home/m280-data/hw1/merge-geno.bim</code></pre>
 <pre><code>## 1    1-54490 0   54490   A   G
 ## 1    1-55550 0   55550   T   A
@@ -159,12 +152,10 @@ $(document).ready(function () {
 ## 1    1-58448 0   58448   A   G
 ## 1    1-58814 0   58814   A   G
 ## 1    1-59492 0   59492   G   A
-## 1    1-60829 0   60829   T   C</code></pre>
-<ul>
-<li><code>merge-geno.fam</code> contains individual information. Each line is one individual and has 6 fields:<br />
+## 1    1-60829 0   60829   T   C</code></pre></li>
+<li><p><code>merge-geno.fam</code> contains individual information. Each line is one individual and has 6 fields:<br />
 <code>Family ID</code>, <code>Person ID</code>, <code>Father ID</code>, <code>Mother ID</code>, <code>Sex</code> coded as 1 (male) or 2 (female), <code>Affection Status</code><br />
-<code>Father ID = 0</code> means that person’s father is not in this data set. Similarly <code>Mother ID</code> = 0 means that person’s mother is not in this data set.</li>
-</ul>
+<code>Father ID = 0</code> means that person’s father is not in this data set. Similarly <code>Mother ID</code> = 0 means that person’s mother is not in this data set.</p>
 <pre class="bash"><code>head -20 /home/m280-data/hw1/merge-geno.fam</code></pre>
 <pre><code>## 2 T2DG0200001 0 0 1 0
 ## 2 T2DG0200002 0 0 2 0
@@ -185,26 +176,24 @@ $(document).ready(function () {
 ## 2 T2DG0200032 T2DG0200001 T2DG0200015 2 0
 ## 2 T2DG0200033 T2DG0200001 T2DG0200015 2 0
 ## 2 T2DG0200034 T2DG0200001 T2DG0200015 2 0
-## 2 T2DG0200035 T2DG0200001 T2DG0200015 2 0</code></pre>
-<ul>
-<li><code>merge-geno.bed</code> contains genotypes of each individual in binary format. We don’t need this file for this homework.</li>
+## 2 T2DG0200035 T2DG0200001 T2DG0200015 2 0</code></pre></li>
+<li><p><code>merge-geno.bed</code> contains genotypes of each individual in binary format. We don’t need this file for this homework.</p></li>
 </ul>
 <p>Please, do <strong>not</strong> put these data files into Git; they are huge. You even don’t need to copy them into your directory. Just read from the data folder <code>/home/m280-data/hw1</code> directly.</p>
 <p>Use Linux shell commands to answer following questions.</p>
 <ol style="list-style-type: decimal">
 <li>How many persons are in the data set (statisticians call this <code>n</code>)? How many SNPs are in the data set (statisticians call this <code>p</code>)?</li>
 </ol>
-<pre class="bash"><code> wc -l /home/m280-data/hw1/merge-geno.fam</code></pre>
+<pre class="bash"><code>wc -l /home/m280-data/hw1/merge-geno.fam</code></pre>
 <pre><code>## 959 /home/m280-data/hw1/merge-geno.fam</code></pre>
 <p><em>There are 959 people in this merge-geno.fam data set</em></p>
-<pre class="bash"><code> wc -l /home/m280-data/hw1/merge-geno.bim
-</code></pre>
+<pre class="bash"><code>wc -l /home/m280-data/hw1/merge-geno.bim</code></pre>
 <pre><code>## 8348674 /home/m280-data/hw1/merge-geno.bim</code></pre>
 <p><em>There are 8,348,674 SNPs in this merge-geno data set</em></p>
 <ol start="2" style="list-style-type: decimal">
-<li>Which chromosomes does this data set contain?</li>
+<li>Which chromosomes does this data set contain? How many SNPs are in each chromosome?</li>
 </ol>
-<pre class="bash"><code> awk '{print $1}' /home/m280-data/hw1/merge-geno.bim | sort | uniq</code></pre>
+<pre class="bash"><code>awk '{print $1}' /home/m280-data/hw1/merge-geno.bim | sort | uniq</code></pre>
 <pre><code>## 1
 ## 11
 ## 13
@@ -217,59 +206,56 @@ $(document).ready(function () {
 ## 7
 ## 9</code></pre>
 <p><em>This data set contains 11 choromosomes (1,3,5,7,9,11,13,15,17,19,21)</em></p>
-<ol start="2" style="list-style-type: decimal">
-<li>How many SNPs are in each chromosome?</li>
-</ol>
 <p>Chromosome 1</p>
-<pre class="bash"><code> awk '{if ($1 == 1) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
+<pre class="bash"><code>awk '{if ($1 == 1) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
 <pre><code>## 1309299</code></pre>
 <p><em>Chromosome 1 has 1,309,299 SNPs.</em></p>
 <p>Chromosome 3</p>
-<pre class="bash"><code> awk '{if ($1 == 3) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
+<pre class="bash"><code>awk '{if ($1 == 3) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
 <pre><code>## 1215399</code></pre>
 <p><em>Chromosome 3 has 1,215,399 SNPs.</em></p>
 <p>Chromosome 5</p>
-<pre class="bash"><code> awk '{if ($1 == 5) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
+<pre class="bash"><code>awk '{if ($1 == 5) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
 <pre><code>## 1090185</code></pre>
 <p><em>Chromosome 5 has 1,090,185 SNPs.</em></p>
 <p>Chromosome 7</p>
-<pre class="bash"><code> awk '{if ($1 == 7) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
+<pre class="bash"><code>awk '{if ($1 == 7) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
 <pre><code>## 980944</code></pre>
 <p><em>Chromosome 7 has 980,944 SNPs.</em></p>
 <p>Chromosome 9</p>
-<pre class="bash"><code> awk '{if ($1 == 9) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
+<pre class="bash"><code>awk '{if ($1 == 9) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
 <pre><code>## 732013</code></pre>
 <p><em>Chromosome 9 has 732,013 SNPs.</em></p>
 <p>Chromosome 11</p>
-<pre class="bash"><code> awk '{if ($1 == 11) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
+<pre class="bash"><code>awk '{if ($1 == 11) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
 <pre><code>## 815860</code></pre>
 <p><em>Chromosome 11 has 815,860 SNPs.</em></p>
 <p>Chromosome 13</p>
-<pre class="bash"><code> awk '{if ($1 == 13) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
+<pre class="bash"><code>awk '{if ($1 == 13) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
 <pre><code>## 602809</code></pre>
 <p><em>Chromosome 13 has 602,809 SNPs.</em></p>
 <p>Chromosome 15</p>
-<pre class="bash"><code> awk '{if ($1 == 15) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
+<pre class="bash"><code>awk '{if ($1 == 15) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
 <pre><code>## 491208</code></pre>
 <p><em>Chromosome 15 has 491,208 SNPs.</em></p>
 <p>Chromosome 17</p>
-<pre class="bash"><code> awk '{if ($1 == 17) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
+<pre class="bash"><code>awk '{if ($1 == 17) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
 <pre><code>## 477990</code></pre>
 <p><em>Chromosome 17 has 477,990 SNPs.</em></p>
 <p>Chromosome 19</p>
-<pre class="bash"><code> awk '{if ($1 == 19) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
+<pre class="bash"><code>awk '{if ($1 == 19) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
 <pre><code>## 393615</code></pre>
 <p><em>Chromosome 19 has 393,615 SNPs.</em></p>
 <p>Chromosome 21</p>
-<pre class="bash"><code> awk '{if ($1 == 21) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
+<pre class="bash"><code>awk '{if ($1 == 21) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
 <pre><code>## 239352</code></pre>
 <p><em>Chromosome 21 has 239,352 SNPs.</em></p>
 <ol start="3" style="list-style-type: decimal">
 <li>MAP4 (microtubule-associated protein 4) is a gene on chromosome 3 spanning positions 47,892,180 bp – 48,130,769 bp. How many SNPs are located within MAP4 gene?</li>
 </ol>
-<pre class="bash"><code> awk '{if ($1 == 3 &amp;&amp; $4 &gt;= 47892180 &amp;&amp; $4 &lt;= 48130769) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
+<pre class="bash"><code>awk '{if ($1 == 3 &amp;&amp; $4 &gt;= 47892180 &amp;&amp; $4 &lt;= 48130769) print}' /home/m280-data/hw1/merge-geno.bim | wc -l
+</code></pre>
 <pre><code>## 894</code></pre>
-<p><em>There are 894 SNPs located within the MAP4 gene.</em></p>
 <ol start="4" style="list-style-type: decimal">
 <li><p>Statistical geneticists often have to reformat a data set to feed into various analysis programs. For example, to use the Mendel software <a href="http://www.genetics.ucla.edu/software/mendel" class="uri">http://www.genetics.ucla.edu/software/mendel</a>, we have to reformat the data set to be read by Mendel.</p>
 <ul>
@@ -291,8 +277,7 @@ with each field separated by a comma. Write a Linux shell command to convert <co
 <li>Mendel’s pedigree file is similar to the plink <code>fam</code> file but has format<br />
 <code>Family ID</code>, <code>Person ID</code>, <code>Father ID</code>, <code>Mother ID</code>, <code>Sex</code> coded as M or F, <code>Twin Status</code><br />
 with each field separated by a comma. Write a Linux shell command to convert <code>merge-geno.fam</code> to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string <code>T2DG</code> from the IDs. First few lines of the Mendel pedigree should look like</li>
-</ul></li>
-</ol>
+</ul>
 <pre><code>## 2,0200001,,,M,
 ## 2,0200002,,,F,
 ## 2,0200003,,,F,
@@ -312,40 +297,18 @@ with each field separated by a comma. Write a Linux shell command to convert <co
 ## 2,0200032,0200001,0200015,F,
 ## 2,0200033,0200001,0200015,F,
 ## 2,0200034,0200001,0200015,F,
-## 2,0200035,0200001,0200015,F,</code></pre>
+## 2,0200035,0200001,0200015,F,</code></pre></li>
+</ol>
 </div>
 <div id="q3.-r-batch-run" class="section level2">
 <h2>Q3. R Batch Run</h2>
 <p>In class we discussed using R to organize simulation studies.</p>
 <ol style="list-style-type: decimal">
-<li>Expand the <a href="http://hua-zhou.github.io/teaching/biostatm280-2018winter/slides/02-linux/runSim.R"><code>runSim.R</code></a> script to include arguments <code>seed</code> (random seed), <code>n</code> (sample size), <code>dist</code> (distribution) and <code>rep</code> (number of simulation replicates). When <code>dist=&quot;gaussian&quot;</code>, generate data from standard normal; when <code>dist=&quot;t1&quot;</code>, generate data from t-distribution with degree of freedom 1 (same as Cauchy distribution); when <code>dist=&quot;t5&quot;</code>, generate data from t-distribution with degree of freedom 5. Calling <code>runSim.R</code> will (1) set random seed according to argument <code>seed</code>, (2) generate data according to argument <code>dist</code>, (3) compute the primed-indexed average estimator in class and the classical sample average estimator for each simulation replicate, (4) report the average mean squared error (MSE) <span class="math display">\[
+<li><p>Expand the <a href="http://hua-zhou.github.io/teaching/biostatm280-2018winter/slides/02-linux/runSim.R"><code>runSim.R</code></a> script to include arguments <code>seed</code> (random seed), <code>n</code> (sample size), <code>dist</code> (distribution) and <code>rep</code> (number of simulation replicates). When <code>dist=&quot;gaussian&quot;</code>, generate data from standard normal; when <code>dist=&quot;t1&quot;</code>, generate data from t-distribution with degree of freedom 1 (same as Cauchy distribution); when <code>dist=&quot;t5&quot;</code>, generate data from t-distribution with degree of freedom 5. Calling <code>runSim.R</code> will (1) set random seed according to argument <code>seed</code>, (2) generate data according to argument <code>dist</code>, (3) compute the primed-indexed average estimator in class and the classical sample average estimator for each simulation replicate, (4) report the average mean squared error (MSE) <span class="math display">\[
   \frac{\sum_{r=1}^{\text{rep}} (\widehat \mu_r - \mu_{\text{true}})^2}{\text{rep}}
-\]</span> for both methods.</li>
-</ol>
-<pre class="bash"><code>Rscript runSim_revised.R n=100 distr=\&quot;gaussian\&quot; rep=50 seed=280
-</code></pre>
-<pre><code>## [1] 0.04146737 0.00948339</code></pre>
-<ol start="2" style="list-style-type: decimal">
-<li>Modify the <a href="http://hua-zhou.github.io/teaching/biostatm280-2018winter/slides/02-linux/autoSim.R"><code>autoSim.R</code></a> script to run simulations with combinations of sample sizes <code>nVals = seq(100, 500, by=100)</code> and distributions <code>distTypes = c(&quot;gaussian&quot;, &quot;t1&quot;, &quot;t5&quot;)</code> and write output to appropriately named files. Use <code>rep = 50</code>, and <code>seed = 280</code>.</li>
-</ol>
-<pre class="bash"><code>Rscript autoSim_revised.R</code></pre>
-<pre><code>## [1] &quot;sysCall=nohup Rscript runSim_revised.R  n=100 seed=280 'distr=\&quot;gaussian\&quot;' rep=50  &gt;  gaussian,n,100,.txt&quot;
-## [1] &quot;sysCall=nohup Rscript runSim_revised.R  n=100 seed=280 'distr=\&quot;t1\&quot;' rep=50  &gt;  t1,n,100,.txt&quot;
-## [1] &quot;sysCall=nohup Rscript runSim_revised.R  n=100 seed=280 'distr=\&quot;t5\&quot;' rep=50  &gt;  t5,n,100,.txt&quot;
-## [1] &quot;sysCall=nohup Rscript runSim_revised.R  n=200 seed=280 'distr=\&quot;gaussian\&quot;' rep=50  &gt;  gaussian,n,200,.txt&quot;
-## [1] &quot;sysCall=nohup Rscript runSim_revised.R  n=200 seed=280 'distr=\&quot;t1\&quot;' rep=50  &gt;  t1,n,200,.txt&quot;
-## [1] &quot;sysCall=nohup Rscript runSim_revised.R  n=200 seed=280 'distr=\&quot;t5\&quot;' rep=50  &gt;  t5,n,200,.txt&quot;
-## [1] &quot;sysCall=nohup Rscript runSim_revised.R  n=300 seed=280 'distr=\&quot;gaussian\&quot;' rep=50  &gt;  gaussian,n,300,.txt&quot;
-## [1] &quot;sysCall=nohup Rscript runSim_revised.R  n=300 seed=280 'distr=\&quot;t1\&quot;' rep=50  &gt;  t1,n,300,.txt&quot;
-## [1] &quot;sysCall=nohup Rscript runSim_revised.R  n=300 seed=280 'distr=\&quot;t5\&quot;' rep=50  &gt;  t5,n,300,.txt&quot;
-## [1] &quot;sysCall=nohup Rscript runSim_revised.R  n=400 seed=280 'distr=\&quot;gaussian\&quot;' rep=50  &gt;  gaussian,n,400,.txt&quot;
-## [1] &quot;sysCall=nohup Rscript runSim_revised.R  n=400 seed=280 'distr=\&quot;t1\&quot;' rep=50  &gt;  t1,n,400,.txt&quot;
-## [1] &quot;sysCall=nohup Rscript runSim_revised.R  n=400 seed=280 'distr=\&quot;t5\&quot;' rep=50  &gt;  t5,n,400,.txt&quot;
-## [1] &quot;sysCall=nohup Rscript runSim_revised.R  n=500 seed=280 'distr=\&quot;gaussian\&quot;' rep=50  &gt;  gaussian,n,500,.txt&quot;
-## [1] &quot;sysCall=nohup Rscript runSim_revised.R  n=500 seed=280 'distr=\&quot;t1\&quot;' rep=50  &gt;  t1,n,500,.txt&quot;
-## [1] &quot;sysCall=nohup Rscript runSim_revised.R  n=500 seed=280 'distr=\&quot;t5\&quot;' rep=50  &gt;  t5,n,500,.txt&quot;</code></pre>
-<ol start="3" style="list-style-type: decimal">
-<li>Write an R script to collect simulation results from output files and print average MSEs in a table of format</li>
+\]</span> for both methods.</p></li>
+<li><p>Modify the <a href="http://hua-zhou.github.io/teaching/biostatm280-2018winter/slides/02-linux/autoSim.R"><code>autoSim.R</code></a> script to run simulations with combinations of sample sizes <code>nVals = seq(100, 500, by=100)</code> and distributions <code>distTypes = c(&quot;gaussian&quot;, &quot;t1&quot;, &quot;t5&quot;)</code> and write output to appropriately named files. Use <code>rep = 50</code>, and <code>seed = 280</code>.</p></li>
+<li><p>Write an R script to collect simulation results from output files and print average MSEs in a table of format</p></li>
 </ol>
 <table>
 <thead>
@@ -427,90 +390,6 @@ with each field separated by a comma. Write a Linux shell command to convert <co
 <td></td>
 <td></td>
 <td></td>
-</tr>
-</tbody>
-</table>
-<pre class="bash"><code>Rscript tblSim_revised.R</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">n</th>
-<th align="left">Method</th>
-<th align="right">t1</th>
-<th align="right">t5</th>
-<th align="right">Gaussian</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">100</td>
-<td align="left">PrimeAvg</td>
-<td align="right">2808.42570</td>
-<td align="right">0.0664284</td>
-<td align="right">0.0414674</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">SampAvg</td>
-<td align="right">230.23720</td>
-<td align="right">0.0167508</td>
-<td align="right">0.0094834</td>
-</tr>
-<tr class="odd">
-<td align="left">200</td>
-<td align="left">PrimeAvg</td>
-<td align="right">799.31393</td>
-<td align="right">0.0418479</td>
-<td align="right">0.0187544</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">SampAvg</td>
-<td align="right">95.87976</td>
-<td align="right">0.0076665</td>
-<td align="right">0.0071637</td>
-</tr>
-<tr class="odd">
-<td align="left">300</td>
-<td align="left">PrimeAvg</td>
-<td align="right">446.40235</td>
-<td align="right">0.0241224</td>
-<td align="right">0.0200254</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">SampAvg</td>
-<td align="right">53.57742</td>
-<td align="right">0.0054711</td>
-<td align="right">0.0035344</td>
-</tr>
-<tr class="odd">
-<td align="left">400</td>
-<td align="left">PrimeAvg</td>
-<td align="right">19.45133</td>
-<td align="right">0.0243314</td>
-<td align="right">0.0112689</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">SampAvg</td>
-<td align="right">20.53370</td>
-<td align="right">0.0035170</td>
-<td align="right">0.0029707</td>
-</tr>
-<tr class="odd">
-<td align="left">500</td>
-<td align="left">PrimeAvg</td>
-<td align="right">217.26890</td>
-<td align="right">0.0116763</td>
-<td align="right">0.0111769</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">SampAvg</td>
-<td align="right">20.78780</td>
-<td align="right">0.0033550</td>
-<td align="right">0.0025920</td>
 </tr>
 </tbody>
 </table>

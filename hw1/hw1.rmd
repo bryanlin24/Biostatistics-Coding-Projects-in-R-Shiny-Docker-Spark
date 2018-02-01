@@ -174,7 +174,7 @@ Chromosome 21
     with each field separated by a comma. Write a Linux shell command to convert `merge-geno.fam` to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string `T2DG` from the IDs. First few lines of the Mendel pedigree should look like  
     
 ```{bash, echo=FALSE, eval=TRUE}
-    awk '{OFS = ","} {print $1, $2, $3, $4, $5, $6}'        /home/m280-data/hw1/merge-geno.fam | 
+    awk '{OFS = ","} {print $1, $2, $3, $4, $5, $6}'         /home/m280-data/hw1/merge-geno.fam | 
    sed 's/,1/,M/' | sed 's/,2/,F/' | sed 's/,0/,/g' | 
    sed 's/T2DG//g'  > mendel_ped.txt
       head -20 mendel_ped.txt
