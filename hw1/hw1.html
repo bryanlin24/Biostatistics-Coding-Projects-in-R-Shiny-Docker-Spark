@@ -197,7 +197,8 @@ $(document).ready(function () {
 <pre class="bash"><code> wc -l /home/m280-data/hw1/merge-geno.fam</code></pre>
 <pre><code>## 959 /home/m280-data/hw1/merge-geno.fam</code></pre>
 <p><em>There are 959 people in this merge-geno.fam data set</em></p>
-<pre class="bash"><code> wc -l /home/m280-data/hw1/merge-geno.bim</code></pre>
+<pre class="bash"><code> wc -l /home/m280-data/hw1/merge-geno.bim
+</code></pre>
 <pre><code>## 8348674 /home/m280-data/hw1/merge-geno.bim</code></pre>
 <p><em>There are 8,348,674 SNPs in this merge-geno data set</em></p>
 <ol start="2" style="list-style-type: decimal">
@@ -320,7 +321,8 @@ with each field separated by a comma. Write a Linux shell command to convert <co
   \frac{\sum_{r=1}^{\text{rep}} (\widehat \mu_r - \mu_{\text{true}})^2}{\text{rep}}
 \]</span> for both methods.</li>
 </ol>
-<pre class="bash"><code>Rscript runSim_revised.R n=100 distr=\&quot;gaussian\&quot; rep=50 seed=280</code></pre>
+<pre class="bash"><code>Rscript runSim_revised.R n=100 distr=\&quot;gaussian\&quot; rep=50 seed=280
+</code></pre>
 <pre><code>## [1] 0.04146737 0.00948339</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>Modify the <a href="http://hua-zhou.github.io/teaching/biostatm280-2018winter/slides/02-linux/autoSim.R"><code>autoSim.R</code></a> script to run simulations with combinations of sample sizes <code>nVals = seq(100, 500, by=100)</code> and distributions <code>distTypes = c(&quot;gaussian&quot;, &quot;t1&quot;, &quot;t5&quot;)</code> and write output to appropriately named files. Use <code>rep = 50</code>, and <code>seed = 280</code>.</li>
