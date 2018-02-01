@@ -256,23 +256,45 @@ $(document).ready(function () {
 <pre class="bash"><code>awk '{if ($1 == 3 &amp;&amp; $4 &gt;= 47892180 &amp;&amp; $4 &lt;= 48130769) print}' /home/m280-data/hw1/merge-geno.bim | wc -l
 </code></pre>
 <pre><code>## 894</code></pre>
-<!-- 4. Statistical geneticists often have to reformat a data set to feed into various analysis programs. For example, to use the Mendel software <http://www.genetics.ucla.edu/software/mendel>, we have to reformat the data set to be read by Mendel. -->
-<!--       - Mendel's SNP definition file is similar to the plink `bim` file but has format -->
-<!--       `SNP ID`, `Chromosome`, `Base Pair Position` -->
-<!--       with each field separated by a comma. Write a Linux shell command to convert `merge-geno.bim` to Mendel SNP definition file. The first few lines of the Mendel SNP definition file should look like -->
-<!--     ```{bash, echo=TRUE, eval=TRUE} -->
-<!--   echo "2.40 = FILE FORMAT VERSION NUMBER." > mendel_snpdef.txt -->
-<!--   echo "8348674 = NUMBER OF SNPS LISTED HERE" >> mendel_snpdef.txt -->
-<!--   awk '{OFS = ","} {print $2, $1, $4}' /home/m280-data/hw1/merge-geno.bim >> mendel_snpdef.txt -->
-<!--     head mendel_snpdef.txt -->
-<!--     ``` -->
-<!--     - Mendel's pedigree file is similar to the plink `fam` file but has format -->
-<!--     `Family ID`, `Person ID`, `Father ID`, `Mother ID`, `Sex` coded as M or F, `Twin Status` -->
-<!--     with each field separated by a comma. Write a Linux shell command to convert `merge-geno.fam` to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string `T2DG` from the IDs. First few lines of the Mendel pedigree should look like -->
-<!--     ```{bash, echo=TRUE, eval=TRUE} -->
-<!--   awk '{OFS = ","} {print $1, $2, $3, $4, $5, $6}' /home/m280-data/hw1/merge-geno.fam | sed 's/,1/,M/' | sed 's/,2/,F/' | sed 's/,0/,/g' | sed 's/T2DG//g'  > mendel_ped.txt -->
-<!--     head -20 mendel_ped.txt -->
-<!--     ``` -->
+<ol start="4" style="list-style-type: decimal">
+<li><p>Statistical geneticists often have to reformat a data set to feed into various analysis programs. For example, to use the Mendel software <a href="http://www.genetics.ucla.edu/software/mendel" class="uri">http://www.genetics.ucla.edu/software/mendel</a>, we have to reformat the data set to be read by Mendel.</p>
+<ul>
+<li>Mendel’s SNP definition file is similar to the plink <code>bim</code> file but has format <code>SNP ID</code>, <code>Chromosome</code>, <code>Base Pair Position</code> with each field separated by a comma. Write a Linux shell command to convert <code>merge-geno.bim</code> to Mendel SNP definition file. The first few lines of the Mendel SNP definition file should look like</li>
+</ul>
+<pre><code>## 2.40 = FILE FORMAT VERSION NUMBER.
+## 8348674 = NUMBER OF SNPS LISTED HERE
+## 1-54490,1,54490
+## 1-55550,1,55550
+## 1-57033,1,57033
+## 1-57064,1,57064
+## 1-57818,1,57818
+## 1-58432,1,58432
+## 1-58448,1,58448
+## 1-58814,1,58814</code></pre>
+<ul>
+<li>Mendel’s pedigree file is similar to the plink <code>fam</code> file but has format <code>Family ID</code>, <code>Person ID</code>, <code>Father ID</code>, <code>Mother ID</code>, <code>Sex</code> coded as M or F, <code>Twin Status</code> with each field separated by a comma. Write a Linux shell command to convert <code>merge-geno.fam</code> to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string <code>T2DG</code> from the IDs. First few lines of the Mendel pedigree should look like</li>
+</ul>
+<pre><code>## 2,0200001,,,M,
+## 2,0200002,,,F,
+## 2,0200003,,,F,
+## 2,0200004,,,F,
+## 2,0200005,,,M,
+## 2,0200006,,,M,
+## 2,0200007,,,F,
+## 2,0200008,,,F,
+## 2,0200009,,,F,
+## 2,0200012,,,M,
+## 2,0200013,,,M,
+## 2,0200018,,,M,
+## 2,0200023,,,F,
+## 2,0200024,,,M,
+## 2,0200027,,,F,
+## 2,0200031,0200001,0200015,M,
+## 2,0200032,0200001,0200015,F,
+## 2,0200033,0200001,0200015,F,
+## 2,0200034,0200001,0200015,F,
+## 2,0200035,0200001,0200015,F,</code></pre></li>
+</ol>
 </div>
 <div id="q3.-r-batch-run" class="section level2">
 <h2>Q3. R Batch Run</h2>
