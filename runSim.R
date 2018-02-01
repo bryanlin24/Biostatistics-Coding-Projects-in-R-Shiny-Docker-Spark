@@ -22,7 +22,7 @@ estMeanPrimes = function (x) {
 }
 
 
-mse_function <- function(seed, n, distrr, rep){
+mse_function <- function(seed, n, distr, rep){
   
   set.seed(seed)
   trueMean = 0
@@ -37,7 +37,7 @@ mse_function <- function(seed, n, distrr, rep){
       x <- rnorm(n)
       
       
-    } else if (distrr == "t1"){
+    } else if (distr == "t1"){
       x <- rt(n, df=1)
       
       
