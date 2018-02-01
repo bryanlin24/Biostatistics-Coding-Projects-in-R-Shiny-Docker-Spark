@@ -267,8 +267,9 @@ $(document).ready(function () {
 <ol start="3" style="list-style-type: decimal">
 <li>MAP4 (microtubule-associated protein 4) is a gene on chromosome 3 spanning positions 47,892,180 bp – 48,130,769 bp. How many SNPs are located within MAP4 gene?</li>
 </ol>
-<p><code>bash  awk '{if ($1 == 3 &amp;&amp; $4 &gt;= 47892180 &amp;&amp; $4 &lt;= 48130769) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></p>
-<p><code>## 894</code> <em>There are 894 SNPs located within the MAP4 gene.</em></p>
+<pre class="bash"><code> awk '{if ($1 == 3 &amp;&amp; $4 &gt;= 47892180 &amp;&amp; $4 &lt;= 48130769) print}' /home/m280-data/hw1/merge-geno.bim | wc -l</code></pre>
+<pre><code>## 894</code></pre>
+<p><em>There are 894 SNPs located within the MAP4 gene.</em></p>
 <ol start="4" style="list-style-type: decimal">
 <li><p>Statistical geneticists often have to reformat a data set to feed into various analysis programs. For example, to use the Mendel software <a href="http://www.genetics.ucla.edu/software/mendel" class="uri">http://www.genetics.ucla.edu/software/mendel</a>, we have to reformat the data set to be read by Mendel.</p>
 <ul>
