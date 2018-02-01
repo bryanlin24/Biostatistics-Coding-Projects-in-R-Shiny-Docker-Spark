@@ -3,25 +3,6 @@ suppressMessages(if (!require("pacman")) install.packages("pacman"))
 suppressMessages(pacman::p_load("tidyr", "dplyr", "knitr", "data.table"))
 
 
-#library(data.table)
-#library(dplyr)
-
-# ?list.files
-# file.list <- list.files(pattern = 'gaussian')
-# file.list1 <- list.files(pattern = 't1')
-# file.list2 <- list.files(pattern = 't5')
-# 
-# file.list3 <- merge(file.list, file.list1, file.list2)
-
-#data <- lapply(file.list, read.table(file.list,h=T))
-#data5 <- lapply(file.list, fread, header = FALSE)
-
-
-#Make data frame
-#library(tidyr)
-
-
-
 file.list4 <- list.files(path = "/home/bryanlin24/biostat-m280-2018-winter", pattern='.txt')
 data5 <- lapply(file.list4, read.table)
 
@@ -67,4 +48,27 @@ n <- c("100", "", "200", "", "300", "", "400", "" ,"500", "")
 d <- cbind(n, Method, d)
 
 knitr::kable(d)
-#kable
+
+
+
+
+
+
+
+
+#library(data.table)
+#library(dplyr)
+
+# ?list.files
+# file.list <- list.files(pattern = 'gaussian')
+# file.list1 <- list.files(pattern = 't1')
+# file.list2 <- list.files(pattern = 't5')
+# 
+# file.list3 <- merge(file.list, file.list1, file.list2)
+
+#data <- lapply(file.list, read.table(file.list,h=T))
+#data5 <- lapply(file.list, fread, header = FALSE)
+
+
+#Make data frame
+#library(tidyr)
