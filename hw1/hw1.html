@@ -131,17 +131,24 @@ $(document).ready(function () {
 </ol>
 <p><em>I applied for student pack and my GitHub handle is <span class="citation">@bryanlin24</span>.</em></p>
 <ol start="2" style="list-style-type: decimal">
-<li><p>Create a <strong>private</strong> repository <code>biostat-m280-2018-winter</code> and add <code>Hua-Zhou</code> and <code>juhkim111</code> as your collaborators with write permission. <em>I created a private repository and added Hua-Zhou and Juhyun Kim.</em></p></li>
-<li><p>Top directories of the repository should be <code>hw1</code>, <code>hw2</code>, … Maintain two branches <code>master</code> and <code>develop</code>. The <code>develop</code> branch will be your main playground, the place where you develop solution (code) to homework problems and write up report. The <code>master</code> branch will be your presentation area. Submit your homework files (R markdown file <code>Rmd</code>, <code>html</code> file converted from R markdown, all code and data sets to reproduce results) in <code>master</code> branch. <em>I did this step and will submit homework in master branch.</em></p></li>
-<li><p>After each homework due date, teaching assistant and instructor will check out your master branch for grading. Tag each of your homework submissions with tag names <code>hw1</code>, <code>hw2</code>, … Tagging time will be used as your submission time. That means if you tag your <code>hw1</code> submission after deadline, penalty points will be deducted for late submission.</p></li>
+<li>Create a <strong>private</strong> repository <code>biostat-m280-2018-winter</code> and add <code>Hua-Zhou</code> and <code>juhkim111</code> as your collaborators with write permission.</li>
+</ol>
+<p><em>I created a private repository and added Hua-Zhou and Juhyun Kim.</em></p>
+<ol start="3" style="list-style-type: decimal">
+<li>Top directories of the repository should be <code>hw1</code>, <code>hw2</code>, … Maintain two branches <code>master</code> and <code>develop</code>. The <code>develop</code> branch will be your main playground, the place where you develop solution (code) to homework problems and write up report. The <code>master</code> branch will be your presentation area. Submit your homework files (R markdown file <code>Rmd</code>, <code>html</code> file converted from R markdown, all code and data sets to reproduce results) in <code>master</code> branch.</li>
+</ol>
+<p><em>I did this step and will submit homework in master branch.</em></p>
+<ol start="4" style="list-style-type: decimal">
+<li>After each homework due date, teaching assistant and instructor will check out your master branch for grading. Tag each of your homework submissions with tag names <code>hw1</code>, <code>hw2</code>, … Tagging time will be used as your submission time. That means if you tag your <code>hw1</code> submission after deadline, penalty points will be deducted for late submission.</li>
 </ol>
 </div>
 <div id="q2.-linux-shell-commands" class="section level2">
 <h2>Q2. Linux Shell Commands</h2>
 <p>The <code>35.227.165.60:/home/m280-data/hw1</code> folder contains a typical genetic data set in plink format. If interested, you can read plink documentation at <a href="http://zzz.bwh.harvard.edu/plink/" class="uri">http://zzz.bwh.harvard.edu/plink/</a>. But it’s definitely not necessary for this homework.</p>
 <ul>
-<li><p><code>merge-geno.bim</code> contains information of each genetic marker (SNP). Each line is a SNP and has 6 fields:<br />
-<code>Chromosome</code>, <code>SNP ID</code>, <code>Genetic Distance (morgan)</code>, <code>Base Pair Position (bp)</code>, <code>Allele 1</code>, <code>Allele 2</code>.</p>
+<li><code>merge-geno.bim</code> contains information of each genetic marker (SNP). Each line is a SNP and has 6 fields:<br />
+<code>Chromosome</code>, <code>SNP ID</code>, <code>Genetic Distance (morgan)</code>, <code>Base Pair Position (bp)</code>, <code>Allele 1</code>, <code>Allele 2</code>.</li>
+</ul>
 <pre class="bash"><code>head /home/m280-data/hw1/merge-geno.bim</code></pre>
 <pre><code>## 1    1-54490 0   54490   A   G
 ## 1    1-55550 0   55550   T   A
@@ -152,7 +159,8 @@ $(document).ready(function () {
 ## 1    1-58448 0   58448   A   G
 ## 1    1-58814 0   58814   A   G
 ## 1    1-59492 0   59492   G   A
-## 1    1-60829 0   60829   T   C</code></pre></li>
+## 1    1-60829 0   60829   T   C</code></pre>
+<ul>
 <li><p><code>merge-geno.fam</code> contains individual information. Each line is one individual and has 6 fields:<br />
 <code>Family ID</code>, <code>Person ID</code>, <code>Father ID</code>, <code>Mother ID</code>, <code>Sex</code> coded as 1 (male) or 2 (female), <code>Affection Status</code><br />
 <code>Father ID = 0</code> means that person’s father is not in this data set. Similarly <code>Mother ID</code> = 0 means that person’s mother is not in this data set.</p>
@@ -261,6 +269,11 @@ $(document).ready(function () {
 <ul>
 <li>Mendel’s SNP definition file is similar to the plink <code>bim</code> file but has format <code>SNP ID</code>, <code>Chromosome</code>, <code>Base Pair Position</code> with each field separated by a comma. Write a Linux shell command to convert <code>merge-geno.bim</code> to Mendel SNP definition file. The first few lines of the Mendel SNP definition file should look like</li>
 </ul>
+<pre class="bash"><code>  echo &quot;2.40 = FILE FORMAT VERSION NUMBER.&quot; &gt; mendel_snpdef.txt
+  echo &quot;8348674 = NUMBER OF SNPS LISTED HERE&quot; &gt;&gt; mendel_snpdef.txt
+  awk '{OFS = &quot;,&quot;} {print $2, $1, $4}' /home/m280-data/hw1/merge-geno.bim &gt;&gt; mendel_snpdef.txt
+
+head mendel_snpdef.txt </code></pre>
 <pre><code>## 2.40 = FILE FORMAT VERSION NUMBER.
 ## 8348674 = NUMBER OF SNPS LISTED HERE
 ## 1-54490,1,54490
@@ -274,6 +287,10 @@ $(document).ready(function () {
 <ul>
 <li>Mendel’s pedigree file is similar to the plink <code>fam</code> file but has format <code>Family ID</code>, <code>Person ID</code>, <code>Father ID</code>, <code>Mother ID</code>, <code>Sex</code> coded as M or F, <code>Twin Status</code> with each field separated by a comma. Write a Linux shell command to convert <code>merge-geno.fam</code> to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string <code>T2DG</code> from the IDs. First few lines of the Mendel pedigree should look like</li>
 </ul>
+<pre class="bash"><code>awk '{OFS = &quot;,&quot;} {print $1, $2, $3, $4, $5, $6}' /home/m280-data/hw1/merge-geno.fam |
+sed 's/,1/,M/' | sed 's/,2/,F/' | sed 's/,0/,/g' | sed 's/T2DG//g'  &gt; mendel_ped.txt
+
+head -20 mendel_ped.txt</code></pre>
 <pre><code>## 2,0200001,,,M,
 ## 2,0200002,,,F,
 ## 2,0200003,,,F,
