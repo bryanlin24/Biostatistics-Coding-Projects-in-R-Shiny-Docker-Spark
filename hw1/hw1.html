@@ -161,9 +161,10 @@ $(document).ready(function () {
 ## 1    1-59492 0   59492   G   A
 ## 1    1-60829 0   60829   T   C</code></pre>
 <ul>
-<li><p><code>merge-geno.fam</code> contains individual information. Each line is one individual and has 6 fields:<br />
+<li><code>merge-geno.fam</code> contains individual information. Each line is one individual and has 6 fields:<br />
 <code>Family ID</code>, <code>Person ID</code>, <code>Father ID</code>, <code>Mother ID</code>, <code>Sex</code> coded as 1 (male) or 2 (female), <code>Affection Status</code><br />
-<code>Father ID = 0</code> means that person’s father is not in this data set. Similarly <code>Mother ID</code> = 0 means that person’s mother is not in this data set.</p>
+<code>Father ID = 0</code> means that person’s father is not in this data set. Similarly <code>Mother ID</code> = 0 means that person’s mother is not in this data set.</li>
+</ul>
 <pre class="bash"><code>head -20 /home/m280-data/hw1/merge-geno.fam</code></pre>
 <pre><code>## 2 T2DG0200001 0 0 1 0
 ## 2 T2DG0200002 0 0 2 0
@@ -184,8 +185,9 @@ $(document).ready(function () {
 ## 2 T2DG0200032 T2DG0200001 T2DG0200015 2 0
 ## 2 T2DG0200033 T2DG0200001 T2DG0200015 2 0
 ## 2 T2DG0200034 T2DG0200001 T2DG0200015 2 0
-## 2 T2DG0200035 T2DG0200001 T2DG0200015 2 0</code></pre></li>
-<li><p><code>merge-geno.bed</code> contains genotypes of each individual in binary format. We don’t need this file for this homework.</p></li>
+## 2 T2DG0200035 T2DG0200001 T2DG0200015 2 0</code></pre>
+<ul>
+<li><code>merge-geno.bed</code> contains genotypes of each individual in binary format. We don’t need this file for this homework.</li>
 </ul>
 <p>Please, do <strong>not</strong> put these data files into Git; they are huge. You even don’t need to copy them into your directory. Just read from the data folder <code>/home/m280-data/hw1</code> directly.</p>
 <p>Use Linux shell commands to answer following questions.</p>
@@ -269,10 +271,9 @@ $(document).ready(function () {
 <ul>
 <li>Mendel’s SNP definition file is similar to the plink <code>bim</code> file but has format <code>SNP ID</code>, <code>Chromosome</code>, <code>Base Pair Position</code> with each field separated by a comma. Write a Linux shell command to convert <code>merge-geno.bim</code> to Mendel SNP definition file. The first few lines of the Mendel SNP definition file should look like</li>
 </ul>
-<pre class="bash"><code>  echo &quot;2.40 = FILE FORMAT VERSION NUMBER.&quot; &gt; mendel_snpdef.txt
-  echo &quot;8348674 = NUMBER OF SNPS LISTED HERE&quot; &gt;&gt; mendel_snpdef.txt
-  awk '{OFS = &quot;,&quot;} {print $2, $1, $4}' /home/m280-data/hw1/merge-geno.bim &gt;&gt; mendel_snpdef.txt
-
+<pre class="bash"><code>echo &quot;2.40 = FILE FORMAT VERSION NUMBER.&quot; &gt; mendel_snpdef.txt
+echo &quot;8348674 = NUMBER OF SNPS LISTED HERE&quot; &gt;&gt; mendel_snpdef.txt
+awk '{OFS = &quot;,&quot;} {print $2, $1, $4}' /home/m280-data/hw1/merge-geno.bim &gt;&gt; mendel_snpdef.txt
 head mendel_snpdef.txt </code></pre>
 <pre><code>## 2.40 = FILE FORMAT VERSION NUMBER.
 ## 8348674 = NUMBER OF SNPS LISTED HERE
@@ -289,7 +290,6 @@ head mendel_snpdef.txt </code></pre>
 </ul>
 <pre class="bash"><code>awk '{OFS = &quot;,&quot;} {print $1, $2, $3, $4, $5, $6}' /home/m280-data/hw1/merge-geno.fam |
 sed 's/,1/,M/' | sed 's/,2/,F/' | sed 's/,0/,/g' | sed 's/T2DG//g'  &gt; mendel_ped.txt
-
 head -20 mendel_ped.txt</code></pre>
 <pre><code>## 2,0200001,,,M,
 ## 2,0200002,,,F,
