@@ -263,6 +263,11 @@ $(document).ready(function () {
 <code>SNP ID</code>, <code>Chromosome</code>, <code>Base Pair Position</code><br />
 with each field separated by a comma. Write a Linux shell command to convert <code>merge-geno.bim</code> to Mendel SNP definition file. The first few lines of the Mendel SNP definition file should look like</li>
 </ul>
+<pre class="bash"><code>  echo &quot;2.40 = FILE FORMAT VERSION NUMBER.&quot; &gt; mendel_snpdef.txt
+  echo &quot;8348674 = NUMBER OF SNPS LISTED HERE&quot; &gt;&gt; mendel_snpdef.txt
+  awk '{OFS = &quot;,&quot;} {print $2, $1, $4}' /home/m280-data/hw1/merge-geno.bim &gt;&gt; mendel_snpdef.txt
+
+head mendel_snpdef.txt</code></pre>
 <pre><code>## 2.40 = FILE FORMAT VERSION NUMBER.
 ## 8348674 = NUMBER OF SNPS LISTED HERE
 ## 1-54490,1,54490
@@ -278,6 +283,9 @@ with each field separated by a comma. Write a Linux shell command to convert <co
 <code>Family ID</code>, <code>Person ID</code>, <code>Father ID</code>, <code>Mother ID</code>, <code>Sex</code> coded as M or F, <code>Twin Status</code><br />
 with each field separated by a comma. Write a Linux shell command to convert <code>merge-geno.fam</code> to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string <code>T2DG</code> from the IDs. First few lines of the Mendel pedigree should look like</li>
 </ul>
+<pre class="bash"><code>  awk '{OFS = &quot;,&quot;} {print $1, $2, $3, $4, $5, $6}' /home/m280-data/hw1/merge-geno.fam | sed 's/,1/,M/' | sed 's/,2/,F/' | sed 's/,0/,/g' | sed 's/T2DG//g'  &gt; mendel_ped.txt
+
+head -20 mendel_ped.txt</code></pre>
 <pre><code>## 2,0200001,,,M,
 ## 2,0200002,,,F,
 ## 2,0200003,,,F,
