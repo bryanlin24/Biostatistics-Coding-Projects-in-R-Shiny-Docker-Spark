@@ -4,7 +4,7 @@ for (arg in commandArgs(TRUE)) {
 }
 
 ## check if a given integer is prime
-isPrime = function(n) {
+isPrime <- function(n) {
   if (n <= 3) {
     return (TRUE)
   }
@@ -14,10 +14,11 @@ isPrime = function(n) {
   return (TRUE)
 }
 
+
 ## estimate mean only using observation with prime indices
-estMeanPrimes = function (x) {
-  n = length(x)
-  ind = sapply(1:n, isPrime)
+estMeanPrimes <- function (x) {
+  n <- length(x)
+  ind <- sapply(1:n, isPrime)
   return (mean(x[ind]))
 }
 
@@ -48,12 +49,12 @@ mse_function <- function(seed, n, distr, rep){
     classic_mean[i] <- mean(x)
     prime_mean[i] <- estMeanPrimes(x)
   }
-  mse_prime <- sum(prime_mean^2- trueMean) / rep
+  mse_prime <- sum(prime_mean^2 - trueMean) / rep
   mse_classic <- sum(classic_mean^2 - trueMean) / rep
   return(c(mse_prime, mse_classic))
 }
 
 
 
-mse <- mse_function(seed,n,distr,rep)
+mse <- mse_function(seed, n, distr, rep)
 mse
