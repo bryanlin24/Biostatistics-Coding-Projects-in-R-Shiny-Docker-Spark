@@ -69,7 +69,7 @@ Use Linux shell commands to answer following questions.
  
 2. Which chromosomes does this data set contain?
  
-```{bash}
+```{bash}s
  awk '{print $1}' /home/m280-data/hw1/merge-geno.bim | sort | uniq
 ```
   *This data set contains 11 choromosomes (1,3,5,7,9,11,13,15,17,19,21)*
