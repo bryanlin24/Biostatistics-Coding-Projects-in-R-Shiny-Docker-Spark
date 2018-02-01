@@ -185,14 +185,14 @@ $$
 $$
 for both methods.
 
-```{bash}
+```{bash, eval=T}
 Rscript runSim_revised.R n=100 distr=\"gaussian\" rep=50 seed=280
 
 ```
 
 2. Modify the [`autoSim.R`](http://hua-zhou.github.io/teaching/biostatm280-2018winter/slides/02-linux/autoSim.R) script to run simulations with combinations of sample sizes `nVals = seq(100, 500, by=100)` and distributions `distTypes = c("gaussian", "t1", "t5")` and write output to appropriately named files. Use `rep = 50`, and `seed = 280`. 
 
-```{bash}
+```{bash, eval=T}
 Rscript autoSim_revised.R
 
 ```
@@ -212,7 +212,7 @@ Rscript autoSim_revised.R
 | 500 | PrimeAvg |       |       |          |
 |     | SampAvg  |       |       |          |
 
-```{bash, results = "asis"}
+```{bash, results = "asis", eval=T}
 Rscript tblSim_revised.R
 
 ```
