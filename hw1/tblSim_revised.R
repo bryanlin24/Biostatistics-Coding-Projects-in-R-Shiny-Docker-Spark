@@ -50,25 +50,3 @@ d <- cbind(n, Method, d)
 knitr::kable(d)
 
 
-
-
-
-
-
-
-#library(data.table)
-#library(dplyr)
-
-# ?list.files
-# file.list <- list.files(pattern = 'gaussian')
-# file.list1 <- list.files(pattern = 't1')
-# file.list2 <- list.files(pattern = 't5')
-# 
-# file.list3 <- merge(file.list, file.list1, file.list2)
-
-#data <- lapply(file.list, read.table(file.list,h=T))
-#data5 <- lapply(file.list, fread, header = FALSE)
-
-
-#Make data frame
-#library(tidyr)
