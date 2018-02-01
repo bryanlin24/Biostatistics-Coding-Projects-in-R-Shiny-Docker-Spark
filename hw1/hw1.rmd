@@ -160,7 +160,7 @@ awk '{if ($1 == 3 && $4 >= 47892180 && $4 <= 48130769) print}' /home/m280-data/h
   echo "8348674 = NUMBER OF SNPS LISTED HERE" >> mendel_snpdef.txt
   awk '{OFS = ","} {print $2, $1, $4}' /home/m280-data/hw1/merge-geno.bim >> mendel_snpdef.txt
 
-    head mendel_snpdef.txt
+    head mendel_snpdef.txt 
     ```
 
     - Mendel's pedigree file is similar to the plink `fam` file but has format
