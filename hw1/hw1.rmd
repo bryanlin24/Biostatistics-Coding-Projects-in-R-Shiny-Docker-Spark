@@ -109,13 +109,13 @@ awk '{if ($1 == 9) print}' /home/m280-data/hw1/merge-geno.bim | wc -l
   *Chromosome 9 has 732,013 SNPs.*
 
 Chromosome 11
-```{bash, eval=T}
+```{bash}
 awk '{if ($1 == 11) print}' /home/m280-data/hw1/merge-geno.bim | wc -l
 ```
   *Chromosome 11 has 815,860 SNPs.*
 
 Chromosome 13
-```{bash, eval=T}
+```{bash}
 awk '{if ($1 == 13) print}' /home/m280-data/hw1/merge-geno.bim | wc -l
 ```
   *Chromosome 13 has 602,809 SNPs.*
