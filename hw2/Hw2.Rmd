@@ -3,7 +3,7 @@ title: "Hw2"
 output: html_document
 ---
 
-#Load necessary packages
+*Load necessary packages*
 ```{r}
 
 library(ggplot2)
@@ -12,6 +12,7 @@ library(tidyr)
 
 
 ```
+
 #Exercise 7.3.4
 
 *1. Explore the distribution of each of the x, y, and z variables in diamonds. What do you learn? Think about a diamond and how you might decide which dimension is the length, width, and depth*
@@ -118,10 +119,60 @@ The best looking histogram is using a bin width of 1000. The distribution of pri
   
   
   
-  *How many diamonds are 0.99 carat? How many are 1 carat? What do you think is the cause of the difference?*
+  
+  *3. How many diamonds are 0.99 carat? How many are 1 carat? What do you think is the cause of the difference?*
   
 ```{r}
 
+#Define carat variable
+carat <- diamonds$carat
+
+filter_carat <- diamonds %>%
+  filter(carat >= 0.99, carat <= 1)
+
+#Define filtered carat variable
+filtered_carat <- filter_carat$carat
+
+#Check if code worked. Min and max should be between 0.99 and 1
+min(filtered_carat)
+max(filtered_carat)
+
+
+#Count 0.99 carat diamonds and 1 carat diamonds
+count_0.99 <- which(filtered_carat == 0.99)
+length(count_0.99)
+
+count_1 <- which(filtered_carat == 1)
+length(count_1)
+
+```
+There are 23 0.99 carat diamonds and 1558 1 carat diamonds. There could be dishonesty in the diamond market. For example, people falsely advertise 0.99 carat diamonds as 1 carat diamonds because there is such a small difference between the two. I suspect that 1 carat diamonds are much more valuable than 0.99 carat diamonds, so sellers would be prone to advertise their 0.99 carat diamonds as 1 carat diamonds.
+
+
+  *4. Compare and contrast coord_cartesian() vs xlim() or ylim() when zooming in on a histogram. What happens if you leave binwidth unset? What happens if you try and zoom so only half a bar shows?*
+  
 
   
+```{r}
+
+#Compare and contrast histograms.
+
+#Do not set bin width. When doing histograms for x, y and z,
+#I got errors about "set better bin width" when I did not set bin widths
+
+#Leave bin width unset for z histogram
+ggplot(diamonds) + 
+  geom_histogram(mapping = aes(x = z)) +
+  coord_cartesian(xlim = c(0, 60), ylim = c(0, 15000))
+
+#Do not use coord_cartesian
+#Make xlim smaller than it should be (excludes values)
+#Look at price data
+
+ggplot(diamonds) + 
+ geom_histogram(mapping = aes(x = price)) +
+  xlim(100, 4000) +
+  ylim(0, 2000)
+
 ```
+Coord_cartesian looks closer at the specified x and y limits on the histogram. If you do not set bin widths, ggplot automatically sets bins = 30 and asks user to input better bin widths. If specified limits for ylim are not met, the bars are cut off. If specified limits for xlim not met, the data points outside xlim are omitted.
