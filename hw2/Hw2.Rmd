@@ -14,232 +14,317 @@ library(nycflights13)
 
 ```
 
-#Exercise 7.3.4
+<!-- #Exercise 7.3.4 -->
 
-*1. Explore the distribution of each of the x, y, and z variables in diamonds. What do you learn? Think about a diamond and how you might decide which dimension is the length, width, and depth*
+<!-- *1. Explore the distribution of each of the x, y, and z variables in diamonds. What do you learn? Think about a diamond and how you might decide which dimension is the length, width, and depth* -->
 
-```{r}
+<!-- ```{r} -->
 
-#Define variables
-x <- diamonds$x
-y <- diamonds$y
-z <- diamonds$z
+<!-- #Define variables -->
+<!-- x <- diamonds$x -->
+<!-- y <- diamonds$y -->
+<!-- z <- diamonds$z -->
 
-#Look at basic R histogram to determine bin widths, max/min of x and y, etc.
-hist(x, main = "Hist of x in Diamonds")
-hist(y, main = "Hist of y in Diamonds")
-hist(z, main = "Hist of z in Diamonds")
+<!-- #Look at basic R histogram to determine bin widths, max/min of x and y, etc. -->
+<!-- hist(x, main = "Hist of x in Diamonds") -->
+<!-- hist(y, main = "Hist of y in Diamonds") -->
+<!-- hist(z, main = "Hist of z in Diamonds") -->
 
 
-#Histogram of x
-ggplot(diamonds) + 
-  geom_histogram(mapping = aes(x = x), binwidth = 0.8) +
-  coord_cartesian(xlim = c(0, 60), ylim = c(0, 15000))
-#set equal binwidth and x and y axis limits for comparison
+<!-- #Histogram of x -->
+<!-- ggplot(diamonds) + -->
+<!--   geom_histogram(mapping = aes(x = x), binwidth = 0.8) + -->
+<!--   coord_cartesian(xlim = c(0, 60), ylim = c(0, 15000)) -->
+<!-- #set equal binwidth and x and y axis limits for comparison -->
 
-#Find outliers
-min(x)
-max(x)
+<!-- #Find outliers -->
+<!-- min(x) -->
+<!-- max(x) -->
 
-#Histogram of y
-ggplot(diamonds) + 
-  geom_histogram(mapping = aes(x = y), binwidth = 0.8) +
-  coord_cartesian(xlim = c(0, 60), ylim = c(0, 15000))
-#set equal binwidth and x and y axis limits for comparison
+<!-- #Histogram of y -->
+<!-- ggplot(diamonds) + -->
+<!--   geom_histogram(mapping = aes(x = y), binwidth = 0.8) + -->
+<!--   coord_cartesian(xlim = c(0, 60), ylim = c(0, 15000)) -->
+<!-- #set equal binwidth and x and y axis limits for comparison -->
 
-#Find outliers
-min(y)
-max(y)
+<!-- #Find outliers -->
+<!-- min(y) -->
+<!-- max(y) -->
 
-#Histogram of z
-ggplot(diamonds) + 
-  geom_histogram(mapping = aes(x = z), binwidth = 0.7) +
-  coord_cartesian(xlim = c(0, 60), ylim = c(0, 15000))
-#set equal binwidth and x and y axis limits for comparison
+<!-- #Histogram of z -->
+<!-- ggplot(diamonds) + -->
+<!--   geom_histogram(mapping = aes(x = z), binwidth = 0.7) + -->
+<!--   coord_cartesian(xlim = c(0, 60), ylim = c(0, 15000)) -->
+<!-- #set equal binwidth and x and y axis limits for comparison -->
 
-#Find outliers
-min(z)
-max(z)
+<!-- #Find outliers -->
+<!-- min(z) -->
+<!-- max(z) -->
 
 
-#Answer found on Internet (overlays the histograms, allows for easier comparison)
-diamonds %>%
-  mutate(id = row_number()) %>%
-  select(x, y, z, id) %>%
-  gather(variable, value, -id)  %>%
-  ggplot(aes(x = value)) +
-  geom_density() +
-  geom_rug() +
-  facet_grid(variable ~ .)
+<!-- #Answer found on Internet (overlays the histograms, allows for easier comparison) -->
+<!-- diamonds %>% -->
+<!--   mutate(id = row_number()) %>% -->
+<!--   select(x, y, z, id) %>% -->
+<!--   gather(variable, value, -id)  %>% -->
+<!--   ggplot(aes(x = value)) + -->
+<!--   geom_density() + -->
+<!--   geom_rug() + -->
+<!--   facet_grid(variable ~ .) -->
 
-```
-The histograms for x, y and z are all highly right skewed and the shape for each of them is bimodal. The histograms for x and y have very similar shapes. There are outliers for y and z (each variable has a large maximum). The units of measuring length, width and depth are in mm. I would guess that x is length because the maximum of x is 10.74 mm and the maximum of y and z are 60 mm and 31.8 mm respectively. These numbers seem too large to be the length of a diamond. I would guess that y is the width of a diamond because a depth of 60 mm would be an abnormally large diamond. I would guess z is the depth of the diamond.
+<!-- ``` -->
+<!-- The histograms for x, y and z are all highly right skewed and the shape for each of them is bimodal. The histograms for x and y have very similar shapes. There are outliers for y and z (each variable has a large maximum). The units of measuring length, width and depth are in mm. I would guess that x is length because the maximum of x is 10.74 mm and the maximum of y and z are 60 mm and 31.8 mm respectively. These numbers seem too large to be the length of a diamond. I would guess that y is the width of a diamond because a depth of 60 mm would be an abnormally large diamond. I would guess z is the depth of the diamond. -->
 
 
 
-  *2. Explore the distribution of price. Do you discover anything unusual or surprising? (Hint: Carefully think about the binwidth and make sure you try a wide range of values.)*
-```{r}
+<!--   *2. Explore the distribution of price. Do you discover anything unusual or surprising? (Hint: Carefully think about the binwidth and make sure you try a wide range of values.)* -->
+<!-- ```{r} -->
 
-#Define price variable
-price <- diamonds$price
+<!-- #Define price variable -->
+<!-- price <- diamonds$price -->
 
-#Check min and max of price
-min(price)
-max(price)
-#Price has a huge range ($326 to $18,823)
+<!-- #Check min and max of price -->
+<!-- min(price) -->
+<!-- max(price) -->
+<!-- #Price has a huge range ($326 to $18,823) -->
 
 
-#Look at basic R histogram to determine bin widths, max/min of x and y, etc.
-hist(price)
+<!-- #Look at basic R histogram to determine bin widths, max/min of x and y, etc. -->
+<!-- hist(price) -->
 
 
-#Make histogram and explore bin widths
+<!-- #Make histogram and explore bin widths -->
 
-#bin width of 1000
-ggplot(diamonds) + 
- geom_histogram(mapping = aes(x = price), binwidth = 1000) +
- coord_cartesian(xlim = c(0, 20000))
+<!-- #bin width of 1000 -->
+<!-- ggplot(diamonds) + -->
+<!--  geom_histogram(mapping = aes(x = price), binwidth = 1000) + -->
+<!--  coord_cartesian(xlim = c(0, 20000)) -->
 
-#bin width of 100
-ggplot(diamonds) + 
- geom_histogram(mapping = aes(x = price), binwidth = 100) +
- coord_cartesian(xlim = c(0, 20000))
-#Note, there is a price gap around $1500-$2000
+<!-- #bin width of 100 -->
+<!-- ggplot(diamonds) + -->
+<!--  geom_histogram(mapping = aes(x = price), binwidth = 100) + -->
+<!--  coord_cartesian(xlim = c(0, 20000)) -->
+<!-- #Note, there is a price gap around $1500-$2000 -->
 
-#Take a closer look at the data
-ggplot(diamonds) + 
- geom_histogram(mapping = aes(x = price), binwidth = 10) +
- coord_cartesian(xlim = c(0, 10000))
+<!-- #Take a closer look at the data -->
+<!-- ggplot(diamonds) + -->
+<!--  geom_histogram(mapping = aes(x = price), binwidth = 10) + -->
+<!--  coord_cartesian(xlim = c(0, 10000)) -->
 
 
-```
-The best looking histogram is using a bin width of 1000. The distribution of price is highly right skewed, which is not surprising beacuse larger diamonds are much more expensive than smaller ones and are rare, so there are not that many diamonds worth such a high price. The curve of best fit for this distribution looks exponenonential.
+<!-- ``` -->
+<!-- The best looking histogram is using a bin width of 1000. The distribution of price is highly right skewed, which is not surprising beacuse larger diamonds are much more expensive than smaller ones and are rare, so there are not that many diamonds worth such a high price. The curve of best fit for this distribution looks exponenonential. -->
 
 
-  However, based on using a bin width of 10, we can get a closer look at the data. We see lots of spikes in prices and the price of ~$1500 has a large gap, which is unsuual. This distribution tells us that there are huge variations in prices for diamonds.
-  
-  
-  
-  
-  *3. How many diamonds are 0.99 carat? How many are 1 carat? What do you think is the cause of the difference?*
-  
-```{r}
+<!--   However, based on using a bin width of 10, we can get a closer look at the data. We see lots of spikes in prices and the price of ~$1500 has a large gap, which is unsuual. This distribution tells us that there are huge variations in prices for diamonds. -->
 
-#Define carat variable
-carat <- diamonds$carat
 
-filter_carat <- diamonds %>%
-  filter(carat >= 0.99, carat <= 1)
 
-#Define filtered carat variable
-filtered_carat <- filter_carat$carat
 
-#Check if code worked. Min and max should be between 0.99 and 1
-min(filtered_carat)
-max(filtered_carat)
+<!--   *3. How many diamonds are 0.99 carat? How many are 1 carat? What do you think is the cause of the difference?* -->
 
+<!-- ```{r} -->
 
-#Count 0.99 carat diamonds and 1 carat diamonds
-count_0.99 <- which(filtered_carat == 0.99)
-length(count_0.99)
+<!-- #Define carat variable -->
+<!-- carat <- diamonds$carat -->
 
-count_1 <- which(filtered_carat == 1)
-length(count_1)
+<!-- filter_carat <- diamonds %>% -->
+<!--   filter(carat >= 0.99, carat <= 1) -->
 
-```
-There are 23 0.99 carat diamonds and 1558 1 carat diamonds. There could be dishonesty in the diamond market. For example, people falsely advertise 0.99 carat diamonds as 1 carat diamonds because there is such a small difference between the two. I suspect that 1 carat diamonds are much more valuable than 0.99 carat diamonds, so sellers would be prone to advertise their 0.99 carat diamonds as 1 carat diamonds.
+<!-- #Define filtered carat variable -->
+<!-- filtered_carat <- filter_carat$carat -->
 
+<!-- #Check if code worked. Min and max should be between 0.99 and 1 -->
+<!-- min(filtered_carat) -->
+<!-- max(filtered_carat) -->
 
-  *4. Compare and contrast coord_cartesian() vs xlim() or ylim() when zooming in on a histogram. What happens if you leave binwidth unset? What happens if you try and zoom so only half a bar shows?*
-  
 
-  
-```{r}
+<!-- #Count 0.99 carat diamonds and 1 carat diamonds -->
+<!-- count_0.99 <- which(filtered_carat == 0.99) -->
+<!-- length(count_0.99) -->
 
-#Compare and contrast histograms.
+<!-- count_1 <- which(filtered_carat == 1) -->
+<!-- length(count_1) -->
 
-#Do not set bin width. When doing histograms for x, y and z,
-#I got errors about "set better bin width" when I did not set bin widths
+<!-- ``` -->
+<!-- There are 23 0.99 carat diamonds and 1558 1 carat diamonds. There could be dishonesty in the diamond market. For example, people falsely advertise 0.99 carat diamonds as 1 carat diamonds because there is such a small difference between the two. I suspect that 1 carat diamonds are much more valuable than 0.99 carat diamonds, so sellers would be prone to advertise their 0.99 carat diamonds as 1 carat diamonds. -->
 
-#Leave bin width unset for z histogram
-ggplot(diamonds) + 
-  geom_histogram(mapping = aes(x = z)) +
-  coord_cartesian(xlim = c(0, 60), ylim = c(0, 15000))
 
-#Do not use coord_cartesian
-#Make xlim smaller than it should be (excludes values)
-#Look at price data
+<!--   *4. Compare and contrast coord_cartesian() vs xlim() or ylim() when zooming in on a histogram. What happens if you leave binwidth unset? What happens if you try and zoom so only half a bar shows?* -->
 
-ggplot(diamonds) + 
- geom_histogram(mapping = aes(x = price)) +
-  xlim(100, 4000) +
-  ylim(0, 2000)
 
-```
-Coord_cartesian looks closer at the specified x and y limits on the histogram. If you do not set bin widths, ggplot automatically sets bins = 30 and asks user to input better bin widths. If specified limits for ylim are not met, the bars are cut off. If specified limits for xlim not met, the data points outside xlim are omitted.
 
+<!-- ```{r} -->
 
+<!-- #Compare and contrast histograms. -->
 
-#Exercise 7.4.1
+<!-- #Do not set bin width. When doing histograms for x, y and z, -->
+<!-- #I got errors about "set better bin width" when I did not set bin widths -->
 
-  *1. What happens to missing values in a histogram? What happens to missing values in a bar chart? Why is there a difference?*
+<!-- #Leave bin width unset for z histogram -->
+<!-- ggplot(diamonds) + -->
+<!--   geom_histogram(mapping = aes(x = z)) + -->
+<!--   coord_cartesian(xlim = c(0, 60), ylim = c(0, 15000)) -->
 
-```{r}
-diamonds2 <- diamonds %>% 
-  mutate(price = ifelse(price > 10000, NA, price))
+<!-- #Do not use coord_cartesian -->
+<!-- #Make xlim smaller than it should be (excludes values) -->
+<!-- #Look at price data -->
 
-diamonds2 %>%
-  ggplot(aes(price)) +
-  geom_histogram()
+<!-- ggplot(diamonds) + -->
+<!--  geom_histogram(mapping = aes(x = price)) + -->
+<!--   xlim(100, 4000) + -->
+<!--   ylim(0, 2000) -->
 
+<!-- ``` -->
+<!-- Coord_cartesian looks closer at the specified x and y limits on the histogram. If you do not set bin widths, ggplot automatically sets bins = 30 and asks user to input better bin widths. If specified limits for ylim are not met, the bars are cut off. If specified limits for xlim not met, the data points outside xlim are omitted. -->
 
-```
-In a histogram, missing values are not included in the binwidth calculation so they do not show up on the histogram.
 
 
-```{r}
-flights %>%
-  mutate(carrier = ifelse(carrier == "DL", NA, carrier)) %>%
-  ggplot(aes(carrier)) +
-  geom_bar()
-```
-For discrete values, in a barplot, missing values are treated as a new category. In this case, NA represents missing values so there is a category for NA
+<!-- #Exercise 7.4.1 -->
 
-```{r}
-diamonds2 %>%
-  ggplot(aes(price)) +
-  geom_bar()
-```
-For continuous values, in a barplot, missing values are omitted in the plot. Note in this plot, prices greater than $10,000 ommitted (See plot below for comparison)
+<!--   *1. What happens to missing values in a histogram? What happens to missing values in a bar chart? Why is there a difference?* -->
 
-```{r}
-diamonds %>%
-  ggplot(aes(price)) + 
-  geom_bar()
-```
+<!-- ```{r} -->
+<!-- diamonds2 <- diamonds %>% -->
+<!--   mutate(price = ifelse(price > 10000, NA, price)) -->
 
-There is a difference in ommitted values in histograms vs. bar plots because histograms and bar charts are constructed differently. Histograms are constructed based off frequency of data points based on bin width. Histograms provide insight on the shape of the distribution of the data as well as measures of central tendency. Including a separate cateogry counting "NAs" would not be helpful in describing the shape of the distribution of the data. In other words, NA values do not give any helpful information in a histogram. In this example, I filtered out diamonds worth more than $10,000. The histogram should be constructed such that we are only looking at the distribution of diamonds worth less than $10,000.
+<!-- diamonds2 %>% -->
+<!--   ggplot(aes(price)) + -->
+<!--   geom_histogram() -->
 
-  On the other hand, it is useful to include NA for bar charts because bar charts visualize categorical data. Therefore, having a category for NA helps one understand what the data looks like. In this case, I made a histogram of 2013 NYC flights and made all flights with the carrier Delta airlines as NA. The bar chart adds a category for NA, and this helps us see and gives us all the information in the data for flights in 2013 for NYC.
 
+<!-- ``` -->
+<!-- In a histogram, missing values are not included in the binwidth calculation so they do not show up on the histogram. -->
 
-  *2. What does na.rm = TRUE do in mean() and sum()?*
 
-```{r}
-mean(c(1, 2, 3, NA), na.rm = TRUE)
-#Mean of this vector is (1 + 2 + 3) / 3 = 2
+<!-- ```{r} -->
+<!-- flights %>% -->
+<!--   mutate(carrier = ifelse(carrier == "DL", NA, carrier)) %>% -->
+<!--   ggplot(aes(carrier)) + -->
+<!--   geom_bar() -->
+<!-- ``` -->
+<!-- For discrete values, in a barplot, missing values are treated as a new category. In this case, NA represents missing values so there is a category for NA -->
 
+<!-- ```{r} -->
+<!-- diamonds2 %>% -->
+<!--   ggplot(aes(price)) + -->
+<!--   geom_bar() -->
+<!-- ``` -->
+<!-- For continuous values, in a barplot, missing values are omitted in the plot. Note in this plot, prices greater than $10,000 ommitted (See plot below for comparison) -->
 
-sum(c(1, 2, 3, NA), na.rm = TRUE)
-#Sum of this vector is (1 + 2 + 3) = 6
-```
+<!-- ```{r} -->
+<!-- diamonds %>% -->
+<!--   ggplot(aes(price)) + -->
+<!--   geom_bar() -->
+<!-- ``` -->
 
-The na.rm command removes NA values from the specified vector. So, data points that are are not included in the mean() nor the sum() calculation.
+<!-- There is a difference in ommitted values in histograms vs. bar plots because histograms and bar charts are constructed differently. Histograms are constructed based off frequency of data points based on bin width. Histograms provide insight on the shape of the distribution of the data as well as measures of central tendency. Including a separate cateogry counting "NAs" would not be helpful in describing the shape of the distribution of the data. In other words, NA values do not give any helpful information in a histogram. In this example, I filtered out diamonds worth more than $10,000. The histogram should be constructed such that we are only looking at the distribution of diamonds worth less than $10,000. -->
+
+<!--   On the other hand, it is useful to include NA for bar charts because bar charts visualize categorical data. Therefore, having a category for NA helps one understand what the data looks like. In this case, I made a histogram of 2013 NYC flights and made all flights with the carrier Delta airlines as NA. The bar chart adds a category for NA, and this helps us see and gives us all the information in the data for flights in 2013 for NYC. -->
+
+
+<!--   *2. What does na.rm = TRUE do in mean() and sum()?* -->
+
+<!-- ```{r} -->
+<!-- mean(c(1, 2, 3, NA), na.rm = TRUE) -->
+<!-- #Mean of this vector is (1 + 2 + 3) / 3 = 2 -->
+
+
+<!-- sum(c(1, 2, 3, NA), na.rm = TRUE) -->
+<!-- #Sum of this vector is (1 + 2 + 3) = 6 -->
+<!-- ``` -->
+
+<!-- The na.rm command removes NA values from the specified vector. So, data points that are are not included in the mean() nor the sum() calculation. -->
 
 
 #7.5.1.1 Exercises
 
 
   *1. Use what you’ve learned to improve the visualisation of the departure times of cancelled vs. non-cancelled flights.*
+```{r}
+
+#original plot
+flights %>% 
+  mutate(
+    cancelled = is.na(dep_time),
+    sched_hour = sched_dep_time %/% 100,
+    sched_min = sched_dep_time %% 100,
+    sched_dep_time = sched_hour + sched_min / 60
+  ) %>% 
+  ggplot(mapping = aes(sched_dep_time)) + 
+  geom_freqpoly(mapping = aes(colour = cancelled), binwidth = 1/4)
+
+
+
+#remove mapping in both ggplot and geom_freqpoly command
+#move color = cancelled into ggplot command
+
+flights %>% 
+  mutate(
+    cancelled = is.na(dep_time),
+    sched_hour = sched_dep_time %/% 100,
+    sched_min = sched_dep_time %% 100,
+    sched_dep_time = sched_hour + sched_min / 60
+  ) %>%
+  ggplot(aes(x = sched_dep_time, y = ..density.., color = cancelled)) + 
+  geom_freqpoly(binwidth = 1/4)
+
+
+
+#Or, visualize cancelled flights with a boxplot
+flights %>% 
+  mutate(cancelled = is.na(dep_time) | is.na(arr_time)) %>% 
+  ggplot() +
+  geom_boxplot(aes(x = cancelled, y = dep_time))
+```
+The first plot is the original plot of cancelled NYC flights that we want to improve. To improve the plot, I removed the "mapping" option in both the ggplot and geom_freqpoly command. I also moved the "color" option into the ggplot command. In comparing the two plots, this improvement allows one to better distinguish the difference between cancelled and non-cancelled flights. In the original plot, the y-axis is the frequency/count of cancelled and non-cancelled flights. The plot shows it is not that insightful to compare counts since cancelled flights occur much less frequently than non-cancelled flights. Instead, looking at the density allows us to compare relative amounts of cancelled vs. non-cancelled flights, and we can see that flights tend to be cancelled late at night (around 8pm - 12am)
+
+
+  *2. What variable in the diamonds dataset is most important for predicting the price of a diamond? How is that variable correlated with cut? Why does the combination of those two relationships lead to lower quality diamonds being more expensive?*
+
+```{r}
+
+
+ggplot(diamonds, aes(carat,price)) + 
+  geom_point() + 
+  geom_smooth(method='lm')
+
+
+fit <- lm(diamonds$price ~ diamonds$carat, data = diamonds)
+summary(fit)
+abline(fit, col = "red")
+#Adj R^2 value is high (0.85)
+
+
+```
+I would guess carat is important in predicting diamond price, so I fitted a linear regression of price vs. carat. The adjust R^2 value is high (0.85), but we should check assumptions for fitting a linear regression model.
+
+```{r}
+
+#Check fitting linear regression assumptions
+plot(fit)
+
+
+```
+I would say regression assumptions are violated because residual plot does NOT show random scatter. I would be cautious in interpreting these linear regression results.
+
+
+  *So, fit a non-linear regression (Loess) curve instead*
+```{r}
+ggplot(diamonds, aes(carat, price)) +
+  geom_point() +
+  geom_smooth()
+```
+
+We can also make a boxplot to visualize this data
+
+```{r}
+diamonds %>%
+  ggplot(aes(cut, carat)) +
+  geom_boxplot()
+
+```
+The correlation between carat and cut is weakly negative. The boxplot shows that there are a lot of diamonds that are big carats but the cuts are only fair or good. If carat is a stronger predictor than cut for price, then lower quality diamonds will be, on average, more expensive.
+
 
 
