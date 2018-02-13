@@ -9,6 +9,7 @@ output: html_document
 library(ggplot2)
 library(dplyr)
 library(tidyr)
+library(nycflights13)
 
 
 ```
@@ -176,3 +177,69 @@ ggplot(diamonds) +
 
 ```
 Coord_cartesian looks closer at the specified x and y limits on the histogram. If you do not set bin widths, ggplot automatically sets bins = 30 and asks user to input better bin widths. If specified limits for ylim are not met, the bars are cut off. If specified limits for xlim not met, the data points outside xlim are omitted.
+
+
+
+#Exercise 7.4.1
+
+  *1. What happens to missing values in a histogram? What happens to missing values in a bar chart? Why is there a difference?*
+
+```{r}
+diamonds2 <- diamonds %>% 
+  mutate(price = ifelse(price > 10000, NA, price))
+
+diamonds2 %>%
+  ggplot(aes(price)) +
+  geom_histogram()
+
+
+```
+In a histogram, missing values are not included in the binwidth calculation so they do not show up on the histogram.
+
+
+```{r}
+flights %>%
+  mutate(carrier = ifelse(carrier == "DL", NA, carrier)) %>%
+  ggplot(aes(carrier)) +
+  geom_bar()
+```
+For discrete values, in a barplot, missing values are treated as a new category. In this case, NA represents missing values so there is a category for NA
+
+```{r}
+diamonds2 %>%
+  ggplot(aes(price)) +
+  geom_bar()
+```
+For continuous values, in a barplot, missing values are omitted in the plot. Note in this plot, prices greater than $10,000 ommitted (See plot below for comparison)
+
+```{r}
+diamonds %>%
+  ggplot(aes(price)) + 
+  geom_bar()
+```
+
+There is a difference in ommitted values in histograms vs. bar plots because histograms and bar charts are constructed differently. Histograms are constructed based off frequency of data points based on bin width. Histograms provide insight on the shape of the distribution of the data as well as measures of central tendency. Including a separate cateogry counting "NAs" would not be helpful in describing the shape of the distribution of the data. In other words, NA values do not give any helpful information in a histogram. In this example, I filtered out diamonds worth more than $10,000. The histogram should be constructed such that we are only looking at the distribution of diamonds worth less than $10,000.
+
+  On the other hand, it is useful to include NA for bar charts because bar charts visualize categorical data. Therefore, having a category for NA helps one understand what the data looks like. In this case, I made a histogram of 2013 NYC flights and made all flights with the carrier Delta airlines as NA. The bar chart adds a category for NA, and this helps us see and gives us all the information in the data for flights in 2013 for NYC.
+
+
+  *2. What does na.rm = TRUE do in mean() and sum()?*
+
+```{r}
+mean(c(1, 2, 3, NA), na.rm = TRUE)
+#Mean of this vector is (1 + 2 + 3) / 3 = 2
+
+
+sum(c(1, 2, 3, NA), na.rm = TRUE)
+#Sum of this vector is (1 + 2 + 3) = 6
+```
+
+The na.rm command removes NA values from the specified vector. So, data points that are are not included in the mean() nor the sum() calculation.
+
+
+#7.5.1.1 Exercises
+
+
+  *1. Use what you’ve learned to improve the visualisation of the departure times of cancelled vs. non-cancelled flights.*
+
+
