@@ -7,10 +7,26 @@ install.packages("dplyr")
 install.packages("nycflights13")
 install.packages("ggstance")
 install.packages("lvplot")
+install.packages("ggbeeswarm")
+install.packages("viridis")
+
+library("viridis")
+library("tidyverse")
+
+
+SNP <- read_tsv(file = "/home/m280-data/hw1/merge-geno.bim", col_names = FALSE)
+persons <- read_delim(file = "/home/m280-data/hw1/merge-geno.fam", delim = " ", col_names = FALSE)
 
 
 
 
+
+
+
+
+
+View(SNP)
+View(persons)
 
 library(ggplot2)
 library(dplyr)
@@ -113,3 +129,32 @@ ggplot(diamonds) +
   geom_histogram(mapping = aes(x = price)) +
   xlim(100, 5000) +
   ylim(0, 3000)
+
+
+#Exercise 7.5.2
+
+diamonds %>% 
+  count(color, cut) %>%  
+  ggplot(mapping = aes(x = color, y = cut)) +
+  geom_tile(mapping = aes(fill = n))
+
+SNP <- read.table(file = "/home/m280-data/hw1/merge-geno.bim")
+persons <- read.table(file = "/home/m280-data/hw1/merge-geno.fam")
+
+
+#delay: dep_delay
+#destination: dest
+#month: month
+
+flights %>%
+  count(dep_delay) %>%
+  group_by(month, dest)
+  
+  
+  
+  
+  
+  diamonds %>% 
+  count(color, cut) %>%  
+  ggplot(mapping = aes(x = color, y = cut)) +
+  geom_tile(mapping = aes(fill = n))

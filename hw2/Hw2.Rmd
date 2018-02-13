@@ -452,42 +452,214 @@ library(nycflights13)
 
 <!-- In this plot, we can better distinguish the differences in color within cut. The original plot had a lot of dark blue. For instance, all J color diamonds are dark blue, so it was difficult to see the differences in cut within the J colored diamonds. Calculating the percentages, one can see the difference within the colors and the cuts better. For instance, the ideal cut has the least percentage of colored diamonds relative to other cuts. -->
 
-  *2. Use geom_tile() together with dplyr to explore how average flight delays vary by destination and month of year. What makes the plot difficult to read? How could you improve it?*
+
+<!--   *2. Use geom_tile() together with dplyr to explore how average flight delays vary by destination and month of year. What makes the plot difficult to read? How could you improve it?* -->
+
+<!-- ```{r} -->
+
+<!-- #delay: dep_delay -->
+<!-- #destination: dest -->
+<!-- #month: month -->
+
+<!-- flights %>% -->
+<!--   ggplot(aes(x = month, y = dest, fill = dep_delay)) + -->
+<!--   geom_tile() -->
+
+
+<!-- ``` -->
+
+<!-- This plot shows that it is difficult to distinguish the departure delays (the graph looks mostly dark blue) and has a lot of white and gray colors. The white colors represent missing values for the variable destination. Therefore, it would be helpful to remove missing values. It would also help to sort the destination values -->
+
+
+<!-- ```{r} -->
+
+<!-- flights %>% -->
+<!--   group_by(dest, month) %>% -->
+<!--   summarize(dev_dep_delay = mean(dep_delay, na.rm = T)) %>% -->
+<!--   group_by(dest) %>% -->
+<!--   filter(n() == 12) %>% -->
+<!--   ungroup() %>% -->
+<!--   mutate(new_dest = fct_reorder(dest, dev_dep_delay)) %>% -->
+<!--   ggplot(aes(x = factor(month), y = new_dest, fill = dev_dep_delay)) + -->
+<!--   geom_tile() + -->
+<!--   labs(x = "Month", y = "Destination", fill = "Departure Delay") -->
+
+<!-- ``` -->
+
+<!-- In this improved plot, I removed missing values in the calculation for mean departure delay time and sorted these values. I also factor re-ordered the variable destination and the mean departure delay time. It also helped to change month to factor -->
+
+
+<!--   *3. Why is it slightly better to use aes(x = color, y = cut) rather than aes(x = cut, y = color) in the example above?* -->
+
+<!-- ```{r} -->
+
+<!-- diamonds %>% -->
+<!--   count(color, cut) %>% -->
+<!--   ggplot(mapping = aes(x = cut, y = color)) + -->
+<!--     geom_tile(mapping = aes(fill = n)) -->
+
+<!-- ``` -->
+
+<!-- It is better to use aes(x = color, y = cut) because there are more colors than cuts, and it would be easier to interpret this plot if the variable with more categories were on the x-axis while the variable with less cateogires were on the y-axis. It is slightly more difficult to interpret this plot because it is harder to compare the difference in blue row-wise vs. column-wise. -->
+
+
+
+
+
+<!-- #7.5.3.1 Exercises -->
+
+
+<!--   *1. Instead of summarising the conditional distribution with a boxplot, you could use a frequency polygon. What do you need to consider when using cut_width() vs cut_number()? How does that impact a visualisation of the 2d distribution of carat and price?* -->
+
+<!-- ```{r} -->
+
+<!-- ggplot(data = diamonds,  -->
+<!--        mapping = aes(x = price, -->
+<!--                      colour = cut_width(carat, 0.3))) + -->
+<!--   geom_freqpoly(binwidth = 1000) -->
+
+
+<!-- ggplot(data = diamonds,  -->
+<!--        mapping = aes(x = price, -->
+<!--                      y = ..density..,  -->
+<!--                      colour = cut_width(carat, 0.4))) + -->
+<!--   geom_freqpoly(binwidth = 1000) -->
+
+<!-- ``` -->
+
+
+<!--   One thing we need to consider is using counts vs. density for cut_width. It is difficult to compare counts of diamonds since there are so few counts of high priced diamonds, so it is hard to visualize them on the frequency polygon. On the other hand, using density allows for better comparison of the diamonds vs. the few high priced diamonds. -->
+
+
+
+<!-- ```{r} -->
+<!-- ggplot(data = diamonds, mapping = aes(x = price, -->
+<!--       y = ..density.., color = cut_number(carat, 10))) + -->
+<!--   geom_freqpoly(binwidth = 1000) -->
+
+
+
+<!-- ggplot(data = diamonds, mapping = aes(x = price, -->
+<!--       colour = cut_number(carat, 10))) + -->
+<!--   geom_freqpoly(binwidht = 1000) -->
+
+<!-- ``` -->
+
+<!--   Using cut_number, we see that the two frequency polygons look very similar. This is because cut_number "divides the data into n groups, with (approximately) equal numbers of observations" (Source: http://ggplot2.tidyverse.org/reference/cut_interval.html). On the other hand, cut_width does NOT divide the data into n groups with equal numbers of observations. Instead, cut_width makes groups of a width the user specifies. -->
+
+
+<!--   *2. Visualise the distribution of carat, partitioned by price.* -->
+
+<!-- ```{r} -->
+
+<!-- #Use cut_number to partition by price -->
+<!-- #n = 15 is the number of intervals -->
+
+<!-- ggplot(diamonds, aes(x = cut_number(price, n = 15), y = carat)) + -->
+<!--   geom_boxplot() + -->
+<!--   coord_flip() + -->
+<!--   xlab("Price") -->
+
+<!-- ``` -->
+
+<!-- ```{r} -->
+
+<!-- #Can also use cut_width -->
+
+<!-- ggplot(diamonds, aes(x = cut_width(price, 2000), y = carat)) +  -->
+<!--   geom_boxplot() + -->
+<!--   coord_flip() +  -->
+<!--   xlab("Price") -->
+<!-- ``` -->
+
+<!--   I made a boxplot and used cut_number to partition the data by price. This plot partitions the carat of the diamond into price ranges i.e. we can see the price range for a 0 carat diamond, a 1 carat diamond, etc. -->
+
+
+<!--   *3. How does the price distribution of very large diamonds compare to small diamonds. Is it as you expect, or does it surprise you?* -->
+
+<!-- Both distributions for very large diamonds and small diamonds are right skewed. What surprises me most is that there are diamonds that are small diamonds (i.e. 1 carat) that are worth hundreds of thousands of dollars. This shows carat is not the only meaningful predictor of the price of a diamond. There are other factors, such as cut as we saw in Exercise 7.5.1.1. Small diamonds (low carat) can still be very valuable, especially if variables like cut are high. -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Redo Hw 1 Qs using Tidyverse
+
+
+
+  Read in SNP and Individual Persons data
+```{r}
+
+#NOTE: do not use base R functions i.e. read.table because 
+#Base R functions are extremely slow. Tidyverse read in functions are a lot faster
+
+SNP <- read_tsv(file = "/home/m280-data/hw1/merge-geno.bim", col_names = FALSE)
+#Tab separated
+
+persons <- read_delim(file = "/home/m280-data/hw1/merge-geno.fam", delim = " ", col_names = FALSE)
+#Space separated
+
+```
+
+
+  *1. How many persons are in the data set (statisticians call this n)? How many SNPs are in the data set (statisticians call this p)?*
+  
+```{r}
+#Each line is a SNP, so count the number of rows in SNP dataset.
+count(SNP)
+```
+There are 8,348,674 SNPs in this dataset
+
+```{r}
+#Each line represents a unique individual, so count the number of rows in persons dataset
+count(persons)
+```
+There are 959 people in this dataset
+
+
+  *2. Which chromosomes does this data set contain? How many SNPs are in each chromosome?*
   
 ```{r}
 
-#delay: dep_delay
-#destination: dest
-#month: month
-
-flights %>%
-  ggplot(aes(x = month, y = dest, fill = dep_delay)) + 
-  geom_tile()
 
 
 ```
+  
+# of chromosomes: count unique numbers in first column
 
-This basic plot shows that it is difficult to distinguish the departure delays (the graph looks mostly dark blue). The gray values represent missing values.
-
-
-```{r}
-
+SNPS - within each unique chromosome, count how many times it appearas
 
 
-```
+  *3. MAP4 (microtubule-associated protein 4) is a gene on chromosome 3 spanning positions 47,892,180 bp – 48,130,769 bp. How many SNPs are located within MAP4 gene?*
+
+
+There should be 894 chromosomes
+
+
+
+4. Statistical geneticists often have to reformat a data set to feed into various analysis programs. For example, to use the Mendel software <http://www.genetics.ucla.edu/software/mendel>, we have to reformat the data set to be read by Mendel.
+
+      - Mendel's SNP definition file is similar to the plink `bim` file but has format
+      `SNP ID`, `Chromosome`, `Base Pair Position`
+      with each field separated by a comma. Write a Linux shell command to convert `merge-geno.bim` to Mendel SNP definition file. The first few lines of the Mendel SNP definition file should look like
+      
+      
+
+
+
+    - Mendel's pedigree file is similar to the plink `fam` file but has format
+    `Family ID`, `Person ID`, `Father ID`, `Mother ID`, `Sex` coded as M or F, `Twin Status`
+    with each field separated by a comma. Write a Linux shell command to convert `merge-geno.fam` to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string `T2DG` from the IDs. First few lines of the Mendel pedigree should look like
 
 
 
 
-  *3. Why is it slightly better to use aes(x = color, y = cut) rather than aes(x = cut, y = color) in the example above?*
-
-```{r}
-
-diamonds %>% 
-  count(color, cut) %>%  
-  ggplot(mapping = aes(x = cut, y = color)) +
-    geom_tile(mapping = aes(fill = n))
-
-```
-
-It is better to use aes(x = color, y = cut) because there are more colors than cuts, and it would be easier to interpret this plot if the variable with more categories were on the x-axis while the variable with less cateogires were on the y-axis. It is slightly more difficult to interpret this plot because it is harder to compare the difference in blue row-wise vs. column-wise.
