@@ -238,170 +238,256 @@ library(nycflights13)
 <!-- The na.rm command removes NA values from the specified vector. So, data points that are are not included in the mean() nor the sum() calculation. -->
 
 
-#7.5.1.1 Exercises
+<!-- #7.5.1.1 Exercises -->
 
 
-  *1. Use what you’ve learned to improve the visualisation of the departure times of cancelled vs. non-cancelled flights.*
-```{r}
+<!--   *1. Use what you’ve learned to improve the visualisation of the departure times of cancelled vs. non-cancelled flights.* -->
+<!-- ```{r} -->
 
-#original plot
-flights %>% 
-  mutate(
-    cancelled = is.na(dep_time),
-    sched_hour = sched_dep_time %/% 100,
-    sched_min = sched_dep_time %% 100,
-    sched_dep_time = sched_hour + sched_min / 60
-  ) %>% 
-  ggplot(mapping = aes(sched_dep_time)) + 
-  geom_freqpoly(mapping = aes(colour = cancelled), binwidth = 1/4)
-
-
-
-#remove mapping in both ggplot and geom_freqpoly command
-#move color = cancelled into ggplot command
-
-flights %>% 
-  mutate(
-    cancelled = is.na(dep_time),
-    sched_hour = sched_dep_time %/% 100,
-    sched_min = sched_dep_time %% 100,
-    sched_dep_time = sched_hour + sched_min / 60
-  ) %>%
-  ggplot(aes(x = sched_dep_time, y = ..density.., color = cancelled)) + 
-  geom_freqpoly(binwidth = 1/4)
+<!-- #original plot -->
+<!-- flights %>% -->
+<!--   mutate( -->
+<!--     cancelled = is.na(dep_time), -->
+<!--     sched_hour = sched_dep_time %/% 100, -->
+<!--     sched_min = sched_dep_time %% 100, -->
+<!--     sched_dep_time = sched_hour + sched_min / 60 -->
+<!--   ) %>% -->
+<!--   ggplot(mapping = aes(sched_dep_time)) + -->
+<!--   geom_freqpoly(mapping = aes(colour = cancelled), binwidth = 1/4) -->
 
 
 
-#Or, visualize cancelled flights with a boxplot
-flights %>% 
-  mutate(cancelled = is.na(dep_time) | is.na(arr_time)) %>% 
-  ggplot() +
-  geom_boxplot(aes(x = cancelled, y = dep_time))
-```
-The first plot is the original plot of cancelled NYC flights that we want to improve. To improve the plot, I removed the "mapping" option in both the ggplot and geom_freqpoly command. I also moved the "color" option into the ggplot command. In comparing the two plots, this improvement allows one to better distinguish the difference between cancelled and non-cancelled flights. In the original plot, the y-axis is the frequency/count of cancelled and non-cancelled flights. The plot shows it is not that insightful to compare counts since cancelled flights occur much less frequently than non-cancelled flights. Instead, looking at the density allows us to compare relative amounts of cancelled vs. non-cancelled flights, and we can see that flights tend to be cancelled late at night (around 8pm - 12am)
+<!-- #remove mapping in both ggplot and geom_freqpoly command -->
+<!-- #move color = cancelled into ggplot command -->
+
+<!-- flights %>% -->
+<!--   mutate( -->
+<!--     cancelled = is.na(dep_time), -->
+<!--     sched_hour = sched_dep_time %/% 100, -->
+<!--     sched_min = sched_dep_time %% 100, -->
+<!--     sched_dep_time = sched_hour + sched_min / 60 -->
+<!--   ) %>% -->
+<!--   ggplot(aes(x = sched_dep_time, y = ..density.., color = cancelled)) + -->
+<!--   geom_freqpoly(binwidth = 1/4) -->
 
 
-  *2. What variable in the diamonds dataset is most important for predicting the price of a diamond? How is that variable correlated with cut? Why does the combination of those two relationships lead to lower quality diamonds being more expensive?*
 
-```{r}
-
-ggplot(diamonds, aes(carat,price)) + 
-  geom_point() + 
-  geom_smooth(method = "lm")
-
-
-fit <- lm(diamonds$price ~ diamonds$carat, data = diamonds)
-summary(fit)
-#Adj R^2 value is high (0.85)
+<!-- #Or, visualize cancelled flights with a boxplot -->
+<!-- flights %>% -->
+<!--   mutate(cancelled = is.na(dep_time) | is.na(arr_time)) %>% -->
+<!--   ggplot() + -->
+<!--   geom_boxplot(aes(x = cancelled, y = dep_time)) -->
+<!-- ``` -->
+<!-- The first plot is the original plot of cancelled NYC flights that we want to improve. To improve the plot, I removed the "mapping" option in both the ggplot and geom_freqpoly command. I also moved the "color" option into the ggplot command. In comparing the two plots, this improvement allows one to better distinguish the difference between cancelled and non-cancelled flights. In the original plot, the y-axis is the frequency/count of cancelled and non-cancelled flights. The plot shows it is not that insightful to compare counts since cancelled flights occur much less frequently than non-cancelled flights. Instead, looking at the density allows us to compare relative amounts of cancelled vs. non-cancelled flights, and we can see that flights tend to be cancelled late at night (around 8pm - 12am) -->
 
 
-```
-I would guess carat is important in predicting diamond price, so I fitted a linear regression of price vs. carat. The adjust R^2 value is high (0.85), but we should check assumptions for fitting a linear regression model.
+<!--   *2. What variable in the diamonds dataset is most important for predicting the price of a diamond? How is that variable correlated with cut? Why does the combination of those two relationships lead to lower quality diamonds being more expensive?* -->
 
-```{r}
+<!-- ```{r} -->
 
-#Check fitting linear regression assumptions
-plot(fit)
-
-
-```
-I would say regression assumptions are violated because residual plot does NOT show random scatter. I would be cautious in interpreting these linear regression results.
+<!-- ggplot(diamonds, aes(carat,price)) + -->
+<!--   geom_point() + -->
+<!--   geom_smooth(method = "lm") -->
 
 
-  *So, fit a non-linear regression (Loess) curve instead*
-```{r}
-ggplot(diamonds, aes(carat, price)) +
-  geom_point() +
-  geom_smooth()
-```
-
-To examine the relationship between cut and carat, I used a boxplot.
-
-```{r}
-diamonds %>%
-  ggplot(aes(cut, carat)) +
-  geom_boxplot()
-
-```
-The correlation between carat and cut is weakly negative. The boxplot shows that there are a lot of diamonds that are big carats but the cuts are only fair or good. If carat is a stronger predictor than cut for price, then lower quality diamonds will be, on average, more expensive.
+<!-- fit <- lm(diamonds$price ~ diamonds$carat, data = diamonds) -->
+<!-- summary(fit) -->
+<!-- #Adj R^2 value is high (0.85) -->
 
 
-  *3. Install the ggstance package, and create a horizontal boxplot. How does this compare to using coord_flip()?*
+<!-- ``` -->
+<!-- I would guess carat is important in predicting diamond price, so I fitted a linear regression of price vs. carat. The adjust R^2 value is high (0.85), but we should check assumptions for fitting a linear regression model. -->
+
+<!-- ```{r} -->
+
+<!-- #Check fitting linear regression assumptions -->
+<!-- plot(fit) -->
+
+<!-- ``` -->
+<!-- I would say regression assumptions are violated because residual plot does NOT show random scatter. I would be cautious in interpreting these linear regression results. -->
+
+
+<!--   *So, fit a non-linear regression (Loess) curve instead* -->
+<!-- ```{r} -->
+<!-- ggplot(diamonds, aes(carat, price)) + -->
+<!--   geom_point() + -->
+<!--   geom_smooth() -->
+<!-- ``` -->
+
+
+<!--   To examine the relationship between cut and carat, I used a boxplot. -->
+<!-- ```{r} -->
+<!-- diamonds %>% -->
+<!--   ggplot(aes(cut, carat)) + -->
+<!--   geom_boxplot() -->
+
+<!-- ``` -->
+<!-- The correlation between carat and cut is weakly negative. The boxplot shows that there are a lot of diamonds that are big carats but the cuts are only fair or good. If carat is a stronger predictor than cut for price, then lower quality diamonds will be, on average, more expensive. -->
+
+
+<!--   *3. Install the ggstance package, and create a horizontal boxplot. How does this compare to using coord_flip()?* -->
+
+<!-- ```{r} -->
+<!-- library(ggstance) -->
+
+<!-- diamonds %>% -->
+<!--   ggplot(aes(cut, carat)) + -->
+<!--   geom_boxplot() + -->
+<!--   coord_flip() -->
+
+<!-- diamonds %>% -->
+<!--   ggplot(aes(carat, cut)) + -->
+<!--   geom_boxploth() -->
+
+<!-- ``` -->
+<!-- These two boxplots are exactly the same, but using boxploth uses less code to output the same thing. Boxploth also flips the coordinate axes -->
+
+
+<!--   *4. One problem with boxplots is that they were developed in an era of much smaller datasets and tend to display a prohibitively large number of “outlying values”. One approach to remedy this problem is the letter value plot. Install the lvplot package, and try using geom_lv() to display the distribution of price vs cut. What do you learn? How do you interpret the plots?* -->
+
+<!-- ```{r} -->
+<!-- library(lvplot) -->
+
+<!-- #Original boxplot of cut and price -->
+<!-- ggplot(diamonds, aes(cut, price)) + -->
+<!--   geom_boxplot() -->
+
+
+<!-- #Use lvplot -->
+<!-- ggplot(diamonds, aes(cut, price)) + -->
+<!--   geom_lv() -->
+<!-- ``` -->
+<!-- This is like an expanded boxplot that has more "boxes" that cover a lot more quantiles. This visualization is more useful for large datasets because large datsets tend to have a lot more outliers. -->
+
+
+
+<!--   *5.Compare and contrast geom_violin() with a facetted geom_histogram(), or a coloured geom_freqpoly(). What are the pros and cons of each method?* -->
+
+<!-- ```{r} -->
+
+<!-- diamonds %>% -->
+<!--   ggplot(aes(cut, price)) + -->
+<!--   geom_violin() -->
+
+
+<!-- diamonds %>% -->
+<!--   ggplot(aes(price)) + -->
+<!--   geom_histogram() + -->
+<!--   facet_wrap(~ cut, scale = "free_y") -->
+
+
+<!-- diamonds %>% -->
+<!--   ggplot(aes(price)) + -->
+<!--   geom_freqpoly(aes(colour = cut)) -->
+<!-- ``` -->
+
+<!-- The violin plot gives a side by side outline of the general shape of the distribution for each cut. We can see that the data for price is highly right skewed. The facetted histogram gives separate side by side histograms of each cut and the frequency polygon gives counts of each type of cut that is worth a certain price. The violin plot gives a picture of the distribution while the facetted histogram allows the user to take a closer look at the data and exact shape of the distribution. The frequency polygon is a line graph that draws the counts of each cut worth certain prices. -->
+
+<!--   **The following are pros for each plot:** -->
+
+<!--   - The violin plot is useful for comparing the shapes of distributions across all cuts. -->
+
+<!--   - The facetted histogram allows one to easily see that price is extremely right skewed -->
+
+<!--   - The frequency polygon allows one to see the frequency of prices for each cut. For example, the largest peak shows that the most common diamond in this dataset is an ideaal cut for about $1,000 -->
+
+
+
+<!--   **The following are cons for each plot:** -->
+
+<!--   - The violin plot does not tell us about the exact frequency of cuts of diamonds worth a certain price. We can only guess and subjectively compare across the categories. -->
+
+<!--   - For the facetted histogram, if there were more categories for cuts (i.e. more than 10 categories), it would be difficult to compare the histograms (which tell us about the shape of the distribution of the data) side by side. It would be more useful to overlay the histograms. -->
+
+<!--   - For the frequency polygon, it is difficult to distinguish the overlapping lines towards the upper half of price. It is not useful for determining the exact shape of the distribution of the data. -->
+
+
+<!--   *6. If you have a small dataset, it’s sometimes useful to use geom_jitter() to see the relationship between a continuous and categorical variable. The ggbeeswarm package provides a number of methods similar to geom_jitter(). List them and briefly describe what each one does.* -->
+
+<!-- ```{r} -->
+
+<!-- library("ggbeeswarm") -->
+
+<!-- #Use a smaller dataset, MPG, and compare hwy (highway mpg) vs. car class -->
+<!-- ggplot(data = mpg) + -->
+<!--   geom_quasirandom(aes(x = class, y = hwy)) -->
+
+
+<!-- ggplot(data = mpg) + -->
+<!--   geom_beeswarm(aes(x = class, y = hwy)) -->
+
+<!-- ``` -->
+
+<!-- Both geom_quasirandom and geom_beeswarm use jittering to reduce overplotting by plotting the points next to each other rather than overlapping each other. The shapes of these plots are similar to a violin plot. They give insight to the shape of the distribution of the data. The difference between the two is that they have differenet algorithims when "offsetting" points. Specifically, geom_quasirandom "uses a van der Corput sequence or Tukey texturing "geom_beeswarm "uses the beeswarm library to do point-size based offset. (Source: https://github.com/eclarke/ggbeeswarm) -->
+
+
+
+<!-- #7.5.2.1 Exercises -->
+
+
+<!--   *1. How could you rescale the count dataset above to more clearly show the distribution of cut within colour, or colour within cut?* -->
+
+<!-- The original plot given is: -->
+<!-- ```{r} -->
+
+<!-- diamonds %>% -->
+<!--   count(color, cut) %>% -->
+<!--   ggplot(mapping = aes(x = color, y = cut)) + -->
+<!--     geom_tile(mapping = aes(fill = n)) -->
+
+<!-- ``` -->
+
+<!-- Instead of looking at counts, we can improve the plot by calculating percentages/proportions of diamonds that are a certain color and cut. -->
+
+<!-- ```{r} -->
+
+<!-- diamonds %>% -->
+<!--   count(color, cut) %>% -->
+<!--   group_by(color) %>% -->
+<!--   mutate(perc = n / sum(n)) %>% -->
+<!--   ggplot(aes(color, cut, fill = perc)) + -->
+<!--   geom_tile() -->
+
+<!-- ``` -->
+
+<!-- In this plot, we can better distinguish the differences in color within cut. The original plot had a lot of dark blue. For instance, all J color diamonds are dark blue, so it was difficult to see the differences in cut within the J colored diamonds. Calculating the percentages, one can see the difference within the colors and the cuts better. For instance, the ideal cut has the least percentage of colored diamonds relative to other cuts. -->
+
+  *2. Use geom_tile() together with dplyr to explore how average flight delays vary by destination and month of year. What makes the plot difficult to read? How could you improve it?*
   
 ```{r}
-library(ggstance)
 
-diamonds %>%
-  ggplot(aes(cut, carat)) +
-  geom_boxplot() +
-  coord_flip()
+#delay: dep_delay
+#destination: dest
+#month: month
 
-diamonds %>%
-  ggplot(aes(carat, cut)) +
-  geom_boxploth()
+flights %>%
+  ggplot(aes(x = month, y = dest, fill = dep_delay)) + 
+  geom_tile()
+
 
 ```
-These two boxplots are exactly the same, but using boxploth uses less code to output the same thing. Boxploth also flips the coordinate axes
 
+This basic plot shows that it is difficult to distinguish the departure delays (the graph looks mostly dark blue). The gray values represent missing values.
 
-  *4. One problem with boxplots is that they were developed in an era of much smaller datasets and tend to display a prohibitively large number of “outlying values”. One approach to remedy this problem is the letter value plot. Install the lvplot package, and try using geom_lv() to display the distribution of price vs cut. What do you learn? How do you interpret the plots?*
-  
-```{r}
-library(lvplot)
-
-#Original boxplot of cut and price
-ggplot(diamonds, aes(cut, price)) +
-  geom_boxplot()
-
-
-#Use lvplot
-ggplot(diamonds, aes(cut, price)) +
-  geom_lv()
-```
-This is like an expanded boxplot that has more "boxes" that cover a lot more quantiles. This visualization is more useful for large datasets because large datsets tend to have a lot more outliers.
-
-
-
-  *5.Compare and contrast geom_violin() with a facetted geom_histogram(), or a coloured geom_freqpoly(). What are the pros and cons of each method?*
 
 ```{r}
 
-diamonds %>%
-  ggplot(aes(cut, price)) +
-  geom_violin()
 
 
-diamonds %>%
-  ggplot(aes(price)) +
-  geom_histogram() +
-  facet_wrap(~ cut, scale = "free_y")
-
-
-diamonds %>%
-  ggplot(aes(price)) +
-  geom_freqpoly(aes(colour = cut))
 ```
 
-The violin plot gives a side by side outline of the general shape of the distribution for each cut. We can see that the data for price is highly right skewed. The facetted histogram gives separate side by side histograms of each cut and the frequency polygon gives counts of each type of cut that is worth a certain price. The violin plot gives a picture of the distribution while the facetted histogram allows the user to take a closer look at the data and exact shape of the distribution. The frequency polygon is a line graph that draws the counts of each cut worth certain prices.
-
-  The following are pros for each plot:
-  
-  The violin plot is useful for comparing the shapes of distributions across all cuts.
-  
-  The facetted histogram allows one to easily see that price is extremely right skewed
-  
-  The frequency polygon allows one to see the frequency of prices for each cut. For example, the largest peak shows that the most common diamond in this dataset is an ideaal cut for about $1,000
 
 
 
-  The following are cons for each plot:
-  
-  The violin plot does not tell us about the exact frequency of cuts of diamonds worth a certain price. We can only guess and subjectively compare across the categories.
-  
-  For the facetted histogram, if there were more categories for cuts (i.e. more than 10 categories), it would be difficult to compare the histograms (which tell us about the shape of the distribution of the data) side by side. It would be more useful to overlay the histograms.
-  
-  For the frequency polygon, it is difficult to distinguish the overlapping lines towards the upper half of price. It is not useful for determining the exact shape of the distribution of the data.
+  *3. Why is it slightly better to use aes(x = color, y = cut) rather than aes(x = cut, y = color) in the example above?*
 
+```{r}
 
+diamonds %>% 
+  count(color, cut) %>%  
+  ggplot(mapping = aes(x = cut, y = color)) +
+    geom_tile(mapping = aes(fill = n))
 
+```
 
+It is better to use aes(x = color, y = cut) because there are more colors than cuts, and it would be easier to interpret this plot if the variable with more categories were on the x-axis while the variable with less cateogires were on the y-axis. It is slightly more difficult to interpret this plot because it is harder to compare the difference in blue row-wise vs. column-wise.
