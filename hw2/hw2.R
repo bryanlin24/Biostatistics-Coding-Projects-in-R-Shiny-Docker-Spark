@@ -1,12 +1,21 @@
 #hw2
 
+install.packages("tidyverse")
 install.packages("tidyr")
 install.packages("ggplot2")
 install.packages("dplyr")
+install.packages("nycflights13")
+install.packages("ggstance")
+install.packages("lvplot")
+
+
+
+
 
 library(ggplot2)
 library(dplyr)
 library(tidyr)
+library(nycflights13)
 
 
 View(diamonds)

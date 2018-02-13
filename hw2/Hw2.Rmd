@@ -7,6 +7,7 @@ output: html_document
 ```{r}
 
 library(ggplot2)
+library(tidyverse)
 library(dplyr)
 library(tidyr)
 library(nycflights13)
@@ -284,15 +285,13 @@ The first plot is the original plot of cancelled NYC flights that we want to imp
 
 ```{r}
 
-
 ggplot(diamonds, aes(carat,price)) + 
   geom_point() + 
-  geom_smooth(method='lm')
+  geom_smooth(method = "lm")
 
 
 fit <- lm(diamonds$price ~ diamonds$carat, data = diamonds)
 summary(fit)
-abline(fit, col = "red")
 #Adj R^2 value is high (0.85)
 
 
@@ -316,7 +315,7 @@ ggplot(diamonds, aes(carat, price)) +
   geom_smooth()
 ```
 
-We can also make a boxplot to visualize this data
+To examine the relationship between cut and carat, I used a boxplot.
 
 ```{r}
 diamonds %>%
@@ -325,6 +324,84 @@ diamonds %>%
 
 ```
 The correlation between carat and cut is weakly negative. The boxplot shows that there are a lot of diamonds that are big carats but the cuts are only fair or good. If carat is a stronger predictor than cut for price, then lower quality diamonds will be, on average, more expensive.
+
+
+  *3. Install the ggstance package, and create a horizontal boxplot. How does this compare to using coord_flip()?*
+  
+```{r}
+library(ggstance)
+
+diamonds %>%
+  ggplot(aes(cut, carat)) +
+  geom_boxplot() +
+  coord_flip()
+
+diamonds %>%
+  ggplot(aes(carat, cut)) +
+  geom_boxploth()
+
+```
+These two boxplots are exactly the same, but using boxploth uses less code to output the same thing. Boxploth also flips the coordinate axes
+
+
+  *4. One problem with boxplots is that they were developed in an era of much smaller datasets and tend to display a prohibitively large number of “outlying values”. One approach to remedy this problem is the letter value plot. Install the lvplot package, and try using geom_lv() to display the distribution of price vs cut. What do you learn? How do you interpret the plots?*
+  
+```{r}
+library(lvplot)
+
+#Original boxplot of cut and price
+ggplot(diamonds, aes(cut, price)) +
+  geom_boxplot()
+
+
+#Use lvplot
+ggplot(diamonds, aes(cut, price)) +
+  geom_lv()
+```
+This is like an expanded boxplot that has more "boxes" that cover a lot more quantiles. This visualization is more useful for large datasets because large datsets tend to have a lot more outliers.
+
+
+
+  *5.Compare and contrast geom_violin() with a facetted geom_histogram(), or a coloured geom_freqpoly(). What are the pros and cons of each method?*
+
+```{r}
+
+diamonds %>%
+  ggplot(aes(cut, price)) +
+  geom_violin()
+
+
+diamonds %>%
+  ggplot(aes(price)) +
+  geom_histogram() +
+  facet_wrap(~ cut, scale = "free_y")
+
+
+diamonds %>%
+  ggplot(aes(price)) +
+  geom_freqpoly(aes(colour = cut))
+```
+
+The violin plot gives a side by side outline of the general shape of the distribution for each cut. We can see that the data for price is highly right skewed. The facetted histogram gives separate side by side histograms of each cut and the frequency polygon gives counts of each type of cut that is worth a certain price. The violin plot gives a picture of the distribution while the facetted histogram allows the user to take a closer look at the data and exact shape of the distribution. The frequency polygon is a line graph that draws the counts of each cut worth certain prices.
+
+  The following are pros for each plot:
+  
+  The violin plot is useful for comparing the shapes of distributions across all cuts.
+  
+  The facetted histogram allows one to easily see that price is extremely right skewed
+  
+  The frequency polygon allows one to see the frequency of prices for each cut. For example, the largest peak shows that the most common diamond in this dataset is an ideaal cut for about $1,000
+
+
+
+  The following are cons for each plot:
+  
+  The violin plot does not tell us about the exact frequency of cuts of diamonds worth a certain price. We can only guess and subjectively compare across the categories.
+  
+  For the facetted histogram, if there were more categories for cuts (i.e. more than 10 categories), it would be difficult to compare the histograms (which tell us about the shape of the distribution of the data) side by side. It would be more useful to overlay the histograms.
+  
+  For the frequency polygon, it is difficult to distinguish the overlapping lines towards the upper half of price. It is not useful for determining the exact shape of the distribution of the data.
+
 
 
 
