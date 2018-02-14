@@ -12,21 +12,120 @@ install.packages("viridis")
 
 library("viridis")
 library("tidyverse")
+library("dplyr")
 
 
 SNP <- read_tsv(file = "/home/m280-data/hw1/merge-geno.bim", col_names = FALSE)
 persons <- read_delim(file = "/home/m280-data/hw1/merge-geno.fam", delim = " ", col_names = FALSE)
 
+SNP <- rename(SNP, Chromosome = X1, SNP_ID = X2,
+              Genetic_Distance = X3, BP = X4, Allele1 = X5, Allele2 = X6 )
+
+persons <- rename(persons, FamilyID = X1, PersonID = X2, FatherID = X3, 
+                  MotherID = X4, Sex = X5, Affection_Status = X6)
 
 
 
 
 
 
+SNP %>%
+  group_by(Chromosome) %>%
+  summarize(., n()) 
 
+
+filter(merge.geno.bim, chromosome == 3 & (bp>=309409) & bp <= 490809)) %>%
+  nrow()
+
+
+#3
+filter(SNP, Chromosome == 3 & (SNP$BP >= 47892180) & (SNP$BP <= 48130769)) %>%
+  nrow()
 
 View(SNP)
-View(persons)
+
+
+#Write to a txt file
+mendel_snp <- file("mendel_snp.txt")
+writeLines(c("2.40 = FILE FORMAT VERSION NUMBER.", "8348674 = NUMBER OF SNPS LISTED HERE"), mendel_snp)
+
+
+SNP1 <- SNP %>% 
+  select(SNP_ID, Chromosome, BP) 
+ 
+write_tsv(SNP1, path = "mendel_snp.txt", append = TRUE, col_names = FALSE) %>%
+  head(10)
+
+
+#use file.show to look at your txt file.
+file.show("mendel_snp.txt")
+
+
+
+mendel.snp.txt <- write_tsv(SNP, path = "./mendel.snp.txt
+                            
+                            /home/bryanlin24/biostat-m280-2018-winter",  append = TRUE, col_names = FALSE)
+ ./
+
+
+getwd()
+write_delim
+
+
+
+
+
+write(x = SNP, file = "mendel.snp.txt", sep = ",", append = T)
+
+fwrite(x = mydf,
+       file = "/tmp/test.txt",
+       sep = ",",
+       col.names=T,
+       append=T)
+
+file.show(mendel.snp)
+
+
+
+
+SNP %>%
+  group_by(Chromosome) %>%
+  summarize(n = n_distinct(Chromosome))
+
+
+
+
+
+
+
+
+
+SNP1 <- SNP %>%
+  group_by(Chromosome) %>%
+  summarise(n = n_distinct(Chromosome)) 
+
+SNP1
+
+count(SNP1)
+
+SNP1 <- distinct(SNP, Chromosome)
+count(SNP1)
+
+SNP2 <- SNP %>%
+  filter(Chromosome == 1)
+
+View(SNP2)
+
+
+
+library(dplyr)
+test %>% 
+  group_by(one) %>%
+  summarise(n = n_distinct(one))
+
+
+
+
 
 library(ggplot2)
 library(dplyr)
@@ -64,7 +163,6 @@ diamonds %>%
   gather(key = dist, vals, x, y, z) %>%
   ggplot(aes(vals, colour = dist)) +
   geom_freqpoly(bins = 100)
-
 
 price <- diamonds$price
 
@@ -149,12 +247,15 @@ persons <- read.table(file = "/home/m280-data/hw1/merge-geno.fam")
 flights %>%
   count(dep_delay) %>%
   group_by(month, dest)
-  
-  
-  
-  
-  
-  diamonds %>% 
+
+
+
+
+
+diamonds %>% 
   count(color, cut) %>%  
   ggplot(mapping = aes(x = color, y = cut)) +
   geom_tile(mapping = aes(fill = n))
+
+
+
