@@ -580,12 +580,28 @@ ggplot(diamonds, aes(x = cut_width(price, 2000), y = carat)) +
 Both distributions for very large diamonds and small diamonds are right skewed. What surprises me most is that there are diamonds that are small diamonds (i.e. 1 carat) that are worth hundreds of thousands of dollars. This shows carat is not the only meaningful predictor of the price of a diamond. There are other factors, such as cut as we saw in Exercise 7.5.1.1. Small diamonds (low carat) can still be very valuable, especially if variables like cut are high.
 
 
+  *4. Combine two of the techniques you’ve learned to visualise the combined distribution of cut, carat, and price.*
+  
+```{r}
+ggplot(diamonds, aes(x = cut_number(carat, 5), y = price, color = cut)) +
+  geom_boxplot()
+```
 
+This plot shows that neither cut nor carat by itself predict price. These two variables are both important in determining price. Ideal cuts of diamonds are worth the most, but each cut is worth a high price.
 
+  
+  *5. Two dimensional plots reveal outliers that are not visible in one dimensional plots. For example, some points in the plot below have an unusual combination of x and y values, which makes the points outliers even though their x and y values appear normal when examined separately.*
 
+```{r}
 
+#Given code is:
+ggplot(data = diamonds) +
+  geom_point(mapping = aes(x = x, y = y)) +
+  coord_cartesian(xlim = c(4, 11), ylim = c(4, 11))
 
+```
 
+A scatterplot is better because if we were to visualize this data with bin (i.e. use a histogram), like in Exercise 7.3.4, we see there are a few huge outliers in x and y, which skew the histogram to the right. However, using a scatterplot, we see the relationship between y and x is strongly linear, despite these huge outliers that skew the data to the right.
 
 
 
