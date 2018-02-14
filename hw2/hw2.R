@@ -25,6 +25,58 @@ persons <- rename(persons, FamilyID = X1, PersonID = X2, FatherID = X3,
                   MotherID = X4, Sex = X5, Affection_Status = X6)
 
 
+View(SNP)
+View(persons)
+
+
+
+
+
+#Mendel snp txt file
+
+#Write to a txt file
+mendel_snp <- file("mendel_snp.txt")
+writeLines(c("2.40 = FILE FORMAT VERSION NUMBER.", "8348674 = NUMBER OF SNPS LISTED HERE"), mendel_snp)
+
+
+SNP1 <- SNP %>% 
+  select(SNP_ID, Chromosome, BP) 
+
+write_tsv(SNP1, path = "mendel_snp.txt", append = TRUE, col_names = FALSE) %>%
+  strsplit(SNP1, ",") %>% head(10) 
+
+#strsplit(SNP1) made R crash
+
+
+
+#use file.show to look at your txt file.
+file.show("mendel_snp.txt")
+
+
+
+
+
+
+
+#Mendel pedigree
+
+#Strip T2DG
+
+
+persons1 <- persons %>% str_replace(persons$PersonID, "T2DG")
+
+persons <- sub("_T2DG.*", "")
+
+sub("_3.*", "", df1[,1])
+
+
+View(persons1)
+
+SNP %>% 
+  filter(!grepl(".*T2DG.", SNP))
+
+
+
 
 
 
@@ -34,8 +86,7 @@ SNP %>%
   summarize(., n()) 
 
 
-filter(merge.geno.bim, chromosome == 3 & (bp>=309409) & bp <= 490809)) %>%
-  nrow()
+
 
 
 #3
@@ -45,83 +96,6 @@ filter(SNP, Chromosome == 3 & (SNP$BP >= 47892180) & (SNP$BP <= 48130769)) %>%
 View(SNP)
 
 
-#Write to a txt file
-mendel_snp <- file("mendel_snp.txt")
-writeLines(c("2.40 = FILE FORMAT VERSION NUMBER.", "8348674 = NUMBER OF SNPS LISTED HERE"), mendel_snp)
-
-
-SNP1 <- SNP %>% 
-  select(SNP_ID, Chromosome, BP) 
- 
-write_tsv(SNP1, path = "mendel_snp.txt", append = TRUE, col_names = FALSE) %>%
-  head(10)
-
-
-#use file.show to look at your txt file.
-file.show("mendel_snp.txt")
-
-
-
-mendel.snp.txt <- write_tsv(SNP, path = "./mendel.snp.txt
-                            
-                            /home/bryanlin24/biostat-m280-2018-winter",  append = TRUE, col_names = FALSE)
- ./
-
-
-getwd()
-write_delim
-
-
-
-
-
-write(x = SNP, file = "mendel.snp.txt", sep = ",", append = T)
-
-fwrite(x = mydf,
-       file = "/tmp/test.txt",
-       sep = ",",
-       col.names=T,
-       append=T)
-
-file.show(mendel.snp)
-
-
-
-
-SNP %>%
-  group_by(Chromosome) %>%
-  summarize(n = n_distinct(Chromosome))
-
-
-
-
-
-
-
-
-
-SNP1 <- SNP %>%
-  group_by(Chromosome) %>%
-  summarise(n = n_distinct(Chromosome)) 
-
-SNP1
-
-count(SNP1)
-
-SNP1 <- distinct(SNP, Chromosome)
-count(SNP1)
-
-SNP2 <- SNP %>%
-  filter(Chromosome == 1)
-
-View(SNP2)
-
-
-
-library(dplyr)
-test %>% 
-  group_by(one) %>%
-  summarise(n = n_distinct(one))
 
 
 
