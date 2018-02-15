@@ -609,116 +609,134 @@ A scatterplot is better because if we were to visualize this data with binned pl
 
 
 
-<!-- #Redo Hw 1 Qs using Tidyverse -->
+#Redo Hw 1 Qs using Tidyverse
 
 
 
-<!--   Read in SNP and Individual Persons data -->
-<!-- ```{r} -->
+  Read in SNP and Individual Persons data
+```{r}
 
-<!-- #NOTE: do not use base R functions i.e. read.table because -->
-<!-- #Base R functions are extremely slow. Tidyverse read in functions are a lot faster -->
+#NOTE: do not use base R functions i.e. read.table because
+#Base R functions are extremely slow. Tidyverse read in functions are a lot faster
 
-<!-- SNP <- read_tsv(file = "/home/m280-data/hw1/merge-geno.bim", col_names = FALSE) -->
-<!-- #Tab separated -->
+SNP <- read_tsv(file = "/home/m280-data/hw1/merge-geno.bim", col_names = FALSE)
+#Tab separated
 
-<!-- persons <- read_delim(file = "/home/m280-data/hw1/merge-geno.fam", delim = " ", col_names = FALSE) -->
-<!-- #Space separated -->
+persons <- read_delim(file = "/home/m280-data/hw1/merge-geno.fam", delim = " ", col_names = FALSE)
+#Space separated
 
-<!-- #Rename columns in SNP -->
-<!-- SNP <- rename(SNP, Chromosome = X1, SNP_ID = X2, -->
-<!--               Genetic_Distance = X3, BP = X4, Allele1 = X5, -->
-<!--               Allele2 = X6) -->
+#Rename columns in SNP
+SNP <- rename(SNP, Chromosome = X1, SNP_ID = X2,
+              Genetic_Distance = X3, BP = X4, Allele1 = X5,
+              Allele2 = X6)
 
-<!-- #Rename columns in Persons -->
-<!-- persons <- rename(persons, FamilyID = X1, PersonID = X2, FatherID = X3, -->
-<!--                   MotherID = X4, Sex = X5, Affection_Status = X6) -->
-
-
-
-<!-- ``` -->
-
-
-<!--   *1. How many persons are in the data set (statisticians call this n)? How many SNPs are in the data set (statisticians call this p)?* -->
-
-<!-- ```{r} -->
-<!-- #Each line is a SNP, so count the number of rows in SNP dataset. -->
-<!-- count(SNP) -->
-<!-- ``` -->
-<!-- There are 8,348,674 SNPs in this dataset -->
-
-<!-- ```{r} -->
-<!-- #Each line represents a unique individual, so count the number of rows in persons dataset -->
-<!-- count(persons) -->
-<!-- ``` -->
-<!-- There are 959 people in this dataset -->
-
-
-<!--   *2. Which chromosomes does this data set contain? How many SNPs are in each chromosome?* -->
-
-<!-- ```{r} -->
-<!-- SNP1 <- distinct(SNP, Chromosome) -->
-<!-- count(SNP1) -->
-<!-- ``` -->
-
-
-<!--   Calculate number of chromosomes by counting unique numbers in the first column. There are 11 unique numbers (specifically, 1, 3, 5, 7, ..., 21) which means there are 11 chromosomes -->
-
-<!-- ```{r} -->
-
-<!-- SNP %>% -->
-<!--   group_by(Chromosome) %>% -->
-<!--   summarize(., n()) -->
-
-<!-- ``` -->
-
-
-<!-- SNPS - within each unique chromosome, count how many times it appearas -->
-
-
-<!--   *3. MAP4 (microtubule-associated protein 4) is a gene on chromosome 3 spanning positions 47,892,180 bp – 48,130,769 bp. How many SNPs are located within MAP4 gene?* -->
-
-<!-- ```{r} -->
-
-<!-- filter(SNP, Chromosome == 3 & (SNP$BP >= 47892180) & (SNP$BP <= 48130769)) %>% -->
-<!--   nrow() -->
-
-<!-- ``` -->
-<!-- There are 894 SNPs located within MAP4 gene. -->
+#Rename columns in Persons
+persons <- rename(persons, FamilyID = X1, PersonID = X2, FatherID = X3,
+                  MotherID = X4, Sex = X5, Affection_Status = X6)
 
 
 
-<!-- 4. Statistical geneticists often have to reformat a data set to feed into various analysis programs. For example, to use the Mendel software <http://www.genetics.ucla.edu/software/mendel>, we have to reformat the data set to be read by Mendel. -->
-
-<!--       - Mendel's SNP definition file is similar to the plink `bim` file but has format -->
-<!--       `SNP ID`, `Chromosome`, `Base Pair Position` -->
-<!--       with each field separated by a comma. Write a Linux shell command to convert `merge-geno.bim` to Mendel SNP definition file. The first few lines of the Mendel SNP definition file should look like -->
+```
 
 
-<!-- ```{r} -->
+  *1. How many persons are in the data set (statisticians call this n)? How many SNPs are in the data set (statisticians call this p)?*
 
-<!-- mendel.snp <- file("mendel.snp.txt") -->
-<!-- writeLines(c("2.40 = FILE FORMAT VERSION NUMBER.", "8348674 = NUMBER OF SNPS LISTED HERE"), mendel.snp) -->
+```{r}
+#Each line is a SNP, so count the number of rows in SNP dataset.
+count(SNP)
+```
+There are 8,348,674 SNPs in this dataset
 
-<!-- #SNP ID, Chromosome, Base Pair Position. col 2,1,4 -->
-<!-- #quote = FALSE -->
-
-<!-- ``` -->
-
-
-
-
-<!--     - Mendel's pedigree file is similar to the plink `fam` file but has format -->
-<!--     `Family ID`, `Person ID`, `Father ID`, `Mother ID`, `Sex` coded as M or F, `Twin Status` -->
-<!--     with each field separated by a comma. Write a Linux shell command to convert `merge-geno.fam` to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string `T2DG` from the IDs. First few lines of the Mendel pedigree should look like -->
+```{r}
+#Each line represents a unique individual, so count the number of rows in persons dataset
+count(persons)
+```
+There are 959 people in this dataset
 
 
-<!-- ```{r} -->
+  *2. Which chromosomes does this data set contain? How many SNPs are in each chromosome?*
+
+```{r}
+SNP1 <- distinct(SNP, Chromosome)
+count(SNP1)
+```
+
+
+  Calculate number of chromosomes by counting unique numbers in the first column. There are 11 unique numbers (specifically, 1, 3, 5, 7, ..., 21) which means there are 11 chromosomes
+
+```{r}
+
+SNP %>%
+  group_by(Chromosome) %>%
+  summarize(., n())
+
+```
+
+
+SNPS - within each unique chromosome, count how many times it appearas
+
+
+  *3. MAP4 (microtubule-associated protein 4) is a gene on chromosome 3 spanning positions 47,892,180 bp – 48,130,769 bp. How many SNPs are located within MAP4 gene?*
+
+```{r}
+
+filter(SNP, Chromosome == 3 & (SNP$BP >= 47892180) & (SNP$BP <= 48130769)) %>%
+  nrow()
+
+```
+There are 894 SNPs located within MAP4 gene.
+
+
+
+4. Statistical geneticists often have to reformat a data set to feed into various analysis programs. For example, to use the Mendel software <http://www.genetics.ucla.edu/software/mendel>, we have to reformat the data set to be read by Mendel.
+
+      - Mendel's SNP definition file is similar to the plink `bim` file but has format
+      `SNP ID`, `Chromosome`, `Base Pair Position`
+      with each field separated by a comma. Write a Linux shell command to convert `merge-geno.bim` to Mendel SNP definition file. The first few lines of the Mendel SNP definition file should look like
+
+
+```{r}
+
+mendel.snp <- file("mendel.snp.txt")
+writeLines(c("2.40 = FILE FORMAT VERSION NUMBER.", "8348674 = NUMBER OF SNPS LISTED HERE"), mendel.snp)
+
+SNP1 <- SNP %>% 
+  select(SNP_ID, Chromosome, BP) %>% 
+  unite(SNP_ID, Chromosome, BP, col=" ", sep = ",", remove = TRUE)
+
+write_delim(SNP1, path = "mendel_snp.txt", delim = ",", append = TRUE, col_names = F)
+
+
+#SNP ID, Chromosome, Base Pair Position. col 2,1,4
+#quote = FALSE
+
+```
 
 
 
 
-<!-- ``` -->
+    - Mendel's pedigree file is similar to the plink `fam` file but has format
+    `Family ID`, `Person ID`, `Father ID`, `Mother ID`, `Sex` coded as M or F, `Twin Status`
+    with each field separated by a comma. Write a Linux shell command to convert `merge-geno.fam` to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string `T2DG` from the IDs. First few lines of the Mendel pedigree should look like
+
+
+```{r}
+persons <- read_delim(file = "/home/m280-data/hw1/merge-geno.fam", delim = " ", col_names = FALSE)
+persons <- rename(persons, FamilyID = X1, PersonID = X2, FatherID = X3, 
+                  MotherID = X4, Sex = X5, Affection_Status = X6)
+
+persons$PersonID <- substr(persons$PersonID, 5, 11)
+persons$MotherID <- substr(persons$MotherID, 5, 11)
+persons$FatherID <- substr(persons$FatherID, 5, 11)
+persons$Sex[persons$Sex == "1"] <- "M"
+persons$Sex[persons$Sex == "2"] <- "F"
+persons$Affection_Status[persons$Affection_Status == 0] <- " "
+
+write_delim(persons, path = "mendel_persons.txt", delim = ",", append = FALSE, col_names = F)
+
+
+
+```
 
 
 

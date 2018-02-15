@@ -29,8 +29,13 @@ persons <- rename(persons, FamilyID = X1, PersonID = X2, FatherID = X3,
 View(SNP)
 View(persons)
 
+typeof(persons$Sex)
+
+persons$PersonID <- substr(persons$PersonID, 5, 11) 
 
 
+persons1 <- persons %>% 
+  
 
 
 #Mendel snp txt file
@@ -41,12 +46,23 @@ writeLines(c("2.40 = FILE FORMAT VERSION NUMBER.", "8348674 = NUMBER OF SNPS LIS
 
 
 SNP1 <- SNP %>% 
-  select(SNP_ID, Chromosome, BP) 
-
-
-SNP1 <- SNP %>% 
   select(SNP_ID, Chromosome, BP) %>% 
   unite(SNP_ID, Chromosome, BP, col=" ", sep = ",", remove = TRUE)
+
+write_delim(SNP1, path = "mendel_snp.txt", delim = ",", append = TRUE)
+
+file.show("mendel_snp.txt")
+
+
+
+SNP %>% 
+  select(SNP_ID, Chromosome, BP) %>% 
+  write_delim
+
+  
+  
+  unite(SNP_ID, Chromosome, BP, col=" ", sep = ",", remove = TRUE) %>% 
+  
 
 write.table(SNP1, "mendel_snp.txt")
 table <- read_table("mendel_snp.txt")
