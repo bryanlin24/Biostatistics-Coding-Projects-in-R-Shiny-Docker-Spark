@@ -15,6 +15,7 @@ library("tidyverse")
 library("dplyr")
 
 
+
 SNP <- read_tsv(file = "/home/m280-data/hw1/merge-geno.bim", col_names = FALSE)
 persons <- read_delim(file = "/home/m280-data/hw1/merge-geno.fam", delim = " ", col_names = FALSE)
 
@@ -42,8 +43,31 @@ writeLines(c("2.40 = FILE FORMAT VERSION NUMBER.", "8348674 = NUMBER OF SNPS LIS
 SNP1 <- SNP %>% 
   select(SNP_ID, Chromosome, BP) 
 
+
+SNP1 <- SNP %>% 
+  select(SNP_ID, Chromosome, BP) %>% 
+  unite(SNP_ID, Chromosome, BP, col=" ", sep = ",", remove = TRUE)
+
+write.table(SNP1, "mendel_snp.txt")
+table <- read_table("mendel_snp.txt")
+
+
+
+
+read_table
+
+
+
+write_rds(SNP1, "test.rds")
+x=read_rds("test.rds")
+
 write_tsv(SNP1, path = "mendel_snp.txt", append = TRUE, col_names = FALSE) %>%
   strsplit(SNP1, ",") %>% head(10) 
+
+
+
+unite (SNP, .., col=" ", sep = ",", remove=TRUE)
+
 
 #strsplit(SNP1) made R crash
 
