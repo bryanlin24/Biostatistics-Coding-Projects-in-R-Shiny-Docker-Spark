@@ -71,7 +71,7 @@ diamonds %>%
 ```
 
 
-  The histograms for x, y and z are all highly right skewed and the shape for each of them is bimodal. The histograms for x and y have very similar shapes. There are outliers for y and z (each variable has a large maximum). The units of measuring length, width and depth are in mm. I would guess that x is length because the maximum of x is 10.74 mm and the maximum of y and z are 60 mm and 31.8 mm respectively. These numbers seem too large to be the length of a diamond. I would guess that y is the width of a diamond because a depth of 60 mm would be an abnormally large diamond. I would guess z is the depth of the diamond.
+  The histograms for x, y and z are all highly right skewed and the shape for each of them is bimodal. The histograms for x and y have very similar shapes. There are outliers for y and z (each variable has a large maximum). The units of measuring length, width and depth are in mm. X is probably length because the maximum of x is 10.74 mm and the maximum of y and z are 60 mm and 31.8 mm respectively. These numbers seem too large to be the length of a diamond. Y is probably the width of a diamond because a depth of 60 mm would be an abnormally large diamond. Z would be the depth of a diamond, as maximum depth of 10.74 mm seems reasonable.
 
 
 
@@ -85,10 +85,6 @@ price <- diamonds$price
 min(price)
 max(price)
 #Price has a huge range ($326 to $18,823)
-
-
-#Look at basic R histogram to determine bin widths, max/min of x and y, etc.
-hist(price)
 
 
 #Make histogram and explore bin widths
@@ -113,7 +109,7 @@ ggplot(diamonds) +
 ```
 
 
-  The best looking histogram uses a bin width of 1000. The distribution of price is highly right skewed, which is not surprising beacuse larger diamonds are much more expensive than smaller ones and are rare, so there are not that many diamonds worth such a high price. However, based on using a bin width of 10, we can get a closer look at the data. We see lots of spikes in prices and the price of ~$1500 has a large gap, which is unusual. This distribution tells us that there are huge variations in prices for diamonds.
+  The best looking histogram uses a bin width of 1000. The distribution of price is highly right skewed, which is not surprising beacuse larger diamonds are much more expensive than smaller ones and are rare, so there are not that many diamonds worth such a high price. This distribution of price shows that there are huge variations in prices for diamonds. However, based on using a bin width of 10, a closer look at the data shows there are lots of spikes in prices and the price around ~$1,000 - $1,500 has a large gap, which is unusual. This seems to imply there are very few diamonds worth this price, but there are many diamonds worth less than $1,000 or more than $1,500.
 
 
 
@@ -146,7 +142,7 @@ length(count_1)
 ```
 
 
-  There are 23 0.99 carat diamonds and 1558 1 carat diamonds. There could be dishonesty in the diamond market. For example, sellers likely falsely advertise 0.99 carat diamonds as 1 carat diamonds because there is such a small difference between the two. I suspect that 1 carat diamonds are much more valuable than 0.99 carat diamonds, so sellers would tend to advertise their 0.99 carat diamonds as 1 carat diamonds instead of as 0.99 carat diamonds.
+  There are 23 0.99 carat diamonds and 1558 1 carat diamonds. One possible explanation is diamond sellers are being intentionally dishonest. In particular, sellers likely falsely advertise 0.99 carat diamonds as 1 carat diamonds because there is such a small difference between the two, and sellers would "round up" the carat number. I suspect that 1 carat diamonds are much more valuable than 0.99 carat diamonds, so sellers would tend to advertise their 0.99 carat diamonds as 1 carat diamonds instead of as 0.99 carat diamonds. Therefore, there would be significantly less 0.99 carat diamonds than 1 carat diamonds.
 
 
   **4. Compare and contrast coord_cartesian() vs xlim() or ylim() when zooming in on a histogram. What happens if you leave binwidth unset? What happens if you try and zoom so only half a bar shows?**
@@ -177,7 +173,9 @@ ggplot(diamonds) +
 ```
 
 
-  Coord_cartesian looks closer at the specified x and y limits on the histogram. If you do not set bin widths, ggplot automatically sets bins = 30 and if this bin width is inappropriate, R will still draw the plot, but will give a warning message asking the user to input better bin widths. Coord_cartesian will not exlude data, but the values will be cut off if the user zooms in.
+  Coord_cartesian looks closer at the specified x and y limits on the histogram. If bin widths are not set, ggplot automatically sets bins = 30 and if this bin width is inappropriate, R will still draw the plot, but will give a warning message asking the user to input better bin widths. Coord_cartesian will not exlude data, but the values will be cut off if the user zooms in.
+  
+  
   On the other hand, if specified limits for ylim are not met, the bars are cut off. In other words, if specified limits for xlim not met, the data points outside the specified limits are omitted.
 
 
@@ -198,7 +196,7 @@ diamonds2 %>%
 ```
 
 
-  In a histogram, missing values are not included in the binwidth calculation so they do not show up on the histogram.
+In a histogram for a continuous variable, missing values are not included in the binwidth calculation so they do not show up on the histogram.
 
 
 ```{r}
@@ -207,7 +205,8 @@ flights %>%
   ggplot(aes(carrier)) +
   geom_bar()
 ```
-For discrete values, in a barplot, missing values are treated as a new category. In this case, NA represents missing values so there is a category for NA
+
+For discrete values in a barplot, missing values are treated as a new category. In this case, NA represents missing values so there is a category for NA
 
 ```{r}
 diamonds2 %>%
@@ -225,7 +224,7 @@ diamonds %>%
 
   There is a difference in ommitted values in histograms vs. bar plots because histograms and bar charts are constructed differently. Histograms are constructed based off frequency of data points based on bin width. Histograms provide insight on the shape of the distribution of the data as well as measures of central tendency. Including a separate cateogry counting "NAs" would not be helpful in describing the shape of the distribution of the data. In other words, NA values do not give any helpful information in a histogram. In the histogram of diamond price, diamonds worth more than $10,000 were filtered out. The histogram should be constructed such that it represents the distribution of diamonds worth less than $10,000.
 
-  On the other hand, it is useful to include NA for bar charts because bar charts visualize categorical data. Therefore, having a category for NA helps one understand what the data looks like. The histogram with flights in 2013 has the carrier Delta airlines as NA for visualization purposes. The bar chart adds a category for NA, and this helps visualize all the information in the data for flights in 2013 for NYC. In short, it is helpful to see how many NA values there are for categorical data.
+  On the other hand, it is useful to include NA for bar charts because bar charts are good for visualizing categorical data. Therefore, having a category for NA helps one understand what the data looks like. The histogram with flights in 2013 has the carrier Delta airlines as NA for visualization purposes. The bar chart adds a category for NA, and this helps visualize all the information in the data for flights in 2013 for NYC. In short, it is helpful to see how many NA values there are for categorical data.
 
 
   **2. What does na.rm = TRUE do in mean() and sum()?**
@@ -239,7 +238,7 @@ sum(c(1, 2, 3, NA), na.rm = TRUE)
 #Sum of this vector is (1 + 2 + 3) = 6
 ```
 
-The na.rm command removes NA values from the specified vector. So, data points that are are not included in the mean() nor the sum() calculation.
+The na.rm command removes NA values from the specified vector. So, these missing data points are are not included in the mean() nor the sum() calculation.
 
 
 
@@ -249,7 +248,7 @@ The na.rm command removes NA values from the specified vector. So, data points t
   **1. Use what you’ve learned to improve the visualisation of the departure times of cancelled vs. non-cancelled flights.**
 ```{r}
 
-#original plot
+#Original given plot
 flights %>%
   mutate(
     cancelled = is.na(dep_time),
@@ -262,8 +261,8 @@ flights %>%
 
 
 
-#remove mapping in both ggplot and geom_freqpoly command
-#move color = cancelled into ggplot command
+#Remove mapping in both ggplot and geom_freqpoly command
+#Move color = cancelled into ggplot command
 
 flights %>%
   mutate(
@@ -282,6 +281,7 @@ flights %>%
   mutate(cancelled = is.na(dep_time) | is.na(arr_time)) %>%
   ggplot() +
   geom_boxplot(aes(x = cancelled, y = dep_time))
+
 ```
 
 
@@ -305,17 +305,7 @@ summary(fit)
 ```
 
 
-  Carat is important in predicting diamond price. Fitting a linear regression of price vs. carat shows the adjusted R^2 value is high (0.85), but assumptions for fitting a linear regression model should be checked.
-
-```{r}
-
-#Check fitting linear regression assumptions
-plot(fit)
-
-```
-
-
-  Regression assumptions are violated because residual plot does NOT show random scatter. Proceed with caution in interpreting these linear regression results.
+  Carat is important in predicting diamond price. Fitting a linear regression of price vs. carat shows the adjusted R^2 value is high (0.85), but this may not be the best model to fit the data.
 
 
   *Fit a non-linear regression (Loess) curve instead*
@@ -337,8 +327,7 @@ diamonds %>%
 
   The correlation between carat and cut is weakly negative. The boxplot shows that there are a lot of diamonds that are big carats but the cuts are only fair or good. The boxplot shows that good and fair diamonds tend to be larger than higher quality cut diamonds.
 
-  The combination of carat and cut leads to lower quality diamonds being more expensive because the combination of these two variables is important in predicting price as both are important contributors to predicting price. Low quality diamonds can have large carats, and since carat is an important predictor of price, the larger the diamond, the more it is worth.
-
+  The combination of carat and cut leads to lower quality diamonds being more expensive because the combination of these two variables is important in predicting price. Low quality diamonds can have large carats, and since carat is an important predictor of price, the larger the diamond, the more it is worth (even though the quality of the cut is low). This allows lower quality diamonds to be more expensive. Similarly, small but high quality cut diamonds can be very expensive.
 
 
   **3. Install the ggstance package, and create a horizontal boxplot. How does this compare to using coord_flip()?**
@@ -708,7 +697,7 @@ SNP %>%
 
   There are 1,309,299 SNPs in Chromosome 1, 1,215,399 SNPs in Chromosome 3, 1,090,185 SNPs in Chromosome 5, 980,944 SNPs in Chromosome 7, 732,013 SNPs in Chromosome 9, 815,860 SNPs in Chromosome 11, 602,809 SNPs in Chromosome 13, 491,208 SNPs in Chromosome 15, 477,990 SNPs in Chromosome 17, 393,615 SNPs in Chromosome 19 and 239,352 SNPs in Chromosome 21.
 
-3. MAP4 (microtubule-associated protein 4) is a gene on chromosome 3 spanning positions 47,892,180 bp -- 48,130,769 bp. How many SNPs are located within MAP4 gene?
+**3. MAP4 (microtubule-associated protein 4) is a gene on chromosome 3 spanning positions 47,892,180 bp -- 48,130,769 bp. How many SNPs are located within MAP4 gene?**
 
 ```{r}
 
@@ -726,11 +715,10 @@ There are 894 SNPs located within MAP4 gene.
       with each field separated by a comma. Write a Linux shell command to convert `merge-geno.bim` to Mendel SNP definition file. The first few lines of the Mendel SNP definition file should look like
     ```{r}
     file("mendel_snpdef.txt")
-write_lines(c("2.40 = FILE FORMAT VERSION NUMBER.", "8348674 = NUMBER OF SNPS LISTED HERE"), "mendel_snpdef.txt")
+write_lines(c("     2.40 = FILE FORMAT VERSION NUMBER.", "8348674 = NUMBER OF SNPS LISTED HERE"), "mendel_snpdef.txt")
 
 SNP1 <- SNP %>%
-  select(SNP_ID, Chromosome, BP) %>%
-  unite(SNP_ID, Chromosome, BP, col = "", sep = ",", remove = TRUE)
+  select(SNP_ID, Chromosome, BP) 
 
 write_delim(SNP1, path = "mendel_snpdef.txt", delim = ",", append = TRUE, col_names = F)
 ```
@@ -744,11 +732,16 @@ write_delim(SNP1, path = "mendel_snpdef.txt", delim = ",", append = TRUE, col_na
     `Family ID`, `Person ID`, `Father ID`, `Mother ID`, `Sex` coded as M or F, `Twin Status`  
     with each field separated by a comma. Write a Linux shell command to convert `merge-geno.fam` to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string `T2DG` from the IDs. First few lines of the Mendel pedigree should look like
     ```{r}
+  
+
+persons$PersonID <- substr(persons$PersonID, 5, 11)
+persons$MotherID <- substr(persons$MotherID, 5, 11)
+persons$FatherID <- substr(persons$FatherID, 5, 11)
+
     persons1 <- persons %>% 
       mutate(Sex = if_else(Sex == 1, "M", "F", missing = NULL)) %>% 
       select(one_of(c("FamilyID", "PersonID", "FatherID", "MotherID", "Sex"))) %>%
-      mutate(Twin_Status = "") %>% 
-      unite(col = "", sep = ",")
+      mutate(Twin_Status = "")
     write_delim(persons1, path = "mendel_persons.txt", delim = ",", append = FALSE, col_names = F)
     ```
     
