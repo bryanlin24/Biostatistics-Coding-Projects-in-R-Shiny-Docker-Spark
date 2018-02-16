@@ -19,13 +19,48 @@ library("dplyr")
 SNP <- read_tsv(file = "/home/m280-data/hw1/merge-geno.bim", col_names = FALSE)
 persons <- read_delim(file = "/home/m280-data/hw1/merge-geno.fam", delim = " ", col_names = FALSE)
 
-SNP <- rename(SNP, Chromosome = X1, SNP_ID = X2,
-              Genetic_Distance = X3, BP = X4, Allele1 = X5, Allele2 = X6 )
+SNP <- rename(SNP, Chromosome = X1, SNP_ID = X2, Genetic_Distance = X3, BP = X4, Allele1 = X5, Allele2 = X6 )
 
 persons <- rename(persons, FamilyID = X1, PersonID = X2, FatherID = X3, 
                   MotherID = X4, Sex = X5, Affection_Status = X6)
 
+
+
+
+View(SNP)
 View(persons)
+
+
+persons <- read_delim(file = "/home/m280-data/hw1/merge-geno.fam", delim = " ", col_names = FALSE)
+persons <- rename(persons, FamilyID = X1, PersonID = X2, FatherID = X3,
+                  MotherID = X4, Sex = X5, Affection_Status = X6)
+
+
+mutate(gradebook, Pass.Fail = ifelse(grade > 60, "Passs", "Fail"))
+mutate(mpg=replace(mpg, cyl==4, NA)) %>%
+  
+
+persons %>% 
+  persons$PersonID <- substr(persons$PersonID, 5, 11) %>% 
+  persons$MotherID <- substr(persons$MotherID, 5, 11) %>% 
+  persons$FatherID <- substr(persons$FatherID, 5, 11) %>% 
+  mutate(persons, persons$)
+
+persons$Sex[persons$Sex == "1"] <- "M"
+persons$Sex[persons$Sex == "2"] <- "F"
+persons$Affection_Status[persons$Affection_Status == 0] <- " "
+
+write_delim(persons, path = "mendel_persons.txt", delim = ",", append = FALSE, col_names = F)
+
+
+
+
+
+
+
+
+
+
 
 persons$PersonID <- substr(persons$PersonID, 5, 11)
 persons$MotherID <- substr(persons$MotherID, 5, 11)
@@ -38,11 +73,13 @@ write_delim(persons, path = "mendel_persons.txt", delim = ",", append = FALSE, c
 file.show("mendel_persons.txt")
 
 
+if persons$Sex[]
+
+
 #convert 0 and 1 to M and F
 
 
 
-persons1 <- persons %>% 
   
 
 
@@ -57,9 +94,25 @@ SNP1 <- SNP %>%
   select(SNP_ID, Chromosome, BP) %>% 
   unite(SNP_ID, Chromosome, BP, col=" ", sep = ",", remove = TRUE)
 
+
 write_delim(SNP1, path = "mendel_snp.txt", delim = ",", append = TRUE, col_names = F)
 
+head("mendel_snp.txt", 10)
+
 file.show("mendel_snp.txt")
+
+
+knitr::kable(head("mendel_snp.txt", n = 10))
+
+knitr::kable(cat(head(readLines("mendel_snp.txt"), n = 10)))
+
+
+cat(readLines('a.csv'), sep = '\n')
+
+
+
+
+
 
 
 
