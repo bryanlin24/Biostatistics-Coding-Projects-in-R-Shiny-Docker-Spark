@@ -273,4 +273,9 @@ d <- cbind(n, Method, d)
 
 knitr::kable(d)
 
+mutate(sex = if_else(Sex == 1, "M", "F", missing = NULL)) %>% 
+  select(one_of)
+         
+
+
 ```
