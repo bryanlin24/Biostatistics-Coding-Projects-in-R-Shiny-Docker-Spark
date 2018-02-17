@@ -141,6 +141,7 @@ $(document).ready(function () {
 <ol start="4" style="list-style-type: decimal">
 <li>After each homework due date, teaching assistant and instructor will check out your master branch for grading. Tag each of your homework submissions with tag names <code>hw1</code>, <code>hw2</code>, … Tagging time will be used as your submission time. That means if you tag your <code>hw1</code> submission after deadline, penalty points will be deducted for late submission.</li>
 </ol>
+<p><em>I will tag my hw1 for submission</em></p>
 </div>
 <div id="q2.-linux-shell-commands" class="section level2">
 <h2>Q2. Linux Shell Commands</h2>
@@ -266,6 +267,7 @@ $(document).ready(function () {
 <pre class="bash"><code>awk '{if ($1 == 3 &amp;&amp; $4 &gt;= 47892180 &amp;&amp; $4 &lt;= 48130769) print}' /home/m280-data/hw1/merge-geno.bim | wc -l
 </code></pre>
 <pre><code>## 894</code></pre>
+<p><em>There are 894 SNPs located within MAP4 gene</em></p>
 <ol start="4" style="list-style-type: decimal">
 <li><p>Statistical geneticists often have to reformat a data set to feed into various analysis programs. For example, to use the Mendel software <a href="http://www.genetics.ucla.edu/software/mendel" class="uri">http://www.genetics.ucla.edu/software/mendel</a>, we have to reformat the data set to be read by Mendel.</p>
 <ul>
@@ -321,7 +323,8 @@ head -20 mendel_ped.txt</code></pre>
   \frac{\sum_{r=1}^{\text{rep}} (\widehat \mu_r - \mu_{\text{true}})^2}{\text{rep}}
 \]</span> for both methods.</li>
 </ol>
-<pre class="bash"><code>Rscript runSim_revised.R n=100 distr=\&quot;gaussian\&quot; rep=50 seed=280
+<pre class="bash"><code>
+Rscript runSim_revised.R n=100 distr=\&quot;gaussian\&quot; rep=50 seed=280
 </code></pre>
 <pre><code>## [1] 0.04146737 0.00948339</code></pre>
 <ol start="2" style="list-style-type: decimal">
@@ -432,139 +435,6 @@ head -20 mendel_ped.txt</code></pre>
 </table>
 <pre class="bash"><code>Rscript tblSim_revised.R
 </code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">n</th>
-<th align="left">Method</th>
-<th align="right">t1</th>
-<th align="right">t5</th>
-<th align="right">Gaussian</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">100</td>
-<td align="left">PrimeAvg</td>
-<td align="right">2808.42570</td>
-<td align="right">0.0664284</td>
-<td align="right">0.0414674</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">SampAvg</td>
-<td align="right">230.23720</td>
-<td align="right">0.0167508</td>
-<td align="right">0.0094834</td>
-</tr>
-<tr class="odd">
-<td align="left">200</td>
-<td align="left">PrimeAvg</td>
-<td align="right">799.31393</td>
-<td align="right">0.0418479</td>
-<td align="right">0.0187544</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">SampAvg</td>
-<td align="right">95.87976</td>
-<td align="right">0.0076665</td>
-<td align="right">0.0071637</td>
-</tr>
-<tr class="odd">
-<td align="left">300</td>
-<td align="left">PrimeAvg</td>
-<td align="right">446.40235</td>
-<td align="right">0.0241224</td>
-<td align="right">0.0200254</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">SampAvg</td>
-<td align="right">53.57742</td>
-<td align="right">0.0054711</td>
-<td align="right">0.0035344</td>
-</tr>
-<tr class="odd">
-<td align="left">400</td>
-<td align="left">PrimeAvg</td>
-<td align="right">19.45133</td>
-<td align="right">0.0243314</td>
-<td align="right">0.0112689</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">SampAvg</td>
-<td align="right">20.53370</td>
-<td align="right">0.0035170</td>
-<td align="right">0.0029707</td>
-</tr>
-<tr class="odd">
-<td align="left">500</td>
-<td align="left">PrimeAvg</td>
-<td align="right">217.26890</td>
-<td align="right">0.0116763</td>
-<td align="right">0.0111769</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">SampAvg</td>
-<td align="right">20.78780</td>
-<td align="right">0.0033550</td>
-<td align="right">0.0025920</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code>#table
-suppressMessages(if (!require(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;))
-suppressMessages(pacman::p_load(&quot;tidyr&quot;, &quot;dplyr&quot;, &quot;knitr&quot;, &quot;data.table&quot;))
-
-
-file.list4 &lt;- list.files(path = &quot;/home/bryanlin24/biostat-m280-2018-winter&quot;, pattern='.txt')
-data5 &lt;- lapply(file.list4, read.table)
-
-
-data1 &lt;- do.call(&quot;rbind&quot;, data5)
-data1 &lt;- data1[,-1]
-
-names(data1) &lt;- c(&quot;PrimeAvg&quot;, &quot;SampAvg&quot;)
-
-
-
-
-data2 &lt;- gather(data1, &quot;Method&quot;, &quot;Avg&quot;)
-
-
-d &lt;- data.frame()
-
-#Prime avg for t1
-d[c(1,3,5,7,9), 1] &lt;- data2[c(6:10), 2]
-
-#Samp avg for t1
-d[c(2,4,6,8,10), 1] &lt;- data2[c(21:25), 2]
-
-#Prime avg for t5
-d[c(1,3,5,7,9), 2] &lt;- data2[c(11:15), 2]
-
-#Samp avg for t5
-d[c(2,4,6,8,10), 2] &lt;- data2[c(26:30), 2]
-
-#Prime avg for Gaussian
-d[c(1,3,5,7,9),3] &lt;- data2[c(1:5), 2]
-
-#Samp avg for Gaussian
-d[c(2,4,6,8,10), 3] &lt;- data2[c(16:20), 2]
-
-
-
-colnames(d) &lt;- c(&quot;t1&quot;, &quot;t5&quot;, &quot;Gaussian&quot;)
-
-Method &lt;- rep(c(&quot;PrimeAvg&quot;, &quot;SampAvg&quot;), 5)
-n &lt;- c(&quot;100&quot;, &quot;&quot;, &quot;200&quot;, &quot;&quot;, &quot;300&quot;, &quot;&quot;, &quot;400&quot;, &quot;&quot; ,&quot;500&quot;, &quot;&quot;)
-
-d &lt;- cbind(n, Method, d)
-
-knitr::kable(d)</code></pre>
 <table>
 <thead>
 <tr class="header">

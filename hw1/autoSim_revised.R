@@ -8,7 +8,7 @@ nVals = seq(100, 500, by=100)
 for (n in nVals) {
   for (distr in distribution){
  
-  oFile <- paste(distr,"n", n, ".txt", sep=",")
+  oFile <- paste(distr, "n", n, ".txt", sep=",")
   
   #modify arg
   
