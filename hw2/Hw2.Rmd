@@ -347,7 +347,7 @@ diamonds %>%
 ```
 
 
-  These two boxplots are exactly the same, but using boxploth uses less code to output the same thing. Boxploth also flips the coordinate axes.
+  These two boxplots are exactly the same, but using boxploth command uses less code to output the same thing. Boxploth also flips the coordinate axes without needing to specify "cood_flip()".
 
 
   **4. One problem with boxplots is that they were developed in an era of much smaller datasets and tend to display a prohibitively large number of “outlying values”. One approach to remedy this problem is the letter value plot. Install the lvplot package, and try using geom_lv() to display the distribution of price vs cut. What do you learn? How do you interpret the plots?**
@@ -462,7 +462,7 @@ diamonds %>%
 ```
 
 
-  In this plot, differences in color are better distinguished within the variable cut. The original plot had a lot of dark blue. For instance, all J color diamonds are dark blue, so it was difficult to see the differences in cut within the J colored diamonds. Calculating the percentages, one can see the difference within the colors and the cuts better. For instance, the ideal cut has the least percentage of colored diamonds relative to other cuts. This plot makes better use of the different color gradients.
+  In this plot, differences in color are better distinguished within the variable cut. The original plot had a lot of dark blue. For instance, all J color diamonds are dark blue, so it was difficult to see the differences in cut within the J colored diamonds. Calculating the percentages reveals the difference within the colors and the cuts better. For instance, the ideal cut has the least percentage of colored diamonds relative to other cuts. Therefore, this plot makes better use of the different color gradients.
 
 
   **2. Use geom_tile() together with dplyr to explore how average flight delays vary by destination and month of year. What makes the plot difficult to read? How could you improve it?**
@@ -476,7 +476,7 @@ flights %>%
 ```
 
 
-  This plot shows that it is difficult to distinguish the departure delays (the graph looks mostly dark blue) and has a lot of white and gray colors. The white colors represent missing values for the variable destination. Therefore, it would be helpful to remove missing values. It would also help to meaningfully sort the destination values and standardize the departure dely times. Also, many of the boxes are dark blue because there are a lot of high delayed departures that skew the data to the right and skew departure delay times upwards. This would explain why the plot has a lot of dark blue colors.
+  This plot shows that it is difficult to distinguish the departure delays (the graph looks mostly dark blue) and has a lot of white and gray colors. The white colors represent missing values for the variable destination. Therefore, it would be helpful to remove missing values. It would also help to meaningfully sort the destination values and standardize the departure delay times. Also, many of the boxes are dark blue because there are a lot of high delayed departures that skew the data to the right and skew departure delay times upwards. This would explain why the plot has a lot of dark blue colors.
 
 
 ```{r}
@@ -615,7 +615,7 @@ ggplot(data = diamonds) +
 ```
 
 
-  A scatterplot is better because visualizing this data with a bin plot (i.e. a histogram, like in Exercise 7.3.4) shows there are a few huge outliers in x and in y, which skews each histogram to the right. Exercise 7.3.4 shows The distributions for x and y are very similar (they are both highly right skewed by the handful of outliers in each dataset).
+  A scatterplot is better because visualizing this data with a bin plot (i.e. a histogram, like in Exercise 7.3.4) shows there are a few huge outliers in x and in y, which skews each histogram to the right. Exercise 7.3.4 shows the distributions for x and y are very similar (they are both highly right skewed by the handful of outliers in each dataset).
    However, when visualizing the relationship between y and x using a scatterplot, the scatterplot shows the relationship between y and x is strongly linear, despite the handful of huge outliers in x and in y that skew their distributions to the right. In the scatterplot, with the exception of a few points in the middle, the data points follow the linear line of best fit pretty well.
 
 
@@ -633,7 +633,6 @@ Read in SNP and Individual Persons data
 #Base R functions are extremely slow. Tidyverse read in functions are a lot faster
 
 SNP <- read_tsv(file = "/home/m280-data/hw1/merge-geno.bim", col_names = FALSE, quote = "\"")
-SNP <- read_delim(file = "/home/m280-data/hw1/merge-geno.bim", delim = "\t",col_names = FALSE)
 #Tab separated
 
 persons <- read_delim(file = "/home/m280-data/hw1/merge-geno.fam", delim = " ", col_names = FALSE)
