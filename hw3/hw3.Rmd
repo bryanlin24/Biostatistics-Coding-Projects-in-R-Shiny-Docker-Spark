@@ -1,0 +1,138 @@
+---
+title: "Biostat M280 Homework 3"
+subtitle: Due Mar 2 @ 11:59PM
+output: html_document
+---
+
+
+
+## Q1 LA City Employee Payroll
+
+The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching server contains payroll information of LA City employees in years 2013-2017. It was downloaded from [LA City Controller's Office](https://controllerdata.lacity.org/Payroll/City-Employee-Payroll/pazn-qyym). Make a Shiny app to facilitate exploratory data analysis. 
+
+1. For efficiency of the Shiny app, you should first pre-process, pare down, tidy, and save the data, e.g., as a compressed RDS file, to be used in the app.
+
+
+```{r}
+library("DBI")
+library("RSQLite")
+library("tidyverse")
+```
+
+```{r}
+
+la_payroll <- read_csv("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv")
+data <- write_rds(la_payroll, "/home/bryanlin24/biostat-m280-2018-winter/hw3/la_payroll.rds", compress = c("gz"))
+
+
+names(la_payroll) <- str_replace_all(names(la_payroll), " ", "_")
+
+
+Total_payments <- parse_number(la_payroll$Total_Payments)
+Base_pay <- parse_number(la_payroll$Base_Pay)
+Overtime_pay <- parse_number(la_payroll$Overtime_Pay)
+
+data_la_payroll <- la_payroll %>% 
+  select(Row_ID, Base_Pay, Overtime_Pay, Total_Payments, Department_Title, Job_Class_Title, Year) %>% 
+  mutate(Other_Pay = Total_payments - Base_pay - Overtime_pay)
+
+```
+
+0. **Total payroll by LA City**. Visualize the total LA City payroll of each year, with breakdown into base pay, overtime pay, and other pay.
+
+0. **Who earned most?** Visualize the payroll information (total payment with breakdown into base pay, overtime pay, and other pay, Department, Job Title) of the top $n$ highest paid LA City employees in a specific year. User specifies $n$ (default 10) and year (default 2017).
+
+0. **Which departments earn most?** Visualize the mean or median payroll, with breakdown into base pay, overtime pay, and other pay, of top $n$ earning departments. User specifies $n$ (default 5), year (default 2017), and method (mean or median, default median).
+
+0. **Which departments cost most?** Visualize the total payroll, with breakdown into base pay, overtime pay, and other pay, of top $n$ expensive departments. User specifies $n$ (default 5) and year (default 2017).
+
+0. Visualize any other information you are interested in.
+
+0. Publish your Shiny app to <https://www.shinyapps.io> and share the link.
+
+## Q2 LA City Parking War
+
+The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on teaching server contains information about parking tickets in LA City. It was downloaded from [LA Open Data Portal](https://data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np). Connect to the database and answer following questions using plots and summary statistics. In this exercise, you are **not** allowed to load whole data into memory. Use the _transform in database, plot in R_ strategy.
+
+```{r}
+#la <- read_csv("la_parking.csv") 
+
+if (Sys.info()[["sysname"]] == "Linux") {
+  db <- dbConnect(RSQLite::SQLite(), 
+                  dbname = "/home/m280-data/la_parking/LA_Parking_Citations.sqlite")
+} else if (Sys.info()[["sysname"]] == "Darwin") {
+  db <- dbConnect(RSQLite::SQLite(), 
+                  dbname = "./LA_Parking_Citations.sqlite")
+}
+#dbWriteTable(db, "la", la, overwrite = TRUE)
+#dbWriteTable(db, "nyc", nyc, overwrite = TRUE)
+
+dbListTables(db)
+```
+
+<!-- ```{r} -->
+<!-- # magrittr for %<>% -->
+<!-- library("magrittr") -->
+<!-- (la %<>%  -->
+<!--   select(Registration_State:Issuing_Agency,  -->
+<!--          Violation_Location, Violation_Precinct, Violation_Time, -->
+<!--          Number:Intersecting_Street, Vehicle_Color)) -->
+<!-- ``` -->
+
+
+
+
+<!-- ```{r} -->
+<!-- # magrittr for %<>% -->
+<!-- library("magrittr") -->
+<!-- (nyc %<>%  -->
+<!--   select(Registration_State:Issuing_Agency,  -->
+<!--          Violation_Location, Violation_Precinct, Violation_Time, -->
+<!--          Number:Intersecting_Street, Vehicle_Color)) -->
+<!-- ``` -->
+
+
+```{bash, eval = (Sys.info()[["sysname"]] == "Linux")}
+ln -sf /home/m280-data/la_parking/LA_Parking_Citations.csv
+```
+
+1. How many tickets are in this data set? Which time period do these tickets span? Which years have most data?
+
+How many rows?
+```{bash}
+wc -l < LA_Parking_Citations.csv
+```
+
+```{r}
+
+latix_sql <- dplyr::tbl(db, "latix")
+str(latix_sql)
+
+count(latix_sql)
+
+```
+
+
+  There are 4,044,488 tickets in this data set.
+  
+Which time period do these tickets span?
+```{r}
+
+range(latix_sql$Issue_DateTime)
+#SELECT * FROM ./LA_Parking_Citations
+# SELECT MAX(Issue_DateTime)
+# FROM laxix_sql
+
+```
+
+0. When (which hour, weekday, month day, and month) are you most likely to get a ticket and when are you least likely to get a ticket?
+
+0. Which car makes received most citations?
+
+0. How many different colors of cars were ticketed? Which color attracted most tickets?
+
+0. What are the most common ticket types?
+
+0. How much money was collected on parking tickets in 2015 and 2016?
+
+0. Visualize any other information you are interested in.
