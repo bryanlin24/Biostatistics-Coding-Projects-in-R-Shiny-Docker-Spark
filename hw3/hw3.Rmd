@@ -82,9 +82,13 @@ latix_sql <- dplyr::tbl(db, "latix")
 
 
 
+
+
+
 db1 <- dbConnect(RSQLite::SQLite(),
                   dbname = "/home/m280-data/la_parking/LA_Parking_Citations_Extra.sqlite")
 dbListTables(db1)
+
 
 new_db <- dbSendQuery(db1, "Select Issue_Year, Issue_Month, Issue_Day, Issue_Hour, Issue_Minute, Make, Violation_Description FROM latix")
 
@@ -104,12 +108,14 @@ How many tickets (how many rows)?
 ```{r}
 
 latix_sql <- dplyr::tbl(db, "latix")
-str(latix_sql)
 
-count(latix_sql)
+latix_sql %>% 
+  tally()
+# str(latix_sql)
+# 
+# count(latix_sql)
 
 ```
-
 
   *There are 4,044,488 tickets in this data set.*
 
@@ -123,7 +129,10 @@ sorted_dates <- sort(latix$Issue_DateTime)
 head(sorted_dates)
 tail(sorted_dates)
 
-
+latix_sql
+filter
+select
+arrange
 
 ```
 
@@ -151,10 +160,20 @@ table(years)
 
 0. Which car makes received most citations?
 ```{r}
-model <- latix$Make
+library("dplyr")
 
-table(model)
-max(table(model))
+car <- tbl(db1, "latix") %>% 
+  group_by(Make) %>% 
+  tally() %>% 
+  collect() %>% 
+  filter(n == max(n))
+car
+
+# 
+# model <- latix$Make
+# 
+# table(model)
+# max(table(model))
 
 
 ```
