@@ -14,27 +14,31 @@ The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching s
 
 
 ```{r}
-library("DBI")
-library("RSQLite")
 library("tidyverse")
 ```
 
 ```{r}
 
+#Read in RDS file
 la_payroll <- read_csv("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv")
-data <- write_rds(la_payroll, "/home/bryanlin24/biostat-m280-2018-winter/hw3/la_payroll.rds", compress = c("gz"))
+
+saveRDS(la_payroll, "la_payroll.rds", compress = TRUE)
+LApayroll <- readRDS("la_payroll.rds")
 
 
-names(la_payroll) <- str_replace_all(names(la_payroll), " ", "_")
+#Rename the names of the columns
+names(LApayroll) <- str_replace_all(names(LApayroll), " ", "_")
 
+data_la_payroll <- 
+  LApayroll %>% 
+  select(Row_ID, Base_Pay, Overtime_Pay, Total_Payments, `Other_Pay_(Payroll_Explorer)`, Department_Title, Job_Class_Title, Year)  
+  
 
-Total_payments <- parse_number(la_payroll$Total_Payments)
-Base_pay <- parse_number(la_payroll$Base_Pay)
-Overtime_pay <- parse_number(la_payroll$Overtime_Pay)
-
-data_la_payroll <- la_payroll %>% 
-  select(Row_ID, Base_Pay, Overtime_Pay, Total_Payments, Department_Title, Job_Class_Title, Year) %>% 
-  mutate(Other_Pay = Total_payments - Base_pay - Overtime_pay)
+#remove dollar signs
+data_la_payroll$Base_Pay <- as.numeric(gsub("\\$", "", data_la_payroll$Base_Pay))
+data_la_payroll$Total_Payments <- as.numeric(gsub("\\$", "", data_la_payroll$Total_Payments))
+data_la_payroll$Overtime_Pay <- as.numeric(gsub("\\$", "", data_la_payroll$Overtime_Pay))
+data_la_payroll$`Other_Pay_(Payroll_Explorer)` <- as.numeric(gsub("\\$", "", data_la_payroll$`Other_Pay_(Payroll_Explorer)`))
 
 ```
 
@@ -54,8 +58,15 @@ data_la_payroll <- la_payroll %>%
 
 The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on teaching server contains information about parking tickets in LA City. It was downloaded from [LA Open Data Portal](https://data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np). Connect to the database and answer following questions using plots and summary statistics. In this exercise, you are **not** allowed to load whole data into memory. Use the _transform in database, plot in R_ strategy.
 
+
 ```{r}
-#la <- read_csv("la_parking.csv") 
+library("DBI")
+library("RSQLite")
+library(anytime)
+```
+
+
+```{r}
 
 if (Sys.info()[["sysname"]] == "Linux") {
   db <- dbConnect(RSQLite::SQLite(), 
@@ -64,8 +75,6 @@ if (Sys.info()[["sysname"]] == "Linux") {
   db <- dbConnect(RSQLite::SQLite(), 
                   dbname = "./LA_Parking_Citations.sqlite")
 }
-#dbWriteTable(db, "la", la, overwrite = TRUE)
-#dbWriteTable(db, "nyc", nyc, overwrite = TRUE)
 
 dbListTables(db)
 ```
@@ -113,24 +122,65 @@ count(latix_sql)
 ```
 
 
-  There are 4,044,488 tickets in this data set.
+  *There are 4,044,488 tickets in this data set.*
   
-Which time period do these tickets span?
+**Which time period do these tickets span?**
 ```{r}
+latix <- as.data.frame(latix_sql)
 
-range(latix_sql$Issue_DateTime)
-#SELECT * FROM ./LA_Parking_Citations
-# SELECT MAX(Issue_DateTime)
-# FROM laxix_sql
+latix$Issue_DateTime <- anydate(latix$Issue_DateTime)
+
+sorted_dates <- sort(latix$Issue_DateTime)
+head(sorted_dates)
+tail(sorted_dates)
+
+
 
 ```
 
+*The time period spans from 4-27-2010 to 12-29-2017*
+
+
+
+**Which years have most data?**
+```{r}
+years <- substr(latix$Issue_DateTime, 1, 4)
+
+table(years)
+
+```
+*The year 2015 has the most data*
+
+
+
 0. When (which hour, weekday, month day, and month) are you most likely to get a ticket and when are you least likely to get a ticket?
 
+```{r}
+
+
+latix_sql <- dplyr::tbl(db, "latix")
+latix <- as.data.frame(latix_sql)
+
+latix$Issue_DateTime <- anytime(latix$Issue_DateTime)
+
+```
+
 0. Which car makes received most citations?
+```{r}
+model <- latix$Make
 
+table(model)
+max(table(model))
+
+
+```
+
+*TOYT has the most citations*
 0. How many different colors of cars were ticketed? Which color attracted most tickets?
+```{r}
 
+
+```
 0. What are the most common ticket types?
 
 0. How much money was collected on parking tickets in 2015 and 2016?
