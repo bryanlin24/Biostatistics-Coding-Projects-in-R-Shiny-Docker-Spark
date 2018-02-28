@@ -69,48 +69,37 @@ library(anytime)
 ```{r}
 
 if (Sys.info()[["sysname"]] == "Linux") {
-  db <- dbConnect(RSQLite::SQLite(), 
+  db <- dbConnect(RSQLite::SQLite(),
                   dbname = "/home/m280-data/la_parking/LA_Parking_Citations.sqlite")
 } else if (Sys.info()[["sysname"]] == "Darwin") {
-  db <- dbConnect(RSQLite::SQLite(), 
+  db <- dbConnect(RSQLite::SQLite(),
                   dbname = "./LA_Parking_Citations.sqlite")
 }
 
 dbListTables(db)
+ 
+latix_sql <- dplyr::tbl(db, "latix")
+
+
+
+db1 <- dbConnect(RSQLite::SQLite(),
+                  dbname = "/home/m280-data/la_parking/LA_Parking_Citations_Extra.sqlite")
+dbListTables(db1)
+
+new_db <- dbSendQuery(db1, "Select Issue_Year, Issue_Month, Issue_Day, Issue_Hour, Issue_Minute, Make, Violation_Description FROM latix")
+
+
+latix_sql1 <- dplyr::tbl(new_db, "latix")
+
+
+
+
 ```
 
-<!-- ```{r} -->
-<!-- # magrittr for %<>% -->
-<!-- library("magrittr") -->
-<!-- (la %<>%  -->
-<!--   select(Registration_State:Issuing_Agency,  -->
-<!--          Violation_Location, Violation_Precinct, Violation_Time, -->
-<!--          Number:Intersecting_Street, Vehicle_Color)) -->
-<!-- ``` -->
-
-
-
-
-<!-- ```{r} -->
-<!-- # magrittr for %<>% -->
-<!-- library("magrittr") -->
-<!-- (nyc %<>%  -->
-<!--   select(Registration_State:Issuing_Agency,  -->
-<!--          Violation_Location, Violation_Precinct, Violation_Time, -->
-<!--          Number:Intersecting_Street, Vehicle_Color)) -->
-<!-- ``` -->
-
-
-```{bash, eval = (Sys.info()[["sysname"]] == "Linux")}
-ln -sf /home/m280-data/la_parking/LA_Parking_Citations.csv
-```
 
 1. How many tickets are in this data set? Which time period do these tickets span? Which years have most data?
 
-How many rows?
-```{bash}
-wc -l < LA_Parking_Citations.csv
-```
+How many tickets (how many rows)?
 
 ```{r}
 
@@ -123,7 +112,7 @@ count(latix_sql)
 
 
   *There are 4,044,488 tickets in this data set.*
-  
+
 **Which time period do these tickets span?**
 ```{r}
 latix <- as.data.frame(latix_sql)
@@ -158,11 +147,6 @@ table(years)
 ```{r}
 
 
-latix_sql <- dplyr::tbl(db, "latix")
-latix <- as.data.frame(latix_sql)
-
-latix$Issue_DateTime <- anytime(latix$Issue_DateTime)
-
 ```
 
 0. Which car makes received most citations?
@@ -179,8 +163,13 @@ max(table(model))
 0. How many different colors of cars were ticketed? Which color attracted most tickets?
 ```{r}
 
+color <- latix$Color
+table(color)
+max(table(color))
 
 ```
+*There are 65 different colors. BK is the color that was most ticketed*
+
 0. What are the most common ticket types?
 
 0. How much money was collected on parking tickets in 2015 and 2016?
