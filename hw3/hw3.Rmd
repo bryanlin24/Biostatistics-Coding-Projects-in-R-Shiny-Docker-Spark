@@ -63,6 +63,8 @@ The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on 
 library("DBI")
 library("RSQLite")
 library("dplyr")
+library("knitr")
+library("ggplot2")
 ```
 
 
@@ -83,7 +85,9 @@ dbListTables(db)
 
 
 latix_sql <- dplyr::tbl(db, "latix")
- 
+
+latix_sql %>% print(width = Inf)
+
 # 
 # new_db <- dbSendQuery(db, "Select Issue_Year, Issue_Month, Issue_Day, Issue_Hour, Issue_Minute, Make, Violation_Description FROM latix")
 # 
@@ -257,43 +261,31 @@ filter(n == max(n))
   
   *Based on the 4 plots (Month, Weekday, Month day, Hour), one can see the most likely and least likely times to get a citation.*
   
-  -One is most likely to get a ticket in the month of March. In terms of weekdays, one is most likely to get a ticket on a Tuesday. For the month day, one is most likely to get a citation on the 22nd of the month. Finally, in terms of the hour, one is most likely to get a ticket at 12am.
-  -One is least likely to get a ticket in the month of March. In terms of weekdays, one is most likely to get a ticket on a Tuesday. For the month day, one is most likely to get a citation on the 22nd of the month. Finally, in terms of the hour, one is most likely to get a ticket at 12am.
+  -One is most likely to get a ticket in the month of March. In terms of weekdays, one is most likely to get a ticket on a Tuesday. For the month day, one is most likely to get a citation on the 22nd of the month. Finally, in terms of the hour, one is most likely to get a ticket at 12pm.
+  -One is least likely to get a ticket in the month of November. In terms of weekdays, one is least likely to get a ticket on a Saturday For the month day, one is most likely to get a citation on the 31st of the month (assuming that month has 31 days). Finally, in terms of the hour, one is most likely to get a ticket at 5am.
   
 
   Confirm results with filtering the data
-  
+
+
+  Most Likely Times
 ```{r}
+
 #Month
 tbl(db, "latix") %>% 
-  filter(!is.na(Issue_Year)) %>% 
-  group_by(Issue_Year) %>% 
-  tally() %>% 
-  collect() %>% 
-filter(n == max(n))
-
-
-#Month
- tbl(db, "latix") %>% 
   filter(!is.na(Issue_Month)) %>% 
   group_by(Issue_Month) %>% 
   tally() %>% 
   collect() %>% 
-  ggplot() +
-  geom_col(aes(x = Issue_Month, y = n)) +
-  scale_x_continuous(breaks = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12),
-  label = c("Jan","Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"))
-  
- 
+  filter(n == max(n))
+
 #Weekday
  tbl(db, "latix") %>%
    filter(!is.na(Issue_Wday)) %>% 
    group_by(Issue_Wday) %>% 
    tally() %>% 
    collect() %>% 
-   ggplot() +
-   geom_col(aes(x = Issue_Wday, y = n)) +
-   scale_x_continuous(breaks = c(1 ,2 ,3, 4, 5, 6, 7), label = c("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"))
+   filter(n == max(n))
 
  
  #Month day
@@ -302,18 +294,55 @@ filter(n == max(n))
    group_by(Issue_Day) %>% 
    tally() %>% 
    collect() %>% 
-   ggplot() +
-   geom_col(aes(x = Issue_Day, y = n)) 
- 
- 
+   filter(n == max(n))
+
 #Hour
  tbl(db, "latix") %>%
    filter(!is.na(Issue_Hour)) %>% 
    group_by(Issue_Hour) %>% 
    tally() %>% 
    collect() %>% 
-   ggplot() +
-   geom_col(aes(x = Issue_Hour, y = n)) 
+   filter(n == max(n))
+ 
+```
+
+
+  #Minimums 
+
+```{r}
+#Month
+tbl(db, "latix") %>% 
+  filter(!is.na(Issue_Month)) %>% 
+  group_by(Issue_Month) %>% 
+  tally() %>% 
+  collect() %>% 
+  filter(n == min(n))
+
+#Weekday
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Wday)) %>% 
+   group_by(Issue_Wday) %>% 
+   tally() %>% 
+   collect() %>% 
+   filter(n == min(n))
+
+ 
+ #Month day
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Day)) %>% 
+   group_by(Issue_Day) %>% 
+   tally() %>% 
+   collect() %>% 
+   filter(n == min(n))
+
+#Hour
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Hour)) %>% 
+   group_by(Issue_Hour) %>% 
+   tally() %>% 
+   collect() %>% 
+   filter(n == min(n))
+ 
 ```
  
 0. Which car makes received most citations?
@@ -366,7 +395,7 @@ tbl(db, "latix") %>%
 
 ```
 
-*There are 65 different colors. BK (Black) is the color that was most ticketed*
+*There are 65 different colors. BK (Black) is the color that was most ticketed (ticketed a total of 862,283 times)*
 
 0. What are the most common ticket types?
 
@@ -393,56 +422,38 @@ ticket
 
 0. How much money was collected on parking tickets in 2015 and 2016?
 ```{r}
-library(knitr)
-# Fine_amount
-# 
-# data %>% 
-#   group_by(subj) %>% 
-#   summarise(n_child = n(),nOlder = sum(older),nYounger = sum(younger))
-
 
 
 tbl(db, "latix") %>% 
+  select(Issue_Year) %>% 
   filter(Issue_Year == 2015 | Issue_Year == 2016) %>% 
   group_by(Issue_Year) %>% 
-  summarize
-  kable
-
-  summarize(Fines = sum(Fine_amount, na.rm = TRUE))
-
-
-  group_by(Fine_amount) %>% 
-  tally() %>% 
+  summarise(sum(Fine_amount)) %>% 
   collect() %>% 
-  top_n(3) %>% 
-  ggplot() +
-  geom_col(aes(x = Violation_Description, y = n))
-
-
+  kable()
 money <- tbl(db, "latix") %>% 
-  filter(Issue_Year >= 2015, Issue_Year <= 2016) %>% 
-
-
+  select(Issue_Year) %>% 
+  filter(Issue_Year == 2015 | Issue_Year == 2016) %>% 
+  group_by(Issue_Year) %>% 
+  summarize(sum(Fine_amount)) %>% 
+  collect() %>% 
+  kable()
 
 money
 
-# 
-#   tally() %>% 
-#   collect()
-# 
-#   group_by()
-# 
-# 
-# diff_col <- tbl(db, "latix") %>% 
-#   group_by(Color) %>% 
-#   tally() %>% 
-#   collect()
-# diff_col
-# 
-# addr <- nyc_sql %>%
-#   select(Issue_Date, Issuing_Agency, Violation_Precinct, Number, Street) %>%
-#   filter(Violation_Precinct >= 1, Violation_Precinct <= 34)
-# addr
+
+
+
+
+
+
+tbl(db, "latix") %>%
+  filter(!is.na(Issue_Year) && !is.na(Fine_amount) && Issue_year == 2015 | Issue_Year == 2016) %>% 
+  group_by(Issue_Year) %>% 
+  summarise(tot = sum(Fine_amount)) %>% 
+  kable(col.names = c("Issue Year", "Fine Amount"))
+
+  
 
 ```
 0. Visualize any other information you are interested in.
