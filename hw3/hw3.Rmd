@@ -111,9 +111,9 @@ latix_sql <- dplyr::tbl(db, "latix")
 ```
 
 
-1. How many tickets are in this data set? Which time period do these tickets span? Which years have most data?
+**1. How many tickets are in this data set? Which time period do these tickets span? Which years have most data?**
 
-How many tickets (how many rows)?
+How many tickets?
 
 ```{r}
 
@@ -127,9 +127,12 @@ latix_sql %>%
 
 ```
 
-  *There are 4,044,488 tickets in this data set.*
 
-**Which time period do these tickets span?**
+
+  *There are 4,044,488 tickets in this data set.*
+  
+
+Which time period do these tickets span?
 ```{r}
 time_ticket <- latix_sql %>% 
   filter(!is.na(Issue_Year)) %>% 
@@ -161,11 +164,13 @@ head(time_ticket1, 1)
 
 ```
 
-*The time period spans from 4-27-2010 to 12-30-2017*
+
+
+  *The time period spans from 4-27-2010 to 12-30-2017*
 
 
 
-**Which years have most data?**
+Which years have most data?
 ```{r}
 
 tbl(db, "latix") %>% 
@@ -177,39 +182,21 @@ tbl(db, "latix") %>%
   geom_col(aes(x = Issue_Year, y = n)) +
   scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017)) 
 
-                     
-                     # 
-                     # label = c("2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017"))
-
-# 
-#   filter(n == max(n))
-# 
-#  collect() %>%
-#   ggplot() + 
-#     geom_col(aes(x = Issue_WDay, y = n))
-# 
-# year
-
-
-# year_visual <- tbl(db, "latix") %>% 
-#   select(Issue_Year) %>% 
-#   ggplot(aes(x)) +
-#   geom_bar()
-# 
-# 
-
-# years <- substr(latix$Issue_DateTime, 1, 4)
-# 
-# table(years)
-
+tbl(db, "latix") %>% 
+  filter(!is.na(Issue_Year)) %>% 
+  group_by(Issue_Year) %>% 
+  tally() %>% 
+  collect() %>% 
+filter(n == max(n))
 ```
-*The year 2015 has the most data*
 
+
+  *2015 is the year that has the most data (2,161,119 citations). 2016 also has a lot of data*
 
 
 0. When (which hour, weekday, month day, and month) are you most likely to get a ticket and when are you least likely to get a ticket?
 
-**Most likely to get a ticket**
+
 ```{r}
 #Month
  tbl(db, "latix") %>% 
@@ -222,17 +209,8 @@ tbl(db, "latix") %>%
   scale_x_continuous(breaks = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12),
   label = c("Jan","Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"))
   
-
-#Hour
- tbl(db, "latix") %>%
-   filter(!is.na(Issue_Hour)) %>% 
-   group_by(Issue_Hour) %>% 
-   tally() %>% 
-   collect() %>% 
-   ggplot() +
-   geom_col(aes(x = Issue_Hour, y = n)) 
  
- #Weekday
+#Weekday
  tbl(db, "latix") %>%
    filter(!is.na(Issue_Wday)) %>% 
    group_by(Issue_Wday) %>% 
@@ -241,6 +219,7 @@ tbl(db, "latix") %>%
    ggplot() +
    geom_col(aes(x = Issue_Wday, y = n)) +
    scale_x_continuous(breaks = c(1 ,2 ,3, 4, 5, 6, 7), label = c("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"))
+
  
  #Month day
  tbl(db, "latix") %>%
@@ -250,6 +229,17 @@ tbl(db, "latix") %>%
    collect() %>% 
    ggplot() +
    geom_col(aes(x = Issue_Day, y = n)) 
+ 
+ 
+#Hour
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Hour)) %>% 
+   group_by(Issue_Hour) %>% 
+   tally() %>% 
+   collect() %>% 
+   ggplot() +
+   geom_col(aes(x = Issue_Hour, y = n)) 
+
 
 # day <- tbl(db, "latix") %>% 
 #   group_by(Issue_Wday) %>% 
@@ -264,50 +254,84 @@ tbl(db, "latix") %>%
 
 
 ```
+  
+  *Based on the 4 plots (Month, Weekday, Month day, Hour), one can see the most likely and least likely times to get a citation.*
+  
+  -One is most likely to get a ticket in the month of March. In terms of weekdays, one is most likely to get a ticket on a Tuesday. For the month day, one is most likely to get a citation on the 22nd of the month. Finally, in terms of the hour, one is most likely to get a ticket at 12am.
+  -One is least likely to get a ticket in the month of March. In terms of weekdays, one is most likely to get a ticket on a Tuesday. For the month day, one is most likely to get a citation on the 22nd of the month. Finally, in terms of the hour, one is most likely to get a ticket at 12am.
+  
 
-
-0. Which car makes received most citations?
+  Confirm results with filtering the data
+  
 ```{r}
-
-car <- tbl(db, "latix") %>% 
-  group_by(Make) %>% 
+#Month
+tbl(db, "latix") %>% 
+  filter(!is.na(Issue_Year)) %>% 
+  group_by(Issue_Year) %>% 
   tally() %>% 
-  collect()
+  collect() %>% 
+filter(n == max(n))
 
-top_n(car,10)
 
-
-%>% 
-  top_n(, 10)
-
-car
+#Month
+ tbl(db, "latix") %>% 
+  filter(!is.na(Issue_Month)) %>% 
+  group_by(Issue_Month) %>% 
+  tally() %>% 
+  collect() %>% 
   ggplot() +
-  geom_col(aes(x = Make, y = n)) + 
-  scale_x_continuous()
-
-car
+  geom_col(aes(x = Issue_Month, y = n)) +
+  scale_x_continuous(breaks = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12),
+  label = c("Jan","Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"))
   
  
-  
-  tbl(db, "latix") %>%
+#Weekday
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Wday)) %>% 
+   group_by(Issue_Wday) %>% 
+   tally() %>% 
+   collect() %>% 
+   ggplot() +
+   geom_col(aes(x = Issue_Wday, y = n)) +
+   scale_x_continuous(breaks = c(1 ,2 ,3, 4, 5, 6, 7), label = c("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"))
+
+ 
+ #Month day
+ tbl(db, "latix") %>%
    filter(!is.na(Issue_Day)) %>% 
    group_by(Issue_Day) %>% 
    tally() %>% 
-   collect() %>%
-  
+   collect() %>% 
    ggplot() +
    geom_col(aes(x = Issue_Day, y = n)) 
-  
-  top_n
+ 
+ 
+#Hour
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Hour)) %>% 
+   group_by(Issue_Hour) %>% 
+   tally() %>% 
+   collect() %>% 
+   ggplot() +
+   geom_col(aes(x = Issue_Hour, y = n)) 
+```
+ 
+0. Which car makes received most citations?
+```{r}
 
+tbl(db, "latix") %>% 
+  group_by(Make) %>% 
+  tally() %>% 
+  collect() %>% 
+  top_n(10) %>% 
+  ggplot() +
+  geom_col(aes(x = Make, y = n))
+
+tbl(db, "latix") %>% 
+  group_by(Make) %>% 
+  tally() %>% 
+  collect() %>% 
   filter(n == max(n))
-car
-
-# 
-# model <- latix$Make
-# 
-# table(model)
-# max(table(model))
 
 
 ```
@@ -318,33 +342,43 @@ car
 0. How many different colors of cars were ticketed? Which color attracted most tickets?
 ```{r}
 
-library("dplyr")
-
-diff_col <- tbl(db, "latix") %>% 
-  group_by(Color) %>% 
-  tally() %>% 
-  collect()
-diff_col
 
 color <- tbl(db, "latix") %>% 
+  filter(!is.na(Color)) %>% 
+  group_by(Color) %>% 
+  tally()
+count(color)
+
+tbl(db, "latix") %>% 
+  group_by(Color) %>% 
+  summarise(ct = n()) %>% 
+  collect() %>% 
+  top_n(10) %>% 
+  ggplot() +
+  geom_col(aes(x = Color, y = ct))
+
+tbl(db, "latix") %>% 
   group_by(Color) %>% 
   tally() %>% 
   collect() %>% 
   filter(n == max(n))
-color
 
-
-# 
-# color <- latix$Color
-# table(color)
-# max(table(color))
 
 ```
-*There are 66 different colors. BK is the color that was most ticketed*
+
+*There are 65 different colors. BK (Black) is the color that was most ticketed*
 
 0. What are the most common ticket types?
 
 ```{r}
+
+tbl(db, "latix") %>% 
+  group_by(Violation_Description) %>% 
+  tally() %>% 
+  collect() %>% 
+  top_n(3) %>% 
+  ggplot() +
+  geom_col(aes(x = Violation_Description, y = n))
 
 ticket <- tbl(db, "latix") %>% 
   group_by(Violation_Description) %>% 
@@ -359,6 +393,7 @@ ticket
 
 0. How much money was collected on parking tickets in 2015 and 2016?
 ```{r}
+library(knitr)
 # Fine_amount
 # 
 # data %>% 
@@ -366,9 +401,28 @@ ticket
 #   summarise(n_child = n(),nOlder = sum(older),nYounger = sum(younger))
 
 
+
+tbl(db, "latix") %>% 
+  filter(Issue_Year == 2015 | Issue_Year == 2016) %>% 
+  group_by(Issue_Year) %>% 
+  summarize
+  kable
+
+  summarize(Fines = sum(Fine_amount, na.rm = TRUE))
+
+
+  group_by(Fine_amount) %>% 
+  tally() %>% 
+  collect() %>% 
+  top_n(3) %>% 
+  ggplot() +
+  geom_col(aes(x = Violation_Description, y = n))
+
+
 money <- tbl(db, "latix") %>% 
   filter(Issue_Year >= 2015, Issue_Year <= 2016) %>% 
-  summarize(Fines = sum(Fine_amount, na.rm = TRUE))
+
+
 
 money
 
