@@ -13,34 +13,34 @@ The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching s
 1. For efficiency of the Shiny app, you should first pre-process, pare down, tidy, and save the data, e.g., as a compressed RDS file, to be used in the app.
 
 
-```{r}
-library("tidyverse")
-```
+<!-- ```{r} -->
+<!-- library("tidyverse") -->
+<!-- ``` -->
 
-```{r}
+<!-- ```{r} -->
 
-#Read in RDS file
-la_payroll <- read_csv("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv")
+<!-- #Read in RDS file -->
+<!-- la_payroll <- read_csv("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv") -->
 
-saveRDS(la_payroll, "la_payroll.rds", compress = TRUE)
-LApayroll <- readRDS("la_payroll.rds")
+<!-- saveRDS(la_payroll, "la_payroll.rds", compress = TRUE) -->
+<!-- LApayroll <- readRDS("la_payroll.rds") -->
 
 
-#Rename the names of the columns
-names(LApayroll) <- str_replace_all(names(LApayroll), " ", "_")
+<!-- #Rename the names of the columns -->
+<!-- names(LApayroll) <- str_replace_all(names(LApayroll), " ", "_") -->
 
-data_la_payroll <- 
-  LApayroll %>% 
-  select(Row_ID, Base_Pay, Overtime_Pay, Total_Payments, `Other_Pay_(Payroll_Explorer)`, Department_Title, Job_Class_Title, Year)  
-  
+<!-- data_la_payroll <-  -->
+<!--   LApayroll %>%  -->
+<!--   select(Row_ID, Base_Pay, Overtime_Pay, Total_Payments, `Other_Pay_(Payroll_Explorer)`, Department_Title, Job_Class_Title, Year)   -->
 
-#remove dollar signs
-data_la_payroll$Base_Pay <- as.numeric(gsub("\\$", "", data_la_payroll$Base_Pay))
-data_la_payroll$Total_Payments <- as.numeric(gsub("\\$", "", data_la_payroll$Total_Payments))
-data_la_payroll$Overtime_Pay <- as.numeric(gsub("\\$", "", data_la_payroll$Overtime_Pay))
-data_la_payroll$`Other_Pay_(Payroll_Explorer)` <- as.numeric(gsub("\\$", "", data_la_payroll$`Other_Pay_(Payroll_Explorer)`))
 
-```
+<!-- #remove dollar signs -->
+<!-- data_la_payroll$Base_Pay <- as.numeric(gsub("\\$", "", data_la_payroll$Base_Pay)) -->
+<!-- data_la_payroll$Total_Payments <- as.numeric(gsub("\\$", "", data_la_payroll$Total_Payments)) -->
+<!-- data_la_payroll$Overtime_Pay <- as.numeric(gsub("\\$", "", data_la_payroll$Overtime_Pay)) -->
+<!-- data_la_payroll$`Other_Pay_(Payroll_Explorer)` <- as.numeric(gsub("\\$", "", data_la_payroll$`Other_Pay_(Payroll_Explorer)`)) -->
+
+<!-- ``` -->
 
 0. **Total payroll by LA City**. Visualize the total LA City payroll of each year, with breakdown into base pay, overtime pay, and other pay.
 
@@ -62,38 +62,48 @@ The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on 
 ```{r}
 library("DBI")
 library("RSQLite")
-library(anytime)
+library("dplyr")
 ```
 
 
 ```{r}
 
-if (Sys.info()[["sysname"]] == "Linux") {
-  db <- dbConnect(RSQLite::SQLite(),
-                  dbname = "/home/m280-data/la_parking/LA_Parking_Citations.sqlite")
-} else if (Sys.info()[["sysname"]] == "Darwin") {
-  db <- dbConnect(RSQLite::SQLite(),
-                  dbname = "./LA_Parking_Citations.sqlite")
-}
-
-dbListTables(db)
- 
-latix_sql <- dplyr::tbl(db, "latix")
+# if (Sys.info()[["sysname"]] == "Linux") {
+#   db <- dbConnect(RSQLite::SQLite(),
+#                   dbname = "/home/m280-data/la_parking/LA_Parking_Citations_Extra.sqlite")
+# } else if (Sys.info()[["sysname"]] == "Darwin") {
+#   db <- dbConnect(RSQLite::SQLite(),
+#                   dbname = "./LA_Parking_Citations.sqlite")
+# }
 
 
-
-
-
-
-db1 <- dbConnect(RSQLite::SQLite(),
+db <- dbConnect(RSQLite::SQLite(),
                   dbname = "/home/m280-data/la_parking/LA_Parking_Citations_Extra.sqlite")
-dbListTables(db1)
+dbListTables(db)
 
 
-new_db <- dbSendQuery(db1, "Select Issue_Year, Issue_Month, Issue_Day, Issue_Hour, Issue_Minute, Make, Violation_Description FROM latix")
+latix_sql <- dplyr::tbl(db, "latix")
+ 
+# 
+# new_db <- dbSendQuery(db, "Select Issue_Year, Issue_Month, Issue_Day, Issue_Hour, Issue_Minute, Make, Violation_Description FROM latix")
+# 
+# la_tix <- as.data.frame(new_db)
+# 
 
 
-latix_sql1 <- dplyr::tbl(new_db, "latix")
+
+
+
+#  db1 <- dbConnect(RSQLite::SQLite(),
+#                    dbname = "/home/m280-data/la_parking/LA_Parking_Citations_Extra.sqlite")
+# dbListTables(db1)
+
+# 
+# 
+# new_db <- dbSendQuery(db1, "Select Issue_Year, Issue_Month, Issue_Day, Issue_Hour, Issue_Minute, Make, Violation_Description FROM latix")
+# 
+# 
+# latix_sql1 <- dplyr::tbl(new_db, "latix")
 
 
 
@@ -121,30 +131,76 @@ latix_sql %>%
 
 **Which time period do these tickets span?**
 ```{r}
-latix <- as.data.frame(latix_sql)
+time_ticket <- latix_sql %>% 
+  filter(!is.na(Issue_Year)) %>% 
+  select(Issue_Year, Issue_Month, Issue_Day, Issue_Hour, Issue_Minute) %>% 
+  arrange(Issue_Year, Issue_Month, Issue_Day, Issue_Hour, Issue_Minute) 
 
-latix$Issue_DateTime <- anydate(latix$Issue_DateTime)
+head(time_ticket, 1)
 
-sorted_dates <- sort(latix$Issue_DateTime)
-head(sorted_dates)
-tail(sorted_dates)
+time_ticket1 <- latix_sql %>% 
+  filter(!is.na(Issue_Year)) %>% 
+  select(Issue_Year, Issue_Month, Issue_Day, Issue_Hour, Issue_Minute) %>% 
+  arrange(desc(Issue_Year), desc(Issue_Month), desc(Issue_Day), desc(Issue_Hour), desc(Issue_Minute)) 
 
-latix_sql
-filter
-select
-arrange
+head(time_ticket1, 1)
+
+
+# latix <- as.data.frame(latix_sql)
+# 
+# latix$Issue_DateTime <- anydate(latix$Issue_DateTime)
+# 
+# sorted_dates <- sort(latix$Issue_DateTime)
+# head(sorted_dates)
+# tail(sorted_dates)
+# 
+# latix_sql
+# filter
+# select
+# arrange
 
 ```
 
-*The time period spans from 4-27-2010 to 12-29-2017*
+*The time period spans from 4-27-2010 to 12-30-2017*
 
 
 
 **Which years have most data?**
 ```{r}
-years <- substr(latix$Issue_DateTime, 1, 4)
 
-table(years)
+tbl(db, "latix") %>% 
+  filter(!is.na(Issue_Year)) %>% 
+  group_by(Issue_Year) %>% 
+  tally() %>% 
+  collect() %>% 
+  ggplot() +
+  geom_col(aes(x = Issue_Year, y = n)) +
+  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017)) 
+
+                     
+                     # 
+                     # label = c("2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017"))
+
+# 
+#   filter(n == max(n))
+# 
+#  collect() %>%
+#   ggplot() + 
+#     geom_col(aes(x = Issue_WDay, y = n))
+# 
+# year
+
+
+# year_visual <- tbl(db, "latix") %>% 
+#   select(Issue_Year) %>% 
+#   ggplot(aes(x)) +
+#   geom_bar()
+# 
+# 
+
+# years <- substr(latix$Issue_DateTime, 1, 4)
+# 
+# table(years)
 
 ```
 *The year 2015 has the most data*
@@ -153,19 +209,97 @@ table(years)
 
 0. When (which hour, weekday, month day, and month) are you most likely to get a ticket and when are you least likely to get a ticket?
 
+**Most likely to get a ticket**
 ```{r}
+#Month
+ tbl(db, "latix") %>% 
+  filter(!is.na(Issue_Month)) %>% 
+  group_by(Issue_Month) %>% 
+  tally() %>% 
+  collect() %>% 
+  ggplot() +
+  geom_col(aes(x = Issue_Month, y = n)) +
+  scale_x_continuous(breaks = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12),
+  label = c("Jan","Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"))
+  
+
+#Hour
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Hour)) %>% 
+   group_by(Issue_Hour) %>% 
+   tally() %>% 
+   collect() %>% 
+   ggplot() +
+   geom_col(aes(x = Issue_Hour, y = n)) 
+ 
+ #Weekday
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Wday)) %>% 
+   group_by(Issue_Wday) %>% 
+   tally() %>% 
+   collect() %>% 
+   ggplot() +
+   geom_col(aes(x = Issue_Wday, y = n)) +
+   scale_x_continuous(breaks = c(1 ,2 ,3, 4, 5, 6, 7), label = c("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"))
+ 
+ #Month day
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Day)) %>% 
+   group_by(Issue_Day) %>% 
+   tally() %>% 
+   collect() %>% 
+   ggplot() +
+   geom_col(aes(x = Issue_Day, y = n)) 
+
+# day <- tbl(db, "latix") %>% 
+#   group_by(Issue_Wday) %>% 
+#   tally() %>% 
+#   collect() %>% 
+#   filter(n == max(n))
+# day
+
+
+
+
 
 
 ```
 
+
 0. Which car makes received most citations?
 ```{r}
-library("dplyr")
 
-car <- tbl(db1, "latix") %>% 
+car <- tbl(db, "latix") %>% 
   group_by(Make) %>% 
   tally() %>% 
-  collect() %>% 
+  collect()
+
+top_n(car,10)
+
+
+%>% 
+  top_n(, 10)
+
+car
+  ggplot() +
+  geom_col(aes(x = Make, y = n)) + 
+  scale_x_continuous()
+
+car
+  
+ 
+  
+  tbl(db, "latix") %>%
+   filter(!is.na(Issue_Day)) %>% 
+   group_by(Issue_Day) %>% 
+   tally() %>% 
+   collect() %>%
+  
+   ggplot() +
+   geom_col(aes(x = Issue_Day, y = n)) 
+  
+  top_n
+
   filter(n == max(n))
 car
 
@@ -178,19 +312,87 @@ car
 
 ```
 
-*TOYT has the most citations*
+  *TOYT has the most citations. TOYT cars have 669,548 citations*
+  
+  
 0. How many different colors of cars were ticketed? Which color attracted most tickets?
 ```{r}
 
-color <- latix$Color
-table(color)
-max(table(color))
+library("dplyr")
+
+diff_col <- tbl(db, "latix") %>% 
+  group_by(Color) %>% 
+  tally() %>% 
+  collect()
+diff_col
+
+color <- tbl(db, "latix") %>% 
+  group_by(Color) %>% 
+  tally() %>% 
+  collect() %>% 
+  filter(n == max(n))
+color
+
+
+# 
+# color <- latix$Color
+# table(color)
+# max(table(color))
 
 ```
-*There are 65 different colors. BK is the color that was most ticketed*
+*There are 66 different colors. BK is the color that was most ticketed*
 
 0. What are the most common ticket types?
 
-0. How much money was collected on parking tickets in 2015 and 2016?
+```{r}
 
+ticket <- tbl(db, "latix") %>% 
+  group_by(Violation_Description) %>% 
+  tally() %>% 
+  collect() %>% 
+  filter(n == max(n))
+
+ticket
+
+```
+  *No park/street clean is the most common ticket type*
+
+0. How much money was collected on parking tickets in 2015 and 2016?
+```{r}
+# Fine_amount
+# 
+# data %>% 
+#   group_by(subj) %>% 
+#   summarise(n_child = n(),nOlder = sum(older),nYounger = sum(younger))
+
+
+money <- tbl(db, "latix") %>% 
+  filter(Issue_Year >= 2015, Issue_Year <= 2016) %>% 
+  summarize(Fines = sum(Fine_amount, na.rm = TRUE))
+
+money
+
+# 
+#   tally() %>% 
+#   collect()
+# 
+#   group_by()
+# 
+# 
+# diff_col <- tbl(db, "latix") %>% 
+#   group_by(Color) %>% 
+#   tally() %>% 
+#   collect()
+# diff_col
+# 
+# addr <- nyc_sql %>%
+#   select(Issue_Date, Issuing_Agency, Violation_Precinct, Number, Street) %>%
+#   filter(Violation_Precinct >= 1, Violation_Precinct <= 34)
+# addr
+
+```
 0. Visualize any other information you are interested in.
+```{r}
+
+
+```
