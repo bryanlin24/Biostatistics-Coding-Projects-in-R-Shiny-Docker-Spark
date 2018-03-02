@@ -10,7 +10,7 @@ totalpay <- read_rds("/home/bryanlin24/biostat-m280-2018-winter/hw3shiny1/totalp
 # Define UI for application that draws a histogram
 ui <- fluidPage(
    
-   # Application title
+   # Make bar chart for total payroll by year
   tabsetPanel(
     
     tabPanel("Total payroll in LA", uiOutput("q2"), fluid = TRUE,
@@ -22,7 +22,26 @@ ui <- fluidPage(
                )
              )
     )
-  )
+  ),
+  
+  #Make panel for Who earned the most?
+  tabPanel("Top Paid LA Employees", uiOutput("q3"), fluid = TRUE,
+           titlePanel("Highest Paid Employees"),
+           sidebarLayout(
+             sidebarPanel(
+               numericInput(inputId = "rowq3", label = "How many rows?",
+                            value = 10, min = 5, max = count(earn), step = 10),
+               selectInput(inputid = "useryearq3", label = "Year", choices = c(distinct(earn, Year)), selected = 2017),
+               width=2
+             )
+           )
+  
+  
+  
+  
+  
+  
+  
 )
 
 # Define server logic required to draw a histogram

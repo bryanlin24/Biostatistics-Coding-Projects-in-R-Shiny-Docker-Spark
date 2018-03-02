@@ -41,3 +41,11 @@ LA_payroll1$Avg_Benefit_Cost <- ifelse(!is.na(LA_payroll1$Avg_Benefit_Cost),
 
 #Make a generic path for RDS
 datapath <- paste(getwd(),"/hw3/hw3shiny", sep = "")
+
+#Subset data for who earned most?
+earn <- LA_payroll1 %>%
+  select(Row_ID, Year, Department, Job_Title, Total_Payments, 
+         Base_Pay, Overtime_Pay, Other_Pay_PE) 
+
+write_rds(earn, path = paste(datapath, "earn.rds", sep = ""))
+
