@@ -1,0 +1,444 @@
+---
+title: "Biostat M280 Homework 3"
+subtitle: Due Mar 2 @ 11:59PM
+output: html_document
+---
+
+
+
+## Q1 LA City Employee Payroll
+
+The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching server contains payroll information of LA City employees in years 2013-2017. It was downloaded from [LA City Controller's Office](https://controllerdata.lacity.org/Payroll/City-Employee-Payroll/pazn-qyym). Make a Shiny app to facilitate exploratory data analysis. 
+
+1. For efficiency of the Shiny app, you should first pre-process, pare down, tidy, and save the data, e.g., as a compressed RDS file, to be used in the app.
+
+```{r}
+library(tidyverse)
+
+LA_payroll <- read_csv("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv",
+                     col_names = FALSE, progress = TRUE)
+
+#Rename all columns
+colnames(LA_payroll) <- c("Row_ID", "Year", "Department", "Pay_Dept", "Record_Num", 
+                          "Job_Title", "Employment_Type", "Hourly_Rate", 
+                          "Annualy_Salary_Projection", "Q1_Payment", "Q2_.Payment", "Q3_Payment", 
+                          "Q4_Payment", "Overpay", "Pct_Overpay", "Total_Payments", 
+                          "Base_Pay", "Permanent_Bonus", "Longevity_Bonus", 
+                          "Temp_Bonus", "Lump_Sum_Pay", "Overtime_Pay", 
+                          "Other_Pay", "Other_Pay_PE", "MOU", "MOU_Title", 
+                          "FMS_Dept", "Job_Class", "Pay_Grade", 
+                          "Avg_Health_Cost", "Avg_Dental_Cost", "Avg_Basic_Life", 
+                          "Avg_Benefit_Cost", "Benefit_Plan", "Job_Link")
+
+LA_payroll1 <- LA_payroll[-1, ]
+
+LA_payroll1$Year <- as.integer(LA_payroll1$Year)
+
+#Remove dollar signs
+
+LA_payroll1$Base_Pay <- ifelse(!is.na(LA_payroll1$Base_Pay), 
+                        as.numeric(str_replace(LA_payroll1$Base_Pay, "\\$", "")), NA)
+
+LA_payroll1$Overtime_Pay <- ifelse(!is.na(LA_payroll1$Overtime_Pay), 
+                            as.numeric(str_replace(LA_payroll1$Overtime_Pay, "\\$", "")), NA)
+
+LA_payroll1$Total_Payments <- ifelse(!is.na(LA_payroll1$Total_Payments), 
+                                     as.numeric(str_replace(LA_payroll1$Total_Payments, "\\$", "")), NA)
+
+LA_payroll1$Other_Pay_PE <- ifelse(!is.na(LA_payroll1$Other_Pay_PE), 
+                            as.numeric(str_replace(LA_payroll1$Other_Pay_PE, 
+                                                   "\\$", "")), NA)
+
+LA_payroll1$Avg_Benefit_Cost <- ifelse(!is.na(LA_payroll1$Avg_Benefit_Cost), 
+                                as.numeric(str_replace(LA_payroll1$Avg_Benefit_Cost, 
+                                                       "\\$", "")), NA)
+
+
+
+```
+
+
+0. **Total payroll by LA City**. Visualize the total LA City payroll of each year, with breakdown into base pay, overtime pay, and other pay.
+
+0. **Who earned most?** Visualize the payroll information (total payment with breakdown into base pay, overtime pay, and other pay, Department, Job Title) of the top $n$ highest paid LA City employees in a specific year. User specifies $n$ (default 10) and year (default 2017).
+
+0. **Which departments earn most?** Visualize the mean or median payroll, with breakdown into base pay, overtime pay, and other pay, of top $n$ earning departments. User specifies $n$ (default 5), year (default 2017), and method (mean or median, default median).
+
+0. **Which departments cost most?** Visualize the total payroll, with breakdown into base pay, overtime pay, and other pay, of top $n$ expensive departments. User specifies $n$ (default 5) and year (default 2017).
+
+0. Visualize any other information you are interested in.
+
+0. Publish your Shiny app to <https://www.shinyapps.io> and share the link.
+
+
+
+  *The link is https://bryanlinbiostatistics.shinyapps.io/hw3shiny/*
+
+## Q2 LA City Parking War
+
+The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on teaching server contains information about parking tickets in LA City. It was downloaded from [LA Open Data Portal](https://data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np). Connect to the database and answer following questions using plots and summary statistics. In this exercise, you are **not** allowed to load whole data into memory. Use the _transform in database, plot in R_ strategy.
+
+
+```{r}
+library("DBI")
+library("RSQLite")
+library("dplyr")
+library("knitr")
+library("ggplot2")
+```
+
+
+```{r}
+db <- dbConnect(RSQLite::SQLite(),
+                  dbname = "/home/m280-data/la_parking/LA_Parking_Citations_Extra.sqlite")
+dbListTables(db)
+
+
+latix_sql <- dplyr::tbl(db, "latix")
+```
+
+
+**1. How many tickets are in this data set? Which time period do these tickets span? Which years have most data?**
+
+How many tickets?
+
+```{r}
+
+latix_sql <- dplyr::tbl(db, "latix")
+
+latix_sql %>% 
+  tally()
+
+```
+
+
+
+  *There are 4,044,488 tickets in this data set.*
+  
+
+Which time period do these tickets span?
+```{r}
+time_ticket <- latix_sql %>% 
+  filter(!is.na(Issue_Year)) %>% 
+  select(Issue_Year, Issue_Month, Issue_Day, Issue_Hour, Issue_Minute) %>% 
+  arrange(Issue_Year, Issue_Month, Issue_Day, Issue_Hour, Issue_Minute) 
+
+head(time_ticket, 1)
+
+time_ticket1 <- latix_sql %>% 
+  filter(!is.na(Issue_Year)) %>% 
+  select(Issue_Year, Issue_Month, Issue_Day, Issue_Hour, Issue_Minute) %>% 
+  arrange(desc(Issue_Year), desc(Issue_Month), desc(Issue_Day), desc(Issue_Hour), desc(Issue_Minute)) 
+
+head(time_ticket1, 1)
+
+```
+
+
+
+  *The time period spans from 4-27-2010 to 12-30-2017*
+
+
+
+Which years have most data?
+```{r}
+
+tbl(db, "latix") %>% 
+  filter(!is.na(Issue_Year)) %>% 
+  group_by(Issue_Year) %>% 
+  tally() %>% 
+  collect() %>% 
+  ggplot() +
+  geom_col(aes(x = Issue_Year, y = n)) +
+  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017)) 
+
+tbl(db, "latix") %>% 
+  filter(!is.na(Issue_Year)) %>% 
+  group_by(Issue_Year) %>% 
+  tally() %>% 
+  collect() %>% 
+filter(n == max(n))
+```
+
+
+  *2015 is the year that has the most data (2,161,119 citations). 2016 also has a lot of data*
+
+
+**2. When (which hour, weekday, month day, and month) are you most likely to get a ticket and when are you least likely to get a ticket?**
+
+
+```{r}
+#Month
+ tbl(db, "latix") %>% 
+  filter(!is.na(Issue_Month)) %>% 
+  group_by(Issue_Month) %>% 
+  tally() %>% 
+  collect() %>% 
+  ggplot() +
+  geom_col(aes(x = Issue_Month, y = n)) +
+  scale_x_continuous(breaks = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12),
+  label = c("Jan","Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"))
+  
+ 
+#Weekday
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Wday)) %>% 
+   group_by(Issue_Wday) %>% 
+   tally() %>% 
+   collect() %>% 
+   ggplot() +
+   geom_col(aes(x = Issue_Wday, y = n)) +
+   scale_x_continuous(breaks = c(1 ,2 ,3, 4, 5, 6, 7), label = c("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"))
+
+ 
+ #Month day
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Day)) %>% 
+   group_by(Issue_Day) %>% 
+   tally() %>% 
+   collect() %>% 
+   ggplot() +
+   geom_col(aes(x = Issue_Day, y = n)) 
+ 
+ 
+#Hour
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Hour)) %>% 
+   group_by(Issue_Hour) %>% 
+   tally() %>% 
+   collect() %>% 
+   ggplot() +
+   geom_col(aes(x = Issue_Hour, y = n)) 
+
+```
+  
+  *Based on the 4 plots (Month, Weekday, Month day, Hour), one can see the most likely and least likely times to get a citation.*
+
+
+  - One is most likely to get a ticket in the month of March. In terms of weekdays, one is most likely to get a ticket on a Tuesday. For the month day, one is most likely to get a citation on the 22nd of the month. Finally, in terms of the hour, one is most likely to get a ticket at 12pm.
+  
+  
+  -  One is least likely to get a ticket in the month of November. In terms of weekdays, one is least likely to get a ticket on a Saturday For the month day, one is most likely to get a citation on the 31st of the month (assuming that month has 31 days). Finally, in terms of the hour, one is most likely to get a ticket at 5am.
+  
+
+  **Confirm results with filtering the data**
+
+
+  Most Likely Times
+```{r}
+
+#Month
+tbl(db, "latix") %>% 
+  filter(!is.na(Issue_Month)) %>% 
+  group_by(Issue_Month) %>% 
+  tally() %>% 
+  collect() %>% 
+  filter(n == max(n))
+
+#Weekday
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Wday)) %>% 
+   group_by(Issue_Wday) %>% 
+   tally() %>% 
+   collect() %>% 
+   filter(n == max(n))
+
+ 
+ #Month day
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Day)) %>% 
+   group_by(Issue_Day) %>% 
+   tally() %>% 
+   collect() %>% 
+   filter(n == max(n))
+
+#Hour
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Hour)) %>% 
+   group_by(Issue_Hour) %>% 
+   tally() %>% 
+   collect() %>% 
+   filter(n == max(n))
+ 
+```
+
+
+  Least Likely Times 
+
+```{r}
+#Month
+tbl(db, "latix") %>% 
+  filter(!is.na(Issue_Month)) %>% 
+  group_by(Issue_Month) %>% 
+  tally() %>% 
+  collect() %>% 
+  filter(n == min(n))
+
+#Weekday
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Wday)) %>% 
+   group_by(Issue_Wday) %>% 
+   tally() %>% 
+   collect() %>% 
+   filter(n == min(n))
+
+ 
+ #Month day
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Day)) %>% 
+   group_by(Issue_Day) %>% 
+   tally() %>% 
+   collect() %>% 
+   filter(n == min(n))
+
+#Hour
+ tbl(db, "latix") %>%
+   filter(!is.na(Issue_Hour)) %>% 
+   group_by(Issue_Hour) %>% 
+   tally() %>% 
+   collect() %>% 
+   filter(n == min(n))
+ 
+```
+ 
+**3. Which car makes received most citations?**
+```{r}
+
+tbl(db, "latix") %>% 
+  group_by(Make) %>% 
+  tally() %>% 
+  collect() %>% 
+  top_n(10) %>% 
+  ggplot() +
+  geom_col(aes(x = Make, y = n))
+
+tbl(db, "latix") %>% 
+  group_by(Make) %>% 
+  tally() %>% 
+  collect() %>% 
+  filter(n == max(n))
+
+
+```
+
+  *TOYT has the most citations. TOYT cars have 669,548 citations*
+  
+  
+**4. How many different colors of cars were ticketed? Which color attracted most tickets?**
+```{r}
+
+
+color <- tbl(db, "latix") %>% 
+  filter(!is.na(Color)) %>% 
+  group_by(Color) %>% 
+  tally()
+count(color)
+
+tbl(db, "latix") %>% 
+  group_by(Color) %>% 
+  summarise(ct = n()) %>% 
+  collect() %>% 
+  top_n(10) %>% 
+  ggplot() +
+  geom_col(aes(x = Color, y = ct))
+
+tbl(db, "latix") %>% 
+  group_by(Color) %>% 
+  tally() %>% 
+  collect() %>% 
+  filter(n == max(n))
+
+
+```
+
+*There are 65 different colors. BK (Black) is the color that was most ticketed (ticketed a total of 862,283 times)*
+
+**5. What are the most common ticket types?**
+
+```{r}
+
+tbl(db, "latix") %>% 
+  group_by(Violation_Description) %>% 
+  tally() %>% 
+  collect() %>% 
+  top_n(3) %>% 
+  ggplot() +
+  geom_col(aes(x = Violation_Description, y = n))
+
+ticket <- tbl(db, "latix") %>% 
+  group_by(Violation_Description) %>% 
+  tally() %>% 
+  collect() %>% 
+  filter(n == max(n))
+
+ticket
+
+```
+  *No park/street clean is the most common ticket type (there are 1,149,021 No park/street clean violations)*
+
+**6. How much money was collected on parking tickets in 2015 and 2016?**
+```{r}
+
+
+
+tbl(db, "latix") %>%
+  filter(!is.na(Issue_Year) && !is.na(Fine_amount) && Issue_year == 2015 | Issue_Year == 2016) %>% 
+  group_by(Issue_Year) %>% 
+  summarise(tot = sum(Fine_amount)) %>% 
+  kable(col.names = c("Issue Year", "Fine Amount"))
+
+
+# 
+# tbl(db, "latix") %>% 
+#   select(Issue_Year) %>% 
+#   filter(Issue_Year == 2015 | Issue_Year == 2016) %>% 
+#   group_by(Issue_Year) %>% 
+#   summarise(sum(Fine_amount)) %>% 
+#   collect() %>% 
+#   kable()
+# money <- tbl(db, "latix") %>% 
+#   select(Issue_Year) %>% 
+#   filter(Issue_Year == 2015 | Issue_Year == 2016) %>% 
+#   group_by(Issue_Year) %>% 
+#   summarize(sum(Fine_amount)) %>% 
+#   collect() %>% 
+#   kable()
+# 
+# money
+
+```
+
+
+  *The total fine amount in 2015 was $151,006,794 and the total fine amount in 2016 was $123,236,136.*
+
+
+
+
+
+
+**7. Visualize any other information you are interested in.**
+
+  Which car State has the most parking citations? (Based off their license plates)
+```{r}
+
+tbl(db, "latix") %>% 
+  group_by(RP_State_Plate) %>% 
+  tally() %>% 
+  collect %>% 
+  filter(n == max(n))
+
+
+tbl(db, "latix") %>% 
+  group_by(RP_State_Plate) %>% 
+  summarise(ct = n()) %>% 
+  collect() %>% 
+  top_n(5) %>% 
+  ggplot() +
+  geom_col(aes(x = RP_State_Plate, y = ct))
+
+
+
+```
+
+
+  An overwhelming amount of tickets are from CA license plates (3,766,908 citations).
