@@ -46,13 +46,9 @@ LA_payroll1$Avg_Benefit_Cost <- ifelse(!is.na(LA_payroll1$Avg_Benefit_Cost),
 datapath <- paste(getwd(),"/hw3/hw3shiny1", sep = "")
 
 
-#Filter pays
-total_pays <- LA_payroll1 %>%
-  select(Year, Base_Pay, Overtime_Pay, Other_Pay_PE) %>%
-  group_by(Year) %>%
-  summarise(BasePayTotal = sum(Base_Pay, na.rm = TRUE),
-            OvertimeTotal = sum(Overtime_Pay, na.rm = TRUE),
-            OtherTotal = sum(Other_Pay_PE, na.rm = TRUE)) %>%
-  gather("BasePayTotal", "OvertimeTotal", "OtherTotal", key = "Type", value = "Amount")
 
-write_rds(total_pays, path = paste(datapath, "totalpay.rds", sep = ""))
+earn <- LA_payroll1 %>%
+  select(Row_ID, Year, Department, Job_Title, Total_Payments, 
+         Base_Pay, Overtime_Pay, Other_Pay_PE) 
+
+write_rds(earn, path = paste(datapath, "earn.rds", sep = ""))

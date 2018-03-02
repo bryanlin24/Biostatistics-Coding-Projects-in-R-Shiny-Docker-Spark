@@ -24,6 +24,21 @@ ui <- fluidPage(
                )
              )
     )
+  ),
+  tabPanel("Top Paid LA Employees", uiOutput("q3"), fluid = TRUE,
+           titlePanel("Highest Paid Employees"),
+           sidebarLayout(
+             sidebarPanel(
+               numericInput(inputId = "rowq3", label = "How many rows?",
+                            value = 10, min = 5, max = count(earn), step = 5),
+               selectInput(inputId = "useryearq3", label = "Year",
+                           choices = c(distinct(earn, Year)), selected = 2017),
+               width = 2
+             ),
+             mainPanel(
+               tableOutput("tableq3")
+             )
+           )
   )
 )
 
@@ -34,7 +49,16 @@ server <- function(input, output) {
   output$totalpaybarplot <- renderPlot({
     ggplot(data = totalpay, aes(x=Year, y=Amount, fill=Type)) +
       geom_bar(stat="identity", position=position_dodge())   })
+  
+  output$tableq3 <- renderTable({
+    earn %>%
+      group_by(Year) %>%
+      filter(Year == input$useryearq3) %>%
+      arrange(desc(Total_Payments)) %>%
+      head(input$rowq3)
+  })
 }
+
 
 # Run the application 
 shinyApp(ui = ui, server = server)
