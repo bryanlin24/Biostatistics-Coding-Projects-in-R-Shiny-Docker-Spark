@@ -12,7 +12,7 @@ The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching s
 
 1. For efficiency of the Shiny app, you should first pre-process, pare down, tidy, and save the data, e.g., as a compressed RDS file, to be used in the app.
 
-```{r}
+```{r, eval=FALSE}
 
 
 library(tidyverse)
