@@ -12,7 +12,7 @@ The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching s
 
 1. For efficiency of the Shiny app, you should first pre-process, pare down, tidy, and save the data, e.g., as a compressed RDS file, to be used in the app.
 
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 
 
 library(tidyverse)
@@ -21,10 +21,18 @@ LA_payroll <- read_csv("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv"
 
 #Rename all columns
 
-colnames(LA_payroll) <- c("Row_ID", "Year", "Department", "Pay_Dept", "Record_Num", "Job_Title", "Employment_Type", "Hourly_Rate",
-"Annualy_Salary_Projection", "Q1_Payment", "Q2_.Payment", "Q3_Payment",
-"Q4_Payment", "Overpay", "Pct_Overpay", "Total_Payments", "Base_Pay", "Permanent_Bonus", "Longevity_Bonus", "Temp_Bonus", "Lump_Sum_Pay", "Overtime_Pay", "Other_Pay", "Other_Pay_PE", "MOU", "MOU_Title", 
-"FMS_Dept", "Job_Class", "Pay_Grade", "Avg_Health_Cost", "Avg_Dental_Cost", "Avg_Basic_Life", "Avg_Benefit_Cost", "Benefit_Plan", "Job_Link")
+colnames(LA_payroll) <- c("Row_ID", "Year", "Department", "Pay_Dept",
+                          "Record_Num", "Job_Title", "Employment_Type",
+                          "Hourly_Rate", "Annualy_Salary_Projection",
+                          "Q1_Payment", "Q2_.Payment", "Q3_Payment",
+                          "Q4_Payment", "Overpay", "Pct_Overpay",
+                          "Total_Payments", "Base_Pay", "Permanent_Bonus",
+                          "Longevity_Bonus", "Temp_Bonus", "Lump_Sum_Pay",
+                          "Overtime_Pay", "Other_Pay", "Other_Pay_PE", "MOU",
+                          "MOU_Title", "FMS_Dept", "Job_Class", "Pay_Grade",
+                          "Avg_Health_Cost", "Avg_Dental_Cost",
+                          "Avg_Basic_Life", "Avg_Benefit_Cost",
+                          "Benefit_Plan", "Job_Link")
 
 LA_payroll1 <- LA_payroll[-1, ]
 
@@ -71,6 +79,7 @@ The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on 
 
 
 ```{r}
+library("tidyverse")
 library("DBI")
 library("RSQLite")
 library("dplyr")
@@ -80,8 +89,9 @@ library("ggplot2")
 
 
 ```{r}
-db <- dbConnect(RSQLite::SQLite(),
-                  dbname = "/home/m280-data/la_parking/LA_Parking_Citations_Extra.sqlite")
+db <- dbConnect(RSQLite::SQLite(), 
+                dbname = "/home/m280-data/la_parking/LA_Parking_Citations_Extra.sqlite")
+
 dbListTables(db)
 
 
@@ -111,15 +121,19 @@ Which time period do these tickets span?
 ```{r}
 time_ticket <- latix_sql %>% 
   filter(!is.na(Issue_Year)) %>% 
-  select(Issue_Year, Issue_Month, Issue_Day, Issue_Hour, Issue_Minute) %>% 
-  arrange(Issue_Year, Issue_Month, Issue_Day, Issue_Hour, Issue_Minute) 
+  select(Issue_Year, Issue_Month, Issue_Day, 
+         Issue_Hour, Issue_Minute) %>% 
+  arrange(Issue_Year, Issue_Month, Issue_Day, 
+          Issue_Hour, Issue_Minute) 
 
 head(time_ticket, 1)
 
 time_ticket1 <- latix_sql %>% 
   filter(!is.na(Issue_Year)) %>% 
-  select(Issue_Year, Issue_Month, Issue_Day, Issue_Hour, Issue_Minute) %>% 
-  arrange(desc(Issue_Year), desc(Issue_Month), desc(Issue_Day), desc(Issue_Hour), desc(Issue_Minute)) 
+  select(Issue_Year, Issue_Month, Issue_Day, 
+         Issue_Hour, Issue_Minute) %>% 
+  arrange(desc(Issue_Year), desc(Issue_Month), 
+          desc(Issue_Day), desc(Issue_Hour), desc(Issue_Minute)) 
 
 head(time_ticket1, 1)
 
@@ -141,7 +155,8 @@ tbl(db, "latix") %>%
   collect() %>% 
   ggplot() +
   geom_col(aes(x = Issue_Year, y = n)) +
-  scale_x_continuous(breaks = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017)) 
+  scale_x_continuous(breaks = c(2010, 2011, 2012, 
+                                2013, 2014, 2015, 2016, 2017)) 
 
 tbl(db, "latix") %>% 
   filter(!is.na(Issue_Year)) %>% 
@@ -167,8 +182,11 @@ filter(n == max(n))
   collect() %>% 
   ggplot() +
   geom_col(aes(x = Issue_Month, y = n)) +
-  scale_x_continuous(breaks = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12),
-  label = c("Jan","Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"))
+  scale_x_continuous(breaks = c(1, 2, 3, 4, 5,
+                                6, 7, 8, 9, 10, 11, 12),
+  label = c("Jan","Feb", "Mar", "Apr",
+            "May", "June", "Jul", "Aug", "Sept", 
+            "Oct", "Nov", "Dec"))
   
  
 #Weekday
@@ -179,7 +197,9 @@ filter(n == max(n))
    collect() %>% 
    ggplot() +
    geom_col(aes(x = Issue_Wday, y = n)) +
-   scale_x_continuous(breaks = c(1 ,2 ,3, 4, 5, 6, 7), label = c("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"))
+   scale_x_continuous(breaks = c(1 ,2 ,3, 4, 5, 6, 7), 
+                      label = c("Sun", "Mon", "Tues", 
+                                "Wed", "Thurs", "Fri", "Sat"))
 
  
  #Month day
@@ -209,13 +229,13 @@ filter(n == max(n))
   - One is most likely to get a ticket in the month of March. In terms of weekdays, one is most likely to get a ticket on a Tuesday. For the month day, one is most likely to get a citation on the 22nd of the month. Finally, in terms of the hour, one is most likely to get a ticket at 12pm.
   
   
-  -  One is least likely to get a ticket in the month of November. In terms of weekdays, one is least likely to get a ticket on a Saturday For the month day, one is most likely to get a citation on the 31st of the month (assuming that month has 31 days). Finally, in terms of the hour, one is most likely to get a ticket at 5am.
+  -  One is least likely to get a ticket in the month of November. In terms of weekdays, one is least likely to get a ticket on a Saturday For the month day, one is least likely to get a citation on the 31st of the month (assuming that month has 31 days). Finally, in terms of the hour, one is least likely to get a ticket at 5am.
   
 
   **Confirm results with filtering the data**
 
 
-  Most Likely Times
+  *Most Likely Times*
 ```{r}
 
 #Month
@@ -254,7 +274,7 @@ tbl(db, "latix") %>%
 ```
 
 
-  Least Likely Times 
+  *Least Likely Times*
 
 ```{r}
 #Month
@@ -373,29 +393,11 @@ ticket
 
 
 tbl(db, "latix") %>%
-  filter(!is.na(Issue_Year) && !is.na(Fine_amount) && Issue_year == 2015 | Issue_Year == 2016) %>% 
+  filter(!is.na(Issue_Year) && !is.na(Fine_amount) 
+         && Issue_year == 2015 | Issue_Year == 2016) %>% 
   group_by(Issue_Year) %>% 
   summarise(tot = sum(Fine_amount)) %>% 
   kable(col.names = c("Issue Year", "Fine Amount"))
-
-
-# 
-# tbl(db, "latix") %>% 
-#   select(Issue_Year) %>% 
-#   filter(Issue_Year == 2015 | Issue_Year == 2016) %>% 
-#   group_by(Issue_Year) %>% 
-#   summarise(sum(Fine_amount)) %>% 
-#   collect() %>% 
-#   kable()
-# money <- tbl(db, "latix") %>% 
-#   select(Issue_Year) %>% 
-#   filter(Issue_Year == 2015 | Issue_Year == 2016) %>% 
-#   group_by(Issue_Year) %>% 
-#   summarize(sum(Fine_amount)) %>% 
-#   collect() %>% 
-#   kable()
-# 
-# money
 
 ```
 
@@ -432,4 +434,4 @@ tbl(db, "latix") %>%
 ```
 
 
-  An overwhelming amount of tickets are from CA license plates (3,766,908 citations).
+  An overwhelming amount of tickets are from CA (California) license plates (3,766,908 citations).
