@@ -12,6 +12,11 @@ The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching s
 
 1. For efficiency of the Shiny app, you should first pre-process, pare down, tidy, and save the data, e.g., as a compressed RDS file, to be used in the app.
 
+```{r}
+
+
+
+```
 
 <!-- ```{r} -->
 <!-- library("tidyverse") -->
@@ -29,9 +34,9 @@ The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching s
 <!-- #Rename the names of the columns -->
 <!-- names(LApayroll) <- str_replace_all(names(LApayroll), " ", "_") -->
 
-<!-- data_la_payroll <-  -->
-<!--   LApayroll %>%  -->
-<!--   select(Row_ID, Base_Pay, Overtime_Pay, Total_Payments, `Other_Pay_(Payroll_Explorer)`, Department_Title, Job_Class_Title, Year)   -->
+<!-- data_la_payroll <- -->
+<!--   LApayroll %>% -->
+<!--   select(Row_ID, Base_Pay, Overtime_Pay, Total_Payments, `Other_Pay_(Payroll_Explorer)`, Department_Title, Job_Class_Title, Year) -->
 
 
 <!-- #remove dollar signs -->
@@ -54,6 +59,10 @@ The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching s
 
 0. Publish your Shiny app to <https://www.shinyapps.io> and share the link.
 
+
+
+  *The link is https://bryanlinbiostatistics.shinyapps.io/hw3shiny/*
+
 ## Q2 LA City Parking War
 
 The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on teaching server contains information about parking tickets in LA City. It was downloaded from [LA Open Data Portal](https://data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np). Connect to the database and answer following questions using plots and summary statistics. In this exercise, you are **not** allowed to load whole data into memory. Use the _transform in database, plot in R_ strategy.
@@ -69,49 +78,12 @@ library("ggplot2")
 
 
 ```{r}
-
-# if (Sys.info()[["sysname"]] == "Linux") {
-#   db <- dbConnect(RSQLite::SQLite(),
-#                   dbname = "/home/m280-data/la_parking/LA_Parking_Citations_Extra.sqlite")
-# } else if (Sys.info()[["sysname"]] == "Darwin") {
-#   db <- dbConnect(RSQLite::SQLite(),
-#                   dbname = "./LA_Parking_Citations.sqlite")
-# }
-
-
 db <- dbConnect(RSQLite::SQLite(),
                   dbname = "/home/m280-data/la_parking/LA_Parking_Citations_Extra.sqlite")
 dbListTables(db)
 
 
 latix_sql <- dplyr::tbl(db, "latix")
-
-latix_sql %>% print(width = Inf)
-
-# 
-# new_db <- dbSendQuery(db, "Select Issue_Year, Issue_Month, Issue_Day, Issue_Hour, Issue_Minute, Make, Violation_Description FROM latix")
-# 
-# la_tix <- as.data.frame(new_db)
-# 
-
-
-
-
-
-#  db1 <- dbConnect(RSQLite::SQLite(),
-#                    dbname = "/home/m280-data/la_parking/LA_Parking_Citations_Extra.sqlite")
-# dbListTables(db1)
-
-# 
-# 
-# new_db <- dbSendQuery(db1, "Select Issue_Year, Issue_Month, Issue_Day, Issue_Hour, Issue_Minute, Make, Violation_Description FROM latix")
-# 
-# 
-# latix_sql1 <- dplyr::tbl(new_db, "latix")
-
-
-
-
 ```
 
 
@@ -125,9 +97,6 @@ latix_sql <- dplyr::tbl(db, "latix")
 
 latix_sql %>% 
   tally()
-# str(latix_sql)
-# 
-# count(latix_sql)
 
 ```
 
@@ -151,20 +120,6 @@ time_ticket1 <- latix_sql %>%
   arrange(desc(Issue_Year), desc(Issue_Month), desc(Issue_Day), desc(Issue_Hour), desc(Issue_Minute)) 
 
 head(time_ticket1, 1)
-
-
-# latix <- as.data.frame(latix_sql)
-# 
-# latix$Issue_DateTime <- anydate(latix$Issue_DateTime)
-# 
-# sorted_dates <- sort(latix$Issue_DateTime)
-# head(sorted_dates)
-# tail(sorted_dates)
-# 
-# latix_sql
-# filter
-# select
-# arrange
 
 ```
 
@@ -198,7 +153,7 @@ filter(n == max(n))
   *2015 is the year that has the most data (2,161,119 citations). 2016 also has a lot of data*
 
 
-0. When (which hour, weekday, month day, and month) are you most likely to get a ticket and when are you least likely to get a ticket?
+**2. When (which hour, weekday, month day, and month) are you most likely to get a ticket and when are you least likely to get a ticket?**
 
 
 ```{r}
@@ -244,28 +199,18 @@ filter(n == max(n))
    ggplot() +
    geom_col(aes(x = Issue_Hour, y = n)) 
 
-
-# day <- tbl(db, "latix") %>% 
-#   group_by(Issue_Wday) %>% 
-#   tally() %>% 
-#   collect() %>% 
-#   filter(n == max(n))
-# day
-
-
-
-
-
-
 ```
   
   *Based on the 4 plots (Month, Weekday, Month day, Hour), one can see the most likely and least likely times to get a citation.*
+
+
+  - One is most likely to get a ticket in the month of March. In terms of weekdays, one is most likely to get a ticket on a Tuesday. For the month day, one is most likely to get a citation on the 22nd of the month. Finally, in terms of the hour, one is most likely to get a ticket at 12pm.
   
-  -One is most likely to get a ticket in the month of March. In terms of weekdays, one is most likely to get a ticket on a Tuesday. For the month day, one is most likely to get a citation on the 22nd of the month. Finally, in terms of the hour, one is most likely to get a ticket at 12pm.
-  -One is least likely to get a ticket in the month of November. In terms of weekdays, one is least likely to get a ticket on a Saturday For the month day, one is most likely to get a citation on the 31st of the month (assuming that month has 31 days). Finally, in terms of the hour, one is most likely to get a ticket at 5am.
+  
+  -  One is least likely to get a ticket in the month of November. In terms of weekdays, one is least likely to get a ticket on a Saturday For the month day, one is most likely to get a citation on the 31st of the month (assuming that month has 31 days). Finally, in terms of the hour, one is most likely to get a ticket at 5am.
   
 
-  Confirm results with filtering the data
+  **Confirm results with filtering the data**
 
 
   Most Likely Times
@@ -307,7 +252,7 @@ tbl(db, "latix") %>%
 ```
 
 
-  #Minimums 
+  Least Likely Times 
 
 ```{r}
 #Month
@@ -345,7 +290,7 @@ tbl(db, "latix") %>%
  
 ```
  
-0. Which car makes received most citations?
+**3. Which car makes received most citations?**
 ```{r}
 
 tbl(db, "latix") %>% 
@@ -368,7 +313,7 @@ tbl(db, "latix") %>%
   *TOYT has the most citations. TOYT cars have 669,548 citations*
   
   
-0. How many different colors of cars were ticketed? Which color attracted most tickets?
+**4. How many different colors of cars were ticketed? Which color attracted most tickets?**
 ```{r}
 
 
@@ -397,7 +342,7 @@ tbl(db, "latix") %>%
 
 *There are 65 different colors. BK (Black) is the color that was most ticketed (ticketed a total of 862,283 times)*
 
-0. What are the most common ticket types?
+**5. What are the most common ticket types?**
 
 ```{r}
 
@@ -418,32 +363,10 @@ ticket <- tbl(db, "latix") %>%
 ticket
 
 ```
-  *No park/street clean is the most common ticket type*
+  *No park/street clean is the most common ticket type (there are 1,149,021 No park/street clean violations)*
 
-0. How much money was collected on parking tickets in 2015 and 2016?
+**6. How much money was collected on parking tickets in 2015 and 2016?**
 ```{r}
-
-
-tbl(db, "latix") %>% 
-  select(Issue_Year) %>% 
-  filter(Issue_Year == 2015 | Issue_Year == 2016) %>% 
-  group_by(Issue_Year) %>% 
-  summarise(sum(Fine_amount)) %>% 
-  collect() %>% 
-  kable()
-money <- tbl(db, "latix") %>% 
-  select(Issue_Year) %>% 
-  filter(Issue_Year == 2015 | Issue_Year == 2016) %>% 
-  group_by(Issue_Year) %>% 
-  summarize(sum(Fine_amount)) %>% 
-  collect() %>% 
-  kable()
-
-money
-
-
-
-
 
 
 
@@ -453,11 +376,58 @@ tbl(db, "latix") %>%
   summarise(tot = sum(Fine_amount)) %>% 
   kable(col.names = c("Issue Year", "Fine Amount"))
 
-  
+
+# 
+# tbl(db, "latix") %>% 
+#   select(Issue_Year) %>% 
+#   filter(Issue_Year == 2015 | Issue_Year == 2016) %>% 
+#   group_by(Issue_Year) %>% 
+#   summarise(sum(Fine_amount)) %>% 
+#   collect() %>% 
+#   kable()
+# money <- tbl(db, "latix") %>% 
+#   select(Issue_Year) %>% 
+#   filter(Issue_Year == 2015 | Issue_Year == 2016) %>% 
+#   group_by(Issue_Year) %>% 
+#   summarize(sum(Fine_amount)) %>% 
+#   collect() %>% 
+#   kable()
+# 
+# money
 
 ```
-0. Visualize any other information you are interested in.
+
+
+  *The total fine amount in 2015 was $151,006,794 and the total fine amount in 2016 was $123,236,136.*
+
+
+
+
+
+
+**7. Visualize any other information you are interested in.**
+
+  Which car State has the most parking citations? (Based off their license plates)
 ```{r}
 
+tbl(db, "latix") %>% 
+  group_by(RP_State_Plate) %>% 
+  tally() %>% 
+  collect %>% 
+  filter(n == max(n))
+
+
+tbl(db, "latix") %>% 
+  group_by(RP_State_Plate) %>% 
+  summarise(ct = n()) %>% 
+  collect() %>% 
+  top_n(5) %>% 
+  ggplot() +
+  geom_col(aes(x = RP_State_Plate, y = ct))
+
+
 
 ```
+
+
+  An overwhelming amount of tickets are from CA license plates (3,766,908 citations).
