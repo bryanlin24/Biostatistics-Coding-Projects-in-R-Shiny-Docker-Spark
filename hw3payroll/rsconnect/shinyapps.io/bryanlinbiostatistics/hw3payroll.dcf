@@ -1,0 +1,12 @@
+name: hw3payroll
+title: hw3payroll
+username:
+account: bryanlinbiostatistics
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 291548
+bundleId: 1248509
+url: https://bryanlinbiostatistics.shinyapps.io/hw3payroll/
+when: 1519974898.20023
+asMultiple: FALSE
+asStatic: FALSE
