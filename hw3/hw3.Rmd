@@ -13,6 +13,8 @@ The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching s
 1. For efficiency of the Shiny app, you should first pre-process, pare down, tidy, and save the data, e.g., as a compressed RDS file, to be used in the app.
 
 ```{r}
+
+
 library(tidyverse)
 
 LA_payroll <- read_csv("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv",
@@ -53,10 +55,7 @@ LA_payroll1$Avg_Benefit_Cost <- ifelse(!is.na(LA_payroll1$Avg_Benefit_Cost),
                                 as.numeric(str_replace(LA_payroll1$Avg_Benefit_Cost, 
                                                        "\\$", "")), NA)
 
-
-
 ```
-
 
 0. **Total payroll by LA City**. Visualize the total LA City payroll of each year, with breakdown into base pay, overtime pay, and other pay.
 
