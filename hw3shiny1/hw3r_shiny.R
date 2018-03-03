@@ -1,7 +1,7 @@
 #Hw3_R script for Shiny
 library(tidyverse)
 
-LA_payroll <- read_csv("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv", col_names = FALSE, progress = TRUE)
+#LA_payroll <- read_csv("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv", col_names = FALSE, progress = TRUE)
 
 #Rename all columns
 colnames(LA_payroll) <- c("Row_ID", "Year", "Department", "Pay_Dept", "Record_Num", 
@@ -102,3 +102,16 @@ depcost <- LA_payroll1 %>%
 
 
 write_rds(depcost, path = paste(datapath, "depcost.rds", sep = ""))
+
+
+
+#Average Health Costs
+health_cost <- LA_payroll1 %>%
+  select(Year, Avg_Health_Cost) %>%
+  group_by(Year) %>%
+  summarise(Avg_Health_Total = sum(Avg_Health_Cost, na.rm = TRUE)) %>%
+  gather("Avg_Health_Total", key = "Type", value = "Amount")
+
+
+write_rds(health_cost, path = paste("/home/bryanlin24/biostat-m280-2018-winter/", "avghlthcost.rds"))
+

@@ -3,14 +3,18 @@
 library(shiny)
 library(tidyverse)
 
-#"/home/bryanlin24/biostat-m280-2018-winter/hw3shiny"
-totalpay <- read_rds("/home/bryanlin24/biostat-m280-2018-winter/hw3shiny1/totalpay.rds")
+#/home/bryanlin24/biostat-m280-2018-winter/hw3shiny1"
 
-earn <- read_rds("/home/bryanlin24/biostat-m280-2018-winter/hw3shiny1/earn.rds")
+totalpay <- read_rds("totalpay.rds")
 
-depearn <- read_rds("/home/bryanlin24/biostat-m280-2018-winter/hw3shiny/depearn.rds")
+earn <- read_rds("earn.rds")
 
-depcost <- read_rds("/home/bryanlin24/biostat-m280-2018-winter/hw3shiny/depcost.rds")
+depearn <- read_rds("depearn.rds")
+
+depcost <- read_rds("depcost.rds")
+
+hlthcost <- read_rds("avghlthcost.rds")
+
 
 
 
@@ -60,13 +64,11 @@ ui <- fluidPage(
              ),
              mainPanel(
                tableOutput("tableq4")
-               
-               
              )
            )
   ),
   
-  tabPanel("Highest Costing Departments", fluid = TRUE,
+  tabPanel("Which Departments Cost Most?", fluid = TRUE,
            titlePanel("Highest Costing Departments"),
            sidebarLayout(
              sidebarPanel(
@@ -80,6 +82,16 @@ ui <- fluidPage(
                tableOutput("tableq5")
              )
            )
+  ),
+  tabPanel("Average Health Care Cost", uiOutput("q6"), fluid = TRUE,
+           titlePanel("Average Health Cost by Year"),
+           verticalLayout(
+             # Create a spot for the barplot
+             mainPanel(
+               plotOutput("hlthcostbarplot")  
+             )
+           )
+           
   )
   )
 )
@@ -89,8 +101,8 @@ ui <- fluidPage(
 server <- function(input, output) {
    
   output$totalpaybarplot <- renderPlot({
-    ggplot(data = totalpay, aes(x=Year, y=Amount, fill=Type)) +
-      geom_bar(stat="identity", position=position_dodge())
+    ggplot(data = totalpay, aes(x = Year, y = Amount, fill = Type)) +
+      geom_bar(stat = "identity", position = position_dodge())
   })
   
   output$tableq3 <- renderTable({
@@ -121,6 +133,13 @@ server <- function(input, output) {
       filter(Year == input$useryearq5) %>%
       arrange(desc(Dept_Avg_Benefit_Cost)) %>%
       head(input$rowq5)
+  })
+  
+  
+  output$hlthcostbarplot <- renderPlot({
+    ggplot(data = hlthcost, aes(x = Year, y = Amount, fill = Type)) +
+      geom_bar(stat = "identity", position = position_dodge())
+    
   })
 }
 
