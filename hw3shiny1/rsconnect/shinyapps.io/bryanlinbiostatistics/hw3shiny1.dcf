@@ -1,0 +1,12 @@
+name: hw3shiny1
+title: hw3shiny1
+username:
+account: bryanlinbiostatistics
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 292153
+bundleId: 1250213
+url: https://bryanlinbiostatistics.shinyapps.io/hw3shiny1/
+when: 1520047661.1561
+asMultiple: FALSE
+asStatic: FALSE
