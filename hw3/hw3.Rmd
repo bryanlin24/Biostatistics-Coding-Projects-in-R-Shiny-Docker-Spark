@@ -229,7 +229,7 @@ filter(n == max(n))
   - One is most likely to get a ticket in the month of March. In terms of weekdays, one is most likely to get a ticket on a Tuesday. For the month day, one is most likely to get a citation on the 22nd of the month. Finally, in terms of the hour, one is most likely to get a ticket at 12pm.
   
   
-  -  One is least likely to get a ticket in the month of November. In terms of weekdays, one is least likely to get a ticket on a Saturday For the month day, one is least likely to get a citation on the 31st of the month (assuming that month has 31 days). Finally, in terms of the hour, one is least likely to get a ticket at 5am.
+  -  One is least likely to get a ticket in the month of November. In terms of weekdays, one is least likely to get a ticket on a Saturday. For the month day, one is least likely to get a citation on the 31st of the month (assuming that month has 31 days). Finally, in terms of the hour, one is least likely to get a ticket at 5am.
   
 
   **Confirm results with filtering the data**
@@ -389,8 +389,6 @@ ticket
 
 **6. How much money was collected on parking tickets in 2015 and 2016?**
 ```{r}
-
-
 
 tbl(db, "latix") %>%
   filter(!is.na(Issue_Year) && !is.na(Fine_amount) 

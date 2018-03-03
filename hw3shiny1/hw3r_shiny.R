@@ -38,6 +38,10 @@ LA_payroll1$Avg_Benefit_Cost <- ifelse(!is.na(LA_payroll1$Avg_Benefit_Cost),
                                        as.numeric(str_replace(LA_payroll1$Avg_Benefit_Cost, 
                                                               "\\$", "")), NA)
 
+LA_payroll1$Avg_Health_Cost <- ifelse(!is.na(LA_payroll1$Avg_Health_Cost), 
+                                      as.numeric(str_replace(LA_payroll1$Avg_Health_Cost, 
+                                                             "\\$", "")), NA)
+
 
 #Make a generic path for RDS
 datapath <- paste(getwd(),"/hw3shiny1", sep = "")
@@ -113,5 +117,5 @@ health_cost <- LA_payroll1 %>%
   gather("Avg_Health_Total", key = "Type", value = "Amount")
 
 
-write_rds(health_cost, path = paste("/home/bryanlin24/biostat-m280-2018-winter/", "avghlthcost.rds"))
+write_rds(health_cost, path = paste(datapath, "avghlthcost.rds"))
 
