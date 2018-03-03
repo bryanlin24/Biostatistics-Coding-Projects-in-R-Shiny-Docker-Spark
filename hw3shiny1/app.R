@@ -6,6 +6,13 @@ library(tidyverse)
 #"/home/bryanlin24/biostat-m280-2018-winter/hw3shiny"
 totalpay <- read_rds("/home/bryanlin24/biostat-m280-2018-winter/hw3shiny1/totalpay.rds")
 
+earn <- read_rds("/home/bryanlin24/biostat-m280-2018-winter/hw3shiny1/earn.rds")
+
+depearn <- read_rds("/home/bryanlin24/biostat-m280-2018-winter/hw3shiny/depearn.rds")
+
+depcost <- read_rds("/home/bryanlin24/biostat-m280-2018-winter/hw3shiny/depcost.rds")
+
+
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -39,6 +46,26 @@ ui <- fluidPage(
              )
            )
           ),
+  tabPanel("Which departments earn most?", uiOutput("q4"), fluid = TRUE,
+           titlePanel("Highest Paid Departments"),
+           sidebarLayout(
+             sidebarPanel(
+               numericInput(inputId = "rowq4", label = "How many rows?",
+                            value = 5, min = 5, max = count(depearn), step = 5),
+               selectInput(inputId = "useryearq4", label = "Year",
+                           choices = c(distinct(depearn, Year)), selected = 2017),
+               selectInput(inputId = "method", label = "Mean or Median?",
+                           choices = c("Mean", "Median"), selected = "Median"),
+               width = 2
+             ),
+             mainPanel(
+               tableOutput("tableq4")
+               
+               
+             )
+           )
+  ),
+  
   tabPanel("Highest Costing Departments", fluid = TRUE,
            titlePanel("Highest Costing Departments"),
            sidebarLayout(
@@ -54,9 +81,7 @@ ui <- fluidPage(
              )
            )
   )
-  
-           
-)
+  )
 )
 
 
@@ -78,11 +103,24 @@ server <- function(input, output) {
   
   output$tableq4 <- renderTable({
     depearnout <- depearn %>% filter(Year == input$useryearq4)
-    
-    group_by(Year) %>%
-      filter(Year == input$useryearq3) %>%
-      arrange(desc(Total_Payments)) %>%
-      head(input$rowq3)
+    if (input$method == "Mean") {
+      depearnout <- depearnout %>%
+        select(c(1, 2, 3, 5, 7, 9)) %>%
+        arrange(desc(Mean_Total_Payments)) %>%
+        head(input$rowq4)
+    } else {
+      depearnout <- depearnout %>%
+        select(c(1, 2, 4, 6, 8, 10)) %>%
+        arrange(desc(Median_Total_Payments)) %>%
+        head(input$rowq4)
+    }
+  })
+  
+  output$tableq5 <- renderTable({
+    depcost %>%
+      filter(Year == input$useryearq5) %>%
+      arrange(desc(Dept_Avg_Benefit_Cost)) %>%
+      head(input$rowq5)
   })
 }
 

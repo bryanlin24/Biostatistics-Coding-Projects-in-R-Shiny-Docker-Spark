@@ -40,8 +40,22 @@ LA_payroll1$Avg_Benefit_Cost <- ifelse(!is.na(LA_payroll1$Avg_Benefit_Cost),
 
 
 #Make a generic path for RDS
-datapath <- paste(getwd(),"/hw3/hw3shiny", sep = "")
+datapath <- paste(getwd(),"/hw3shiny1", sep = "")
 
+
+#Q2 Total Payrolls
+#Filter pays
+total_pays <- LA_payroll1 %>%
+  select(Year, Base_Pay, Overtime_Pay, Other_Pay_PE) %>%
+  group_by(Year) %>%
+  summarise(BasePayTotal = sum(Base_Pay, na.rm = TRUE),
+            OvertimeTotal = sum(Overtime_Pay, na.rm = TRUE),
+            OtherTotal = sum(Other_Pay_PE, na.rm = TRUE)) %>%
+  gather("BasePayTotal", "OvertimeTotal", "OtherTotal", key = "Type", value = "Amount")
+
+write_rds(total_pays, path = paste(datapath, "totalpay.rds", sep = ""))
+
+#Q3 Who earned the most?
 #Subset data for who earned most?
 earn <- LA_payroll1 %>%
   select(Row_ID, Year, Department, Job_Title, Total_Payments, 
@@ -50,7 +64,7 @@ earn <- LA_payroll1 %>%
 write_rds(earn, path = paste(datapath, "earn.rds", sep = ""))
 
 
-#Departments that earn the most
+#Q4 Departments that earn the most
 depearn <- LA_payroll1 %>% 
   select(Department, Year, Total_Payments, Base_Pay, Overtime_Pay, Other_Pay_PE) %>%
   group_by(Department, Year) %>% 
@@ -66,4 +80,25 @@ depearn <- LA_payroll1 %>%
     Median_Other_Pay_PE = median(Other_Pay_PE, na.rm = TRUE)) %>% 
   ungroup()
  
+write_rds(depearn, path = paste(datapath, "depearn.rds", sep = ""))
 
+
+
+#Q5 Which departments cost the most?
+
+depcost <- LA_payroll1 %>%
+  
+  select(Department, Year, Avg_Benefit_Cost, Total_Payments, 
+         Base_Pay, Overtime_Pay, Other_Pay_PE) %>%
+  group_by(Department, Year) %>%
+  
+  summarise(Dept_Base_Pay = sum(Base_Pay, na.rm = TRUE),
+            Dept_Overtime_Pay = sum(Overtime_Pay, na.rm = TRUE),
+            Dept_Avg_Benefit_Cost = sum(Avg_Benefit_Cost, na.rm = TRUE),
+            Dept_Total_Payments = sum(Total_Payments, na.rm = TRUE),
+            Dept_Other_Pay_PE = sum(Other_Pay_PE, na.rm = TRUE)
+  ) %>%
+  ungroup()
+
+
+write_rds(depcost, path = paste(datapath, "depcost.rds", sep = ""))
