@@ -71,7 +71,7 @@ LA_payroll1$Avg_Benefit_Cost <- ifelse(!is.na(LA_payroll1$Avg_Benefit_Cost),
 
 
 
-  *The link is https://bryanlinbiostatistics.shinyapps.io/hw3shiny/*
+  *The link is https://bryanlinbiostatistics.shinyapps.io/hw3shiny1/*
 
 ## Q2 LA City Parking War
 
