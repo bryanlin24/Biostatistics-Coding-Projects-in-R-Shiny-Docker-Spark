@@ -1,7 +1,7 @@
 #Hw3_R script for Shiny
 library(tidyverse)
 
-#LA_payroll <- read_csv("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv", col_names = FALSE, progress = TRUE)
+LA_payroll <- read_csv("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv", col_names = FALSE, progress = TRUE)
 
 #Rename all columns
 colnames(LA_payroll) <- c("Row_ID", "Year", "Department", "Pay_Dept", "Record_Num", 
