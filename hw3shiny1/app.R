@@ -21,7 +21,6 @@ ui <- fluidPage(
                  plotOutput("totalpaybarplot")  
                )
              )
-    )
     ),
   
   #Make panel for Who earned the most?
@@ -39,7 +38,25 @@ ui <- fluidPage(
                tableOutput("tableq3")
              )
            )
+          ),
+  tabPanel("Highest Costing Departments", fluid = TRUE,
+           titlePanel("Highest Costing Departments"),
+           sidebarLayout(
+             sidebarPanel(
+               numericInput(inputId = "rowq5", label = "How many rows?",
+                            value = 5, min = 5, max = count(depcost), step = 5),
+               selectInput(inputId = "useryearq5", label = "Year",
+                           choices = c(distinct(depcost, Year)), selected = 2017),
+               width = 2
+             ),
+             mainPanel(
+               tableOutput("tableq5")
+             )
+           )
   )
+  
+           
+)
 )
 
 
@@ -54,6 +71,15 @@ server <- function(input, output) {
   output$tableq3 <- renderTable({
     earn %>%
       group_by(Year) %>%
+      filter(Year == input$useryearq3) %>%
+      arrange(desc(Total_Payments)) %>%
+      head(input$rowq3)
+  })
+  
+  output$tableq4 <- renderTable({
+    depearnout <- depearn %>% filter(Year == input$useryearq4)
+    
+    group_by(Year) %>%
       filter(Year == input$useryearq3) %>%
       arrange(desc(Total_Payments)) %>%
       head(input$rowq3)

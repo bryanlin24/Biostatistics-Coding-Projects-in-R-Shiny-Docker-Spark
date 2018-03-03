@@ -49,3 +49,21 @@ earn <- LA_payroll1 %>%
 
 write_rds(earn, path = paste(datapath, "earn.rds", sep = ""))
 
+
+#Departments that earn the most
+depearn <- LA_payroll1 %>% 
+  select(Department, Year, Total_Payments, Base_Pay, Overtime_Pay, Other_Pay_PE) %>%
+  group_by(Department, Year) %>% 
+  summarise(
+    Mean_Base_Pay = mean(Base_Pay, na.rm = TRUE),
+    Mean_Overtime_Pay = mean(Overtime_Pay, na.rm = TRUE),
+    Mean_Total_Payments = mean(Total_Payments, na.rm = TRUE),
+    Mean_Other_Pay_PE = mean(Other_Pay_PE, na.rm = TRUE),
+    
+    Median_Base_Pay = median(Base_Pay, na.rm = TRUE),
+    Median_Overtime_Pay = median(Overtime_Pay, na.rm = TRUE),
+    Median_Total_Payments = median(Total_Payments, na.rm = TRUE),
+    Median_Other_Pay_PE = median(Other_Pay_PE, na.rm = TRUE)) %>% 
+  ungroup()
+ 
+
