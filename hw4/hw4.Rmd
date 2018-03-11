@@ -26,45 +26,47 @@ config <- spark_config()
 sc <- spark_connect(master = "yarn-client", config = config)
 sc
 
-
 flights_tbl <- tbl(sc, 'flights')
-flights_tbl %>% print(width = Inf)
+head(flights_tbl)
 
 ```
 
 1. Map the top 10 busiest airports. Size of dots should reflect the number of flights through that destination.  
 Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html) helpful.
-```{r}
-#look for airports with most origin
-
-#Top origin flights, bar chart
-flights20021 <- 
-  
-  
-  flights20021 <- flights_tbl %>% 
-  filter(year == 2002) %>% 
-  group_by(origin) %>% 
-  tally() %>% 
-  collect() %>% 
-  top_n(10)
-  
-  
-  
-  
-  
-flights_tbl %>% 
-  filter(year == 2002) %>% 
-  group_by(origin, dest) %>% 
-  count() %>% 
-  arrange(desc(n)) %>% 
-  head(10) %>% 
-  collect()
 
 
-p <- ggplot(flights20021, aes(origin, n))
-p + geom_point(aes(size = n))
+<!-- ```{r} -->
+<!-- #look for airports with most origin -->
 
-```
+<!-- #Top origin flights, bar chart -->
+
+
+<!--   flights20021 <- flights_tbl %>% -->
+<!--   filter(year == 2002) %>% -->
+<!--   group_by(origin) %>% -->
+<!--   tally() %>% -->
+<!--   collect() %>% -->
+<!--   top_n(10) -->
+
+
+
+
+
+<!-- flights_tbl %>%  -->
+<!--   filter(year == 2002) %>%  -->
+<!--   group_by(origin, dest) %>%  -->
+<!--   count() %>%  -->
+<!--   arrange(desc(n)) %>%  -->
+<!--   head(10) %>%  -->
+<!--   collect() -->
+
+
+<!-- p <- ggplot(flights20021, aes(origin, n)) -->
+<!-- p + geom_point(aes(size = n)) -->
+
+<!-- ``` -->
+
+  
 
 ```{r}
 f_origin <- flights_tbl %>% 
@@ -75,9 +77,6 @@ f_origin <- flights_tbl %>%
   arrange(desc(n))
 
 f_origin_head <- head(f_origin, 10)
-
-
-# top_n(10)
 
 
 f_dest <- flights_tbl %>% 
@@ -95,6 +94,13 @@ combined
 
 ```
 
+  
+  
+  **Table and plots based off of flights in the year 2002.**
+  
+  First, the top 10 origin airports (airports that had the most outgoing flights) were found. Then, the top 10 destination airports (ones that had the most incoming flights) were found. Both results were combined into one table.
+
+  From this table, the top 10 busiest airports in the year 2002 are ORD, DFW, ATL, LAX, PHX, MSP, DTW, STL, LAS and DEN. Total n was calculated by adding the number of flights in these airports as the origin airport as well as as the destination airport.
 
 ```{r}
 #Make a new dataframe
@@ -102,28 +108,33 @@ airport <- c("ORD", "DFW", "ATL", "LAX", "PHX", "MSP", "DTW",
              "STL", "LAS", "DEN")
 n <- c(654782, 562709, 463826, 364835, 347880, 
        283074, 281537, 265157, 261191, 240662)
-sum(n)
 
 df <- data.frame(airport, n)
 df
 ```
+
+  This table represents a newly created data frame that has the top 10 busiest airports with total n (total flights as origin airport + total flights as destination airport). For instance, total n for ORD was calculated as number of flights where ORD is the origin airport + number of flights where ORD is the destination airport.
 
 ```{r}
 usa <- map_data("usa")
 states <- map_data("state")
 
 gg1 <- ggplot(data = states) + 
-  geom_polygon(aes(x = long, y = lat, fill = region, group = group), color = "white") + 
+  geom_polygon(aes(x = long, y = lat, group = group), color = "white") + 
   coord_fixed(1.3) +
   guides(fill=FALSE) 
 gg1
 
 
+```
+
+
+```{r}
 labs <- data.frame(
-  long = c(-87.837, -97.04, -84.386, -118.41, -112.074, -80.192, -83.356, -90.366, -115.154, -104.674),
-  lat = c(41.977, 32.897, 33.753, 33.943, 33.448, 25.762, 42.208, 38.7503, 36.086, 39.849),
-  names = c("ORD", "DFW", "ATL", "LAX", "PHX", "MSP", "DTW", "STL", "LAS", "DEN"),
-  size =  c(30*654782/sum(n), 30*562709/sum(n), 30*463826/sum(n), 30*364835/sum(n), 30*347880/sum(n), 30*283074/sum(n), 30*281537/sum(n), 30*265157/sum(n), 30*261191/sum(n), 30*240662/sum(n)),
+  long <- c(-87.837, -97.04, -84.386, -118.41, -112.074, -80.192, -83.356, -90.366, -115.154, -104.674),
+  lat <- c(41.977, 32.897, 33.753, 33.943, 33.448, 25.762, 42.208, 38.7503, 36.086, 39.849),
+  names <- c("ORD", "DFW", "ATL", "LAX", "PHX", "MSP", "DTW", "STL", "LAS", "DEN"),
+  size <-  c(30*654782/sum(n), 30*562709/sum(n), 30*463826/sum(n), 30*364835/sum(n), 30*347880/sum(n), 30*283074/sum(n), 30*281537/sum(n), 30*265157/sum(n), 30*261191/sum(n), 30*240662/sum(n)),
   stringsAsFactors = FALSE
   )  
 
@@ -132,6 +143,35 @@ labs <- data.frame(
 
 
 ```
+
+```{r}
+
+labs10 <- data.frame(
+  long10 <- c(-118.41, -115.15),
+  lat10 <- c(33.94, 36.08),
+  names10 <- c("LAX", "LAS"),
+  size10 <-  20*24989/sum(n1),
+  stringsAsFactors = FALSE)  
+
+labs11 <- data.frame(
+  long11 <- c(-80.192, -87.84),
+  lat11 <- c(25.762, 41.98),
+  names11 <- c("MSP", "ORD"),
+  size11 <-  20*10000/sum(n1),
+  stringsAsFactors = FALSE)  
+
+ gg1 + 
+   geom_line(data = labs10, aes(x = long10, y = lat10), size = size10, color = "blue") +
+   geom_line(data = labs11, aes(x = long11, y = lat11), size = size11, color = "yellow")
+
+
+```
+
+
+
+
+
+  This map represents the top 10 busiest airports plotted on the U.S. map (size of dot is proportional to how many flights this airport receives).
 
 
 
@@ -139,44 +179,249 @@ labs <- data.frame(
 
 ```{r}
 
-#Each row is a route
-#Find the routes with most origin -> dest
 flights_tbl %>% 
   filter(year == 2002) %>% 
   group_by(origin, dest) %>% 
   count() %>% 
   arrange(desc(n)) %>% 
-  head(20) %>% 
+  head(30) %>% 
   collect()
 
 
 ```
-
+  
+  
+  From this table, the top 10 busiest routes for the year 2002 are:
+  
+  - LAX to LAS
+  - MSP to ORD
+  - BOS to LGA
+  - LAS to PHX
+  - LAX to PHX
+  - LGA to DCA
+  - ORD to LGA
+  - EWR to ORD
+  - HOU to DAL
+  - ORD to PHL
+  
+  Each row in this table represents total number of flights of one specific route (i.e. one specific origin airport to destination airport). Table is arranged in descending order. 
 
 ```{r}
-usa <- map_data("usa")
-states <- map_data("state")
+#Make a new dataframe of top 10 busiest routes
+airport1 <- c("LAX", "LAS", #12,733 + 12,256 = 24,989
+              "MSP", "ORD", #12,007 + 11,907 = 23,914
+              "BOS", "LGA", #11,539 + 11,537 = 23,076
+              "LAS", "PHX", #11,143 + 11,091 = 22,234
+              "LAX", "PHX", #11,066 + 11,027 = 22,093
+              "LGA", "DCA", #10,955 + 10,948 = 21,903
+              "ORD", "LGA", #10,639 + 10,566 = 21,205
+              "EWR", "ORD", #10,278 + 10,126 = 20,404
+              "HOU", "DAL", #10,612 + 9,507 = 20,119
+              "ORD", "PHL") #10,109 + 9,954 = 20,063
+              
+n1 <- c(24989, 23914, 23076, 22234, 22093, 21903, 21205, 20404, 20119, 20063)
+sum(n1)
 
-gg1 <- ggplot(data = states) + 
-  geom_polygon(aes(x = long, y = lat, fill = region, group = group), color = "white") + 
-  coord_fixed(1.3) +
-  guides(fill=FALSE) 
-gg1
+df1 <- data.frame(airport1, n1)
+df1
+```
+  
+  This data frame represents the top 10 busiest routes. A route is defined as having one specific airport as the origin and another airport as the destination. Total n for routes was calculated as adding one specific route + the same route, but with the origin and destination airports flipped. For example, one of the busiest routes is LAX to LAS. The total n for this route was calculated as total number of flights from LAX to LAS + total number of flights from LAS to LAX.
+  
+  
+```{r}
+sum(n1)
+labs1 <- data.frame(
+  long1 <- c(-118.41, -115.15),
+  lat1 <- c(33.94, 36.08),
+  names1 <- c("LAX", "LAS"),
+  size1 <- 30*24989/sum(n1),
+  stringsAsFactors = FALSE)
+#0.11 
+
+labs2 <- data.frame(
+  long2 <- c(-80.192, -87.84),
+  lat2 <- c(25.762, 41.98),
+  names2 <- c("MSP", "ORD"),
+  size2 <- 28*23914/sum(n1),
+  stringsAsFactors = FALSE)
+
+#0.1087
+
+labs3 <- data.frame(
+  long3 <- c(-71.02, -73.87),
+  lat3 <- c(42.37, 40.78),
+  names3 <- c("BOS", "LGA"),
+  size3 <- 24*23076/sum(n1),
+  stringsAsFactors = FALSE)
+
+#0.104
+
+labs4 <- data.frame(
+  long4 <- c(-115.15, -112.07),
+  lat4 <- c(36.08, 33.45),
+  names4 <- c("LAS", "PHX"),
+  size4 <- 20*22234/sum(n1),
+  stringsAsFactors = FALSE)
+
+#0.101
+
+labs5 <- data.frame(
+  long5 <- c(-118.41, -112.07),
+  lat5 <- c(33.94, 33.45),
+  names5 <- c("BOS", "LGA"),
+  size5 <- 20*23076/sum(n1),
+  stringsAsFactors = FALSE)
+
+#0.0996
+
+labs6 <- data.frame(
+  long6 <- c(-73.87, -77.04),
+  lat6 <- c(40.78, 38.85),
+  names6 <- c("LGA", "DCA"),
+  size6 <- 20*21903/sum(n1),
+  stringsAsFactors = FALSE)
+
+#0.0995
+
+labs7 <- data.frame(
+  long7 <- c(-87.84, -73.87),
+  lat7 <- c(41.98, 40.78),
+  names7 <- c("ORD", "LGA"),
+  size7 <- 20*21205/sum(n1),
+  stringsAsFactors = FALSE)
+
+#0.0963
+
+labs8 <- data.frame(
+  long8 <- c(-74.17, -87.84),
+  lat8 <- c(40.69, 41.98),
+  names8 <- c("EWR", "ORD"),
+  size8 <- 20*20404/sum(n1),
+  stringsAsFactors = FALSE)
+
+#0.0927
 
 
-labs <- data.frame(
-  long = c(-87.837, -97.04, -84.386, -118.41, -112.074, -80.192, -83.356, -90.366, -115.154, -104.674),
-  lat = c(41.977, 32.897, 33.753, 33.943, 33.448, 25.762, 42.208, 38.7503, 36.086, 39.849),
-  names = c("ORD", "DFW", "ATL", "LAX", "PHX", "MSP", "DTW", "STL", "LAS", "DEN"),
-  size =  c(30*654782/sum(n), 30*562709/sum(n), 30*463826/sum(n), 30*364835/sum(n), 30*347880/sum(n), 30*283074/sum(n), 30*281537/sum(n), 30*265157/sum(n), 30*261191/sum(n), 30*240662/sum(n)),
-  stringsAsFactors = FALSE
-  )  
+labs9 <- data.frame(
+  long9 <- c(-95.37, -96.85),
+  lat9 <- c(29.76, 32.85),
+  names9 <- c("HOU", "DAL"),
+  size9 <- 20*20119/sum(n1),
+  stringsAsFactors = FALSE)
+
+#0.0915
+
+
+labs10 <- data.frame(
+  long10 <- c(-87.84, -75.24),
+  lat10 <- c(41.98, 39.87),
+  names10 <- c("ORD", "PHL"),
+  size10 <- 20*20063/sum(n1),
+  stringsAsFactors = FALSE)
+
+#0.0912
+
 
  gg1 + 
-   geom_point(data = labs, aes(x = long, y = lat, size=size), color = "blue")
+   geom_line(data = labs1, aes(x = long1, y = lat1), size = size1, color = "blue") +
+   geom_line(data = labs2, aes(x = long2, y = lat2), size = size2, color = "yellow") +
+   geom_line(data = labs3, aes(x = long3, y = lat3), size = size3, color = "gray") +
+ geom_line(data = labs4, aes(x = long4, y = lat4), size = size4, color = "orange") +
+ geom_line(data = labs5, aes(x = long5, y = lat5), size = size5, color = "purple") +
+ geom_line(data = labs6, aes(x = long6, y = lat6), size = size6, color = "green") +
+   geom_line(data = labs7, aes(x = long7, y = lat7), size = size7, color = "red") +
+ geom_line(data = labs8, aes(x = long8, y = lat8), size = size8, color = "black") +
+   geom_line(data = labs9, aes(x = long9, y = lat9), size = size9, color = "white") +
+   geom_line(data = labs10, aes(x = long10, y = lat10), size = size10, color = "brown")
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```
 
+
+
+
+```{r}
+
+
+
+labs6 <- data.frame(
+  long6 <- c(-73.87, -77.04),
+  lat6 <- c(40.78, 38.85),
+  names6 <- c("LGA", "DCA"),
+  size6 <- 20*21903/sum(n1),
+  stringsAsFactors = FALSE)
+
+#0.0995
+
+labs7 <- data.frame(
+  long7 <- c(-87.84, -73.87),
+  lat7 <- c(41.98, 40.78),
+  names7 <- c("ORD", "LGA"),
+  size7 <- 20*21205/sum(n1),
+  stringsAsFactors = FALSE)
+
+#0.0963
+
+labs8 <- data.frame(
+  long8 <- c(-74.17, -87.84),
+  lat8 <- c(40.69, 41.98),
+  names8 <- c("EWR", "ORD"),
+  size8 <- 20*20404/sum(n1),
+  stringsAsFactors = FALSE)
+
+#0.0927
+
+
+labs9 <- data.frame(
+  long9 <- c(-95.37, -96.85),
+  lat9 <- c(29.76, 32.85),
+  names9 <- c("HOU", "DAL"),
+  size9 <- 20*20119/sum(n1),
+  stringsAsFactors = FALSE)
+
+#0.0915
+
+
+labs10 <- data.frame(
+  long10 <- c(-87.84, -75.24),
+  lat10 <- c(41.98, 39.87),
+  names10 <- c("ORD", "PHL"),
+  size10 <- 20*20063/sum(n1),
+  stringsAsFactors = FALSE)
+
+#0.0912
+
+
+
+ gg1 +
+ geom_line(data = labs6, aes(x = long6, y = lat6), size = size6, color = "green") +
+   geom_line(data = labs7, aes(x = long7, y = lat7), size = size7, color = "red") +
+ geom_line(data = labs8, aes(x = long8, y = lat8), size = size8, color = "black") 
+  
+```
+
+
+geom_line(data = labs4, aes(x = long4, y = lat4), size = size4, color = "orange") +
+ geom_line(data = labs5, aes(x = long5, y = lat5), size = size5, color = "purple") +
+ geom_line(data = labs6, aes(x = long6, y = lat6), size = size6, color = "green") +
+   geom_line(data = labs7, aes(x = long7, y = lat7), size = size7, color = "white") +
+ geom_line(data = labs8, aes(x = long8, y = lat8), size = size8, color = "black") +
+   geom_line(data = labs9, aes(x = long9, y = lat9), size = size9, color = "white") +
+   geom_line(data = labs10, aes(x = long10, y = lat10), size = size10, color = "brown")
+   
+   
 0. LAX:
   
     <p align="center">
