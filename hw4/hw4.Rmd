@@ -123,7 +123,6 @@ gg1 <- ggplot(data = states) +
   geom_polygon(aes(x = long, y = lat, group = group), color = "white") + 
   coord_fixed(1.3) +
   guides(fill=FALSE) 
-gg1
 
 
 ```
@@ -144,34 +143,9 @@ labs <- data.frame(
 
 ```
 
-```{r}
-
-labs10 <- data.frame(
-  long10 <- c(-118.41, -115.15),
-  lat10 <- c(33.94, 36.08),
-  names10 <- c("LAX", "LAS"),
-  size10 <-  20*24989/sum(n1),
-  stringsAsFactors = FALSE)  
-
-labs11 <- data.frame(
-  long11 <- c(-80.192, -87.84),
-  lat11 <- c(25.762, 41.98),
-  names11 <- c("MSP", "ORD"),
-  size11 <-  20*10000/sum(n1),
-  stringsAsFactors = FALSE)  
-
- gg1 + 
-   geom_line(data = labs10, aes(x = long10, y = lat10), size = size10, color = "blue") +
-   geom_line(data = labs11, aes(x = long11, y = lat11), size = size11, color = "yellow")
 
 
-```
-
-
-
-
-
-  This map represents the top 10 busiest airports plotted on the U.S. map (size of dot is proportional to how many flights this airport receives).
+  This map represents the top 10 busiest airports plotted on the U.S. map (size of dot is proportional/scaled to how many flights this airport receives).
 
 
 
@@ -226,7 +200,7 @@ df1 <- data.frame(airport1, n1)
 df1
 ```
   
-  This data frame represents the top 10 busiest routes. A route is defined as having one specific airport as the origin and another airport as the destination. Total n for routes was calculated as adding one specific route + the same route, but with the origin and destination airports flipped. For example, one of the busiest routes is LAX to LAS. The total n for this route was calculated as total number of flights from LAX to LAS + total number of flights from LAS to LAX.
+  This data frame represents the top 10 busiest routes. A route is defined as having one specific airport as the origin and another airport as the destination. Total n for routes was calculated as adding one specific route + the same route with the same airports, but with the origin and destination airports flipped. For example, the busiest route is LAX to LAS. The total n for this route was calculated as total number of flights from LAX to LAS + total number of flights from LAS to LAX.
   
   
 ```{r}
@@ -235,191 +209,111 @@ labs1 <- data.frame(
   long1 <- c(-118.41, -115.15),
   lat1 <- c(33.94, 36.08),
   names1 <- c("LAX", "LAS"),
-  size1 <- 30*24989/sum(n1),
+  size1 <- 20*24989/sum(n1),
   stringsAsFactors = FALSE)
-#0.11 
+#24,989/22,000 = 0.11 
 
 labs2 <- data.frame(
   long2 <- c(-80.192, -87.84),
   lat2 <- c(25.762, 41.98),
   names2 <- c("MSP", "ORD"),
-  size2 <- 28*23914/sum(n1),
+  size2 <- 18*23914/sum(n1),
   stringsAsFactors = FALSE)
 
-#0.1087
+#23,914/22,000 = 0.1087
 
 labs3 <- data.frame(
   long3 <- c(-71.02, -73.87),
   lat3 <- c(42.37, 40.78),
   names3 <- c("BOS", "LGA"),
-  size3 <- 24*23076/sum(n1),
+  size3 <- 14*23076/sum(n1),
   stringsAsFactors = FALSE)
 
-#0.104
+#23,076/22,000 = 0.104
 
 labs4 <- data.frame(
   long4 <- c(-115.15, -112.07),
   lat4 <- c(36.08, 33.45),
   names4 <- c("LAS", "PHX"),
-  size4 <- 20*22234/sum(n1),
+  size4 <- 10*22234/sum(n1),
   stringsAsFactors = FALSE)
 
-#0.101
+#22,234/22,000 = 0.101
 
 labs5 <- data.frame(
   long5 <- c(-118.41, -112.07),
   lat5 <- c(33.94, 33.45),
   names5 <- c("BOS", "LGA"),
-  size5 <- 20*23076/sum(n1),
+  size5 <- 10*22093/sum(n1),
   stringsAsFactors = FALSE)
 
-#0.0996
+#22,093/22,000 = 0.0996
 
 labs6 <- data.frame(
   long6 <- c(-73.87, -77.04),
   lat6 <- c(40.78, 38.85),
   names6 <- c("LGA", "DCA"),
-  size6 <- 20*21903/sum(n1),
+  size6 <- 10*21903/sum(n1),
   stringsAsFactors = FALSE)
 
-#0.0995
+#21,093/22,000 = 0.0995
 
 labs7 <- data.frame(
   long7 <- c(-87.84, -73.87),
   lat7 <- c(41.98, 40.78),
   names7 <- c("ORD", "LGA"),
-  size7 <- 20*21205/sum(n1),
+  size7 <- 10*21205/sum(n1),
   stringsAsFactors = FALSE)
 
-#0.0963
+#21,205/22,000 = 0.0963
 
 labs8 <- data.frame(
   long8 <- c(-74.17, -87.84),
   lat8 <- c(40.69, 41.98),
   names8 <- c("EWR", "ORD"),
-  size8 <- 20*20404/sum(n1),
+  size8 <- 10*20404/sum(n1),
   stringsAsFactors = FALSE)
 
-#0.0927
+#20,404/22,000 = 0.0927
 
 
 labs9 <- data.frame(
   long9 <- c(-95.37, -96.85),
   lat9 <- c(29.76, 32.85),
   names9 <- c("HOU", "DAL"),
-  size9 <- 20*20119/sum(n1),
+  size9 <- 10*20119/sum(n1),
   stringsAsFactors = FALSE)
 
-#0.0915
+#20,119/22,000 = 0.0915
 
 
 labs10 <- data.frame(
   long10 <- c(-87.84, -75.24),
   lat10 <- c(41.98, 39.87),
   names10 <- c("ORD", "PHL"),
-  size10 <- 20*20063/sum(n1),
+  size10 <- 10*20063/sum(n1),
   stringsAsFactors = FALSE)
 
-#0.0912
+#20,063/22,000 = 0.0912
 
 
  gg1 + 
-   geom_line(data = labs1, aes(x = long1, y = lat1), size = size1, color = "blue") +
-   geom_line(data = labs2, aes(x = long2, y = lat2), size = size2, color = "yellow") +
-   geom_line(data = labs3, aes(x = long3, y = lat3), size = size3, color = "gray") +
- geom_line(data = labs4, aes(x = long4, y = lat4), size = size4, color = "orange") +
- geom_line(data = labs5, aes(x = long5, y = lat5), size = size5, color = "purple") +
- geom_line(data = labs6, aes(x = long6, y = lat6), size = size6, color = "green") +
-   geom_line(data = labs7, aes(x = long7, y = lat7), size = size7, color = "red") +
- geom_line(data = labs8, aes(x = long8, y = lat8), size = size8, color = "black") +
-   geom_line(data = labs9, aes(x = long9, y = lat9), size = size9, color = "white") +
+   geom_line(data = labs1, aes(x = long1, y = lat1), size = size1, color = "blue") + y
+   geom_line(data = labs2, aes(x = long2, y = lat2), size = size2, color = "black") + y
+   geom_line(data = labs3, aes(x = long3, y = lat3), size = size3, color = "gray") + y
+   geom_line(data = labs4, aes(x = long4, y = lat4), size = size4, color = "orange") +
+   geom_line(data = labs5, aes(x = long5, y = lat5), size = size5, color = "purple") + 
+   geom_line(data = labs6, aes(x = long6, y = lat6), size = size6, color = "green") +
+   geom_line(data = labs7, aes(x = long7, y = lat7), size = size7, color = "red") + y
+   geom_line(data = labs8, aes(x = long8, y = lat8), size = size8, color = "yellow") +
+   geom_line(data = labs9, aes(x = long9, y = lat9), size = size9, color = "white") + y
    geom_line(data = labs10, aes(x = long10, y = lat10), size = size10, color = "brown")
-
-
-
-
-
-
-
-
-
-
-
-
 
 ```
 
-
-
-
-```{r}
-
-
-
-labs6 <- data.frame(
-  long6 <- c(-73.87, -77.04),
-  lat6 <- c(40.78, 38.85),
-  names6 <- c("LGA", "DCA"),
-  size6 <- 20*21903/sum(n1),
-  stringsAsFactors = FALSE)
-
-#0.0995
-
-labs7 <- data.frame(
-  long7 <- c(-87.84, -73.87),
-  lat7 <- c(41.98, 40.78),
-  names7 <- c("ORD", "LGA"),
-  size7 <- 20*21205/sum(n1),
-  stringsAsFactors = FALSE)
-
-#0.0963
-
-labs8 <- data.frame(
-  long8 <- c(-74.17, -87.84),
-  lat8 <- c(40.69, 41.98),
-  names8 <- c("EWR", "ORD"),
-  size8 <- 20*20404/sum(n1),
-  stringsAsFactors = FALSE)
-
-#0.0927
-
-
-labs9 <- data.frame(
-  long9 <- c(-95.37, -96.85),
-  lat9 <- c(29.76, 32.85),
-  names9 <- c("HOU", "DAL"),
-  size9 <- 20*20119/sum(n1),
-  stringsAsFactors = FALSE)
-
-#0.0915
-
-
-labs10 <- data.frame(
-  long10 <- c(-87.84, -75.24),
-  lat10 <- c(41.98, 39.87),
-  names10 <- c("ORD", "PHL"),
-  size10 <- 20*20063/sum(n1),
-  stringsAsFactors = FALSE)
-
-#0.0912
-
-
-
- gg1 +
- geom_line(data = labs6, aes(x = long6, y = lat6), size = size6, color = "green") +
-   geom_line(data = labs7, aes(x = long7, y = lat7), size = size7, color = "red") +
- geom_line(data = labs8, aes(x = long8, y = lat8), size = size8, color = "black") 
+  It is difficult to distinguish the different sizes of the lines because the total number of flights in each route are close in number (range from 20,000 to 25,000) out of a total of 220,000 flights. So, the proportion of the top 10 busiest routes range from 9% to 11%. Size was scaled so that for every .2% drop, scaling factor was decreased by 2 to try to help better visualize the differences in size of lines.
   
-```
-
-
-geom_line(data = labs4, aes(x = long4, y = lat4), size = size4, color = "orange") +
- geom_line(data = labs5, aes(x = long5, y = lat5), size = size5, color = "purple") +
- geom_line(data = labs6, aes(x = long6, y = lat6), size = size6, color = "green") +
-   geom_line(data = labs7, aes(x = long7, y = lat7), size = size7, color = "white") +
- geom_line(data = labs8, aes(x = long8, y = lat8), size = size8, color = "black") +
-   geom_line(data = labs9, aes(x = long9, y = lat9), size = size9, color = "white") +
-   geom_line(data = labs10, aes(x = long10, y = lat10), size = size10, color = "brown")
+  Also, note that two of the busiest routes include ORD to LGA and ORD to EWR. ORD is an airport in Chicago, LGA is an airport in Queens, New York and EWR is an airport in New Jersey. The routes for ORD to LGA and ORD to EWR overlap and are slightly difficult to distinguish. The red line (ORD to LGA) overlaps heavily with the yellow line (ORD to EWR).
    
    
 0. LAX:
