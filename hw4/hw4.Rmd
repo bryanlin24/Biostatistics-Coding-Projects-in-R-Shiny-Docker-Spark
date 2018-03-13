@@ -78,7 +78,7 @@ colnames(f_origin) <- c("origin", "outgoing")
 
 colnames(f_dest) <- c("dest", "incoming")
 
-# combined table (top origin and dest airports)
+#combined table (top origin and dest airports)
 combined <- f_origin %>%
   left_join(f_dest, by = c("origin" = "dest")) %>%
   transmute(airport = origin,
@@ -95,6 +95,8 @@ combined
       lon = as.double(lon),
       lat = as.double(lat)) %>%
     collect()
+  
+  head(location)
   
 
 write_rds(location, "location.rds")
@@ -118,17 +120,17 @@ usa <- map_data("usa")
 
 
 
-us_map <- ggplot(data = states) + 
-  geom_polygon(data = usa, aes(x = long, y = lat, group = group), fill = NA, color = "blue") + 
+us_map <- ggplot() + 
+  geom_polygon(data = usa, aes(x = long, y = lat, group = group), fill = NA, color = "black") + 
   coord_fixed(1.3) +
   guides(fill=FALSE) 
 
 map1 <- us_map + 
   geom_point(data = location, 
              aes(x = lon, y = lat, size = n/sum(n)), 
-             color = "red")
+             color = "blue")
 
-map1 <- map1+
+map1 <- map1 +
   geom_label_repel(data = location, 
                    aes(x = lon, y = lat, label = airport, size = n/sum(n),
                        fill = factor(airport)), min.segment.length = 0,
@@ -151,7 +153,7 @@ map1
 
 ```{r}
 
-flights_tbl %>% 
+routes <- flights_tbl %>% 
   filter(year == 2002) %>% 
   group_by(origin, dest) %>% 
   count() %>% 
@@ -159,7 +161,28 @@ flights_tbl %>%
   head(30) %>% 
   collect()
 
+routes
 
+
+
+#combined table (top origin and dest airports)
+combined <- f_origin %>%
+  left_join(f_dest, by = c("origin" = "dest")) %>%
+  transmute(airport = origin,
+            n = outgoing + incoming) %>%
+  head(10)
+
+combined 
+
+#airport longitude and latitude
+  location <- combined %>%
+    left_join(airports_tbl, by = c("airport" = "faa"), copy = TRUE) %>%
+    select(airport, n, lon, lat) %>%
+    mutate(
+      lon = as.double(lon),
+      lat = as.double(lat)) %>%
+    collect()
+  
 ```
   
   
@@ -296,24 +319,35 @@ labs10 <- data.frame(
 
 
  gg1 + 
-   geom_line(data = labs1, aes(x = long1, y = lat1), size = size1, color = "blue") + y
-   geom_line(data = labs2, aes(x = long2, y = lat2), size = size2, color = "black") + y
-   geom_line(data = labs3, aes(x = long3, y = lat3), size = size3, color = "gray") + y
+   geom_line(data = labs1, aes(x = long1, y = lat1), size = size1, color = "blue") + 
+   geom_line(data = labs2, aes(x = long2, y = lat2), size = size2, color = "black") + 
+   geom_line(data = labs3, aes(x = long3, y = lat3), size = size3, color = "gray") + 
    geom_line(data = labs4, aes(x = long4, y = lat4), size = size4, color = "orange") +
    geom_line(data = labs5, aes(x = long5, y = lat5), size = size5, color = "purple") + 
    geom_line(data = labs6, aes(x = long6, y = lat6), size = size6, color = "green") +
-   geom_line(data = labs7, aes(x = long7, y = lat7), size = size7, color = "red") + y
+   geom_line(data = labs7, aes(x = long7, y = lat7), size = size7, color = "red") + 
    geom_line(data = labs8, aes(x = long8, y = lat8), size = size8, color = "yellow") +
-   geom_line(data = labs9, aes(x = long9, y = lat9), size = size9, color = "white") + y
+   geom_line(data = labs9, aes(x = long9, y = lat9), size = size9, color = "white") + 
    geom_line(data = labs10, aes(x = long10, y = lat10), size = size10, color = "brown")
 
 ```
 
   It is difficult to distinguish the different sizes of the lines because the total number of flights in each route are close in number (range from 20,000 to 25,000) out of a total of 220,000 flights. So, the proportion of the top 10 busiest routes range from 9% to 11%. Size was scaled so that for every .2% drop, scaling factor was decreased by 2 to try to help better visualize the differences in size of lines.
   
-  Also, note that two of the busiest routes include ORD to LGA and ORD to EWR. ORD is an airport in Chicago, LGA is an airport in Queens, New York and EWR is an airport in New Jersey. The routes for ORD to LGA and ORD to EWR overlap and are slightly difficult to distinguish. The red line (ORD to LGA) overlaps heavily with the yellow line (ORD to EWR).
+  Also, note that two of the busiest routes include ORD to LGA and ORD to EWR. ORD is an airport in Chicago, LGA is an airport in Queens, New York and EWR is an airport in New Jersey. The routes for ORD to LGA and ORD to EWR overlap and are difficult to distinguish. The red line (ORD to LGA) overlaps heavily with the yellow line (ORD to EWR).
    
    
+   
+   
+```{r}
+#revised
+
+
+
+```
+
+
+
 0. LAX:
   
     <p align="center">
@@ -362,13 +396,208 @@ write_rds(lax_flights, "lax_flights.rds")
   
     (b). Visualize and explain seasonal effects.
     
-    
+```{r}
+
+
+
+
+
+```
+
   
     (c). Visualize and explain weekly effects.
   
+
+```{r}
+
+
+
+
+
+```
+
     (d). Map top 10 destinations from LAX. Size of dots should reflect the number of flights from LAX to that destination.
     
+```{r}
+# top 10 destinations
+lax_top <- flights_tbl %>%
+  filter(origin == "LAX" & !is.na(dest)) %>%
+  select(origin, dest) %>%
+  group_by(dest) %>%
+  tally() %>% 
+  arrange(desc(n)) %>%
+  collect() %>% 
+  top_n(10)
+
+
+write_rds(lax_top, "lax_top.rds")
+
+options(digits = 15)
+
+lax_top_dest <- lax_top %>%
+  left_join(airports_tbl, by = c("dest" = "faa"), copy = TRUE) %>%
+  select(dest, n, lon, lat) %>%
+  mutate(
+    lon = as.double(lon),
+    lat = as.double(lat)) %>%
+  collect()
+
+
+usa <- map_data("usa")
+
+us_map1 <- ggplot() + 
+  geom_polygon(data = usa, aes(x = long, y = lat, group = group), fill = NA, color = "black") + 
+  coord_fixed(1.3) +
+  guides(fill=FALSE) 
+
+us_map1 <- us_map1 + 
+  geom_point(data = lax_top_dest, 
+             aes(x = lon, y = lat, size = n/sum(n)), 
+             color = "blue")
+
+us_map1 <- us_map1 +
+  geom_label_repel(data = lax_top_dest, 
+                   aes(x = lon, y = lat, label = dest, size = n/sum(n),
+                       fill = factor(dest)), min.segment.length = 0,
+                   size = 3.5) +
+  ggtitle("Top 10 Destinations from LAX")
+
+us_map1
+
+
+```
+    
 0. Build a predictive model for the arrival delay (`arrdelay`) of flights flying from LAX. Use the same filtering criteria as in the [lecture notes](http://hua-zhou.github.io/teaching/biostatm280-2018winter/slides/12-sparklyr/sparklyr-flights.html) to construct training and validation sets. You are allowed to use a maximum of 5 predictors. The prediction performance of your model on the validation data set will be an important factor for grading this question.
+
+Distance depdelay uniquecarrier deptime airtime
+Sdf_predict(model1, model_partition$valid)
+
+
+
+```{r}
+  model_data1 <- flights_tbl %>%
+    filter(!is.na(arrdelay) & !is.na(depdelay) & !is.na(distance)) %>%
+    filter(depdelay > 15 & depdelay < 240) %>%
+    filter(arrdelay > -60 & arrdelay < 360) %>%
+    filter(year >= 2003 & year <= 2007) %>%
+    left_join(airlines_tbl, by = c("uniquecarrier" = "code")) %>%
+    select(year, month, arrdelay, depdelay, distance, uniquecarrier, description, deptime, airtime)
+
+model_data1
+```
+
+```{r}
+
+# Summarize data by carrier
+model_data1 %>%
+  group_by(uniquecarrier) %>%
+  summarize(description = min(description), distance = mean(distance), arrdelay = mean(arrdelay), depdelay = mean(depdelay), airtime = mean(airtime), deptime = mean(deptime)) %>%
+  select(description, distance, arrdelay, depdelay, airtime, deptime)
+
+model_data1
+# 
+# Distance depdelay uniquecarrier deptime airtime
+# Sdf_predict(model1, model_partition$valid)
+
+
+
+```
+
+
+```{r}
+model_partition1 <- model_data1 %>% 
+  sdf_partition(train = 0.8, valid = 0.2, seed = 5555)
+
+# Fit a linear model
+  ml2 <- model_partition1$train %>%
+    ml_linear_regression(arrdelay ~ distance + depdelay + deptime + airtime + uniquecarrier)
+  
+# Summarize the linear model
+summary(ml2)
+```
+
+
+```{r}
+  model_deciles <- lapply(model_partition1, function(x) {
+    sdf_predict(ml2, x) %>%
+      mutate(decile = ntile(desc(prediction), 10)) %>%
+      group_by(decile) %>%
+      summarize(arrdelay = mean(arrdelay)) %>%
+      select(decile, arrdelay) %>%
+      collect()
+  })
+
+model_deciles
+
+
+```
+
+```{r}
+deciles <- rbind(
+  data.frame(data = 'train', model_deciles$train),
+  data.frame(data = 'valid', model_deciles$valid),
+  make.row.names = FALSE
+)
+deciles
+
+```
+
+
+
+```{r}
+deciles %>%
+  ggplot(aes(factor(decile), gain, fill = data)) +
+  geom_bar(stat = 'identity', position = 'dodge') +
+  labs(title = 'Average Arrival Delay by predicted decile', x = 'Decile', y = 'Minutes')
+
+
+```
+
+
+
+
+
+```{r}
+#Visualize predictions for 2008
+data_2008 <- flights_tbl %>%
+  filter(!is.na(arrdelay) & !is.na(depdelay) & !is.na(distance)) %>%
+  filter(depdelay > 15 & depdelay < 240) %>%
+  filter(arrdelay > -60 & arrdelay < 360) %>%
+  filter(year == 2008) %>%
+  left_join(airlines_tbl, by = c("uniquecarrier" = "code")) %>%
+  mutate(gain = depdelay - arrdelay) %>%
+  select(year, month, arrdelay, depdelay, distance, uniquecarrier, description, gain, origin, dest)
+data_2008
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ```{r}
@@ -389,7 +618,102 @@ model_data
 
 
 ```
+
+
+
+
+
+```{r}
+# Summarize data by carrier
+model_data %>%
+  group_by(uniquecarrier) %>%
+  summarize(description = min(description), gain = mean(gain), 
+            distance = mean(distance), depdelay = mean(depdelay)) %>%
+  select(description, gain, distance, depdelay) %>%
+  arrange(gain)
+
+
+
+```
     
-0. Visualize and explain any other information you want to explore.
+    
+    
+```{r}
+model_partition <- model_data %>% 
+  sdf_partition(train = 0.8, valid = 0.2, seed = 5555)
+
+# Fit a linear model
+  ml1 <- model_partition$train %>%
+    ml_linear_regression(gain ~ distance + depdelay + uniquecarrier)
+  
+# Summarize the linear model
+summary(ml1)
+```
+    
+    
+    
+  
+  
   
 
+
+
+
+
+
+
+
+
+
+
+0. Visualize and explain any other information you want to explore.
+
+```{r}
+# top 10 destinations
+msp_top <- flights_tbl %>%
+  filter(origin == "MSP" & !is.na(dest)) %>%
+  select(origin, dest) %>%
+  group_by(dest) %>%
+  tally() %>% 
+  arrange(desc(n)) %>%
+  collect() %>% 
+  top_n(10)
+
+
+write_rds(msp_top, "msp_top.rds")
+
+options(digits = 15)
+
+msp_top_dest <- msp_top %>%
+  left_join(airports_tbl, by = c("dest" = "faa"), copy = TRUE) %>%
+  select(dest, n, lon, lat) %>%
+  mutate(
+    lon = as.double(lon),
+    lat = as.double(lat)) %>%
+  collect()
+
+
+usa1 <- map_data("usa")
+
+us_map2 <- ggplot() + 
+  geom_polygon(data = usa1, aes(x = long, y = lat, group = group), fill = NA, color = "black") + 
+  coord_fixed(1.3) +
+  guides(fill=FALSE) 
+
+us_map2 <- us_map2 + 
+  geom_point(data = lax_top_dest, 
+             aes(x = lon, y = lat, size = n/sum(n)), 
+             color = "blue")
+
+us_map2 <- us_map2 +
+  geom_label_repel(data = lax_top_dest, 
+                   aes(x = lon, y = lat, label = dest, size = n/sum(n),
+                       fill = factor(dest)), min.segment.length = 0,
+                   size = 3.5) +
+  ggtitle("Top 10 Destinations from MSP")
+us_map2
+
+
+```
+
+  This map represents the top 10 destinations from the airport MSP. I found it interesting how MSP is one of the top 10 busiest airports and so wanted to see what the most popular destinations from MSP are. The map above shows the most popular destinations are on the West coast (i.e. California, Nevada, Arizona and Washington state).
