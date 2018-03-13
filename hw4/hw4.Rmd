@@ -21,6 +21,11 @@ library(ggmap)
 library(maps)
 library(mapdata)
 
+library(lubridate)
+library(ggrepel)
+library(modelr)
+library(olsrr)
+
 Sys.setenv(SPARK_HOME="/usr/lib/spark")
 config <- spark_config()
 sc <- spark_connect(master = "yarn-client", config = config)
@@ -29,120 +34,113 @@ sc
 flights_tbl <- tbl(sc, 'flights')
 head(flights_tbl)
 
+airlines_tbl <- tbl(sc, 'airlines')
+head(airlines_tbl)
+
+airports_tbl <- tbl(sc, 'airports')
+head(airports_tbl)
+
 ```
+
 
 1. Map the top 10 busiest airports. Size of dots should reflect the number of flights through that destination.  
 Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html) helpful.
 
-
-<!-- ```{r} -->
-<!-- #look for airports with most origin -->
-
-<!-- #Top origin flights, bar chart -->
-
-
-<!--   flights20021 <- flights_tbl %>% -->
-<!--   filter(year == 2002) %>% -->
-<!--   group_by(origin) %>% -->
-<!--   tally() %>% -->
-<!--   collect() %>% -->
-<!--   top_n(10) -->
-
-
-
-
-
-<!-- flights_tbl %>%  -->
-<!--   filter(year == 2002) %>%  -->
-<!--   group_by(origin, dest) %>%  -->
-<!--   count() %>%  -->
-<!--   arrange(desc(n)) %>%  -->
-<!--   head(10) %>%  -->
-<!--   collect() -->
-
-
-<!-- p <- ggplot(flights20021, aes(origin, n)) -->
-<!-- p + geom_point(aes(size = n)) -->
-
-<!-- ``` -->
-
   
 
 ```{r}
-f_origin <- flights_tbl %>% 
-  filter(year == 2002) %>% 
-  group_by(origin) %>% 
+#10 busiest airports in year 2002
+
+#origin airpots
+f_origin <- flights_tbl %>%
+  filter(year == 2002 & !is.na(origin)) %>%
+  group_by(origin) %>%
   tally() %>% 
+  arrange(desc(n)) %>%
   collect() %>% 
-  arrange(desc(n))
+  head(10)
 
-f_origin_head <- head(f_origin, 10)
+f_origin
 
+colnames(f_origin) <- c("origin", "outgoing")
 
-f_dest <- flights_tbl %>% 
-  filter(year == 2002) %>% 
-  group_by(dest) %>% 
-  tally() %>% 
-  collect() %>% 
-  arrange(desc(n))
+#destination airports
+  f_dest <- flights_tbl %>%
+    filter(year == 2002 & !is.na(dest)) %>%
+    group_by(dest) %>%
+    tally() %>% 
+    arrange(desc(n)) %>%
+    collect() %>% 
+    head(10)
 
-f_dest_head <- head(f_dest, 10)
+  
+  f_dest
 
-combined <- full_join(f_origin_head, f_dest_head)
-combined
+colnames(f_dest) <- c("dest", "incoming")
 
+# combined table (top origin and dest airports)
+combined <- f_origin %>%
+  left_join(f_dest, by = c("origin" = "dest")) %>%
+  transmute(airport = origin,
+            n = outgoing + incoming) %>%
+  head(10)
 
+combined 
+
+#airport longitude and latitude
+  location <- combined %>%
+    left_join(airports_tbl, by = c("airport" = "faa"), copy = TRUE) %>%
+    select(airport, n, lon, lat) %>%
+    mutate(
+      lon = as.double(lon),
+      lat = as.double(lat)) %>%
+    collect()
+  
+
+write_rds(location, "location.rds")
 ```
 
-  
-  
+
+
+
   **Table and plots based off of flights in the year 2002.**
   
   First, the top 10 origin airports (airports that had the most outgoing flights) were found. Then, the top 10 destination airports (ones that had the most incoming flights) were found. Both results were combined into one table.
 
   From this table, the top 10 busiest airports in the year 2002 are ORD, DFW, ATL, LAX, PHX, MSP, DTW, STL, LAS and DEN. Total n was calculated by adding the number of flights in these airports as the origin airport as well as as the destination airport.
+  
+
 
 ```{r}
-#Make a new dataframe
-airport <- c("ORD", "DFW", "ATL", "LAX", "PHX", "MSP", "DTW",
-             "STL", "LAS", "DEN")
-n <- c(654782, 562709, 463826, 364835, 347880, 
-       283074, 281537, 265157, 261191, 240662)
+#plot the 10 busiest airports on map
 
-df <- data.frame(airport, n)
-df
-```
-
-  This table represents a newly created data frame that has the top 10 busiest airports with total n (total flights as origin airport + total flights as destination airport). For instance, total n for ORD was calculated as number of flights where ORD is the origin airport + number of flights where ORD is the destination airport.
-
-```{r}
 usa <- map_data("usa")
-states <- map_data("state")
 
-gg1 <- ggplot(data = states) + 
-  geom_polygon(aes(x = long, y = lat, group = group), color = "white") + 
+
+
+us_map <- ggplot(data = states) + 
+  geom_polygon(data = usa, aes(x = long, y = lat, group = group), fill = NA, color = "blue") + 
   coord_fixed(1.3) +
   guides(fill=FALSE) 
 
+map1 <- us_map + 
+  geom_point(data = location, 
+             aes(x = lon, y = lat, size = n/sum(n)), 
+             color = "red")
+
+map1 <- map1+
+  geom_label_repel(data = location, 
+                   aes(x = lon, y = lat, label = airport, size = n/sum(n),
+                       fill = factor(airport)), min.segment.length = 0,
+                   size = 3.5) +
+  ggtitle("Top 10 Busiest Airports for Year 2002")
+map1
+
+
+
+
 
 ```
-
-
-```{r}
-labs <- data.frame(
-  long <- c(-87.837, -97.04, -84.386, -118.41, -112.074, -80.192, -83.356, -90.366, -115.154, -104.674),
-  lat <- c(41.977, 32.897, 33.753, 33.943, 33.448, 25.762, 42.208, 38.7503, 36.086, 39.849),
-  names <- c("ORD", "DFW", "ATL", "LAX", "PHX", "MSP", "DTW", "STL", "LAS", "DEN"),
-  size <-  c(30*654782/sum(n), 30*562709/sum(n), 30*463826/sum(n), 30*364835/sum(n), 30*347880/sum(n), 30*283074/sum(n), 30*281537/sum(n), 30*265157/sum(n), 30*261191/sum(n), 30*240662/sum(n)),
-  stringsAsFactors = FALSE
-  )  
-
- gg1 + 
-   geom_point(data = labs, aes(x = long, y = lat, size=size), color = "blue")
-
-
-```
-
 
 
   This map represents the top 10 busiest airports plotted on the U.S. map (size of dot is proportional/scaled to how many flights this airport receives).
@@ -325,42 +323,46 @@ labs10 <- data.frame(
     (a). Reproduce above plot. Visualize and explain some prominent features you observe. For example, what happened at points 1-5?
 
 ```{r}
+  lax_flights <- flights_tbl %>%
+    filter(origin == "LAX" | dest == "LAX" & 
+             !is.na(year) & !is.na(month) & !is.na(dayofmonth)) %>%
+    select(origin, year, month, dayofmonth) %>%
+    collect()
 
-lax <- flights_tbl %>% 
-  filter(origin == "LAX") %>% 
-  group_by(year, month, dayofmonth) %>% 
-  summarise(n=n())
-
-
-lax
-
-#lax1 <- data.frame(lax)
-#lax1
-# 
-# gg2 <- ggplot(data = lax, aes(year, n)) +
-#   geom_line()
+write_rds(lax_flights, "lax_flights.rds")
 
 
-#   
-#   
-#   
-#   
-#   tally() %>% 
-#   collect() %>% 
-#   top_n(10)
-#   
-#   
-# flights_tbl %>% 
-#   filter(year == 1990) %>% 
-#   group_by(origin) %>% 
-#   tally() %>% 
-#   collect() %>% 
-#   top_n(10)
+  lax_flights <- lax %>%
+    mutate(date = make_date(year, month, dayofmonth)) %>%
+    filter(date >= ymd(19980101) & date <= ymd(20081231)) %>%
+    collect() 
 
+  lax_flights %>% 
+    group_by(date) %>%
+    count() %>%
+    ggplot(aes(x = date, y = n)) +
+    geom_line() +
+    geom_label(aes(x = ymd(20010911), y = 1150, label = "1")) +
+    geom_label(aes(x = ymd(20041127), y = 1000, label = "2")) +
+    geom_label(aes(x = ymd(20040710), y = 1050, label = "3")) +
+    geom_label(aes(x = ymd(20080103), y = 1230, label = "4")) +
+    geom_label(aes(x = ymd(20010101), y = 1180, label = "5")) +
+    ggtitle("LAX air traffic") 
 
 ```
 
+  Some prominent features include the labelled points 1-5. 
+  
+  - The sudden drop in flights in label 1 seems to be around the time of 9/11, where the Twin Towers in NYC were hit by airplanes. Airport security became a lot stricter after this incident, which proably explains why there is a sudden drop in flights. It was not until around 2004 and 2005 that the number of flights increased back to pre-9/11 levels.
+  - Label 2 and label 3 both show sudden, drastic drops in number of flights. This may be due to how in July 2005, employment had fallen 28%, which also affected employment for aircraft carriers. With less aircraft employees, aircraft carriers are inevitably going to have less outgoing flights. (Source: Bureau of Transportation Statistics. https://www.rita.dot.gov/bts/sites/rita.dot.gov.bts/files/publications/special_reports_and_issue_briefs/issue_briefs/number_13/html/entire.html)
+  - In label 4, flights initially decreased around 2008 possibly because around this time, there were plans to renovate the Tom Bradley International section in order to accommodate the growing need and demand for international flights. According to the Bureau of Transportation Statistics, after May 2005, demand in the flight market shifted towards having more international flights. So, while LAX was renovating the Tom Bradley International section, flights from LAX initially decreased because of this huge construction project (as these parts of the airport had to be closed), then flights to and from LAX went back up soon after renovations were finished.
+  - In label 5, there is random fluctuation in flights. This might be because in early 2001s (beginning around March 2001), there was an economic recession in the U.S. due to the dot-com bubble as well as the housing market crash. This may have caused LAX to have fewer flights, and right after the recession ended, there was economic growth in the U.S. so there were more flights from LAX. However, after the 9/11 attacks (shown in point 1), flights dropped drastically again.
+  
+  
+  
     (b). Visualize and explain seasonal effects.
+    
+    
   
     (c). Visualize and explain weekly effects.
   
