@@ -11,8 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 Our Apache Yarn cluster hosts the [flights](http://stat-computing.org/dataexpo/2009/the-data.html) data representing 123 million flights over 22 years. Read the [lecture notes](http://hua-zhou.github.io/teaching/biostatm280-2018winter/slides/12-sparklyr/sparklyr-flights.html) on how to access the Yarn cluster. Connect to the database using `sparklyr` and answer following questions. You can base your answers on a specific year or the whole data set.
 
 ```{r}
-spark_disconnect_all()
-
+#spark_disconnect_all()
 library(tidyverse)
 library(sparklyr)
 library(ggplot2)
@@ -26,25 +25,30 @@ library(ggrepel)
 library(modelr)
 library(olsrr)
 
+
 Sys.setenv(SPARK_HOME="/usr/lib/spark")
 config <- spark_config()
 sc <- spark_connect(master = "yarn-client", config = config)
 sc
+```
+
+
+```{r}
 
 flights_tbl <- tbl(sc, 'flights')
-head(flights_tbl)
+#head(flights_tbl)
 
 airlines_tbl <- tbl(sc, 'airlines')
-head(airlines_tbl)
+#head(airlines_tbl)
 
 airports_tbl <- tbl(sc, 'airports')
-head(airports_tbl)
+#head(airports_tbl)
 
 ```
 
 
-1. Map the top 10 busiest airports. Size of dots should reflect the number of flights through that destination.  
-Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html) helpful.
+**1. Map the top 10 busiest airports. Size of dots should reflect the number of flights through that destination.  
+Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html) helpful.**
 
   
 
@@ -98,7 +102,6 @@ write_rds(location, "location.rds")
 
 
 
-
   **Table and plots based off of flights in the year 2002.**
   
   First, the top 10 origin airports (airports that had the most outgoing flights) were found. Then, the top 10 destination airports (ones that had the most incoming flights) were found. Both results were combined into one table.
@@ -143,7 +146,7 @@ map1
 
 
 
-0. Map the top 10 busiest direct routes. Size of lines should reflect the number of flights through that route.
+**2. Map the top 10 busiest direct routes. Size of lines should reflect the number of flights through that route.**
 
  
 ```{r}
@@ -160,10 +163,13 @@ map1
 
 #Consolidate top 10 routes into a table. Get longitude and latitude for each route.
   route_location <- top_routes %>%
+    
     left_join(airports_tbl, by = c("origin" = "faa"), copy = TRUE) %>%
     mutate(origin_longitude = lon, origin_latitude = lat) %>%
+    
     select(origin, dest, origin_longitude, origin_latitude, n) %>%
     left_join(airports_tbl, by = c("dest" = "faa"), copy = TRUE) %>%
+    
     mutate(lon_dest = lon, lat_dest = lat) %>%
     select(origin, dest, origin_longitude, origin_latitude, 
            lon_dest, lat_dest, n) %>%
@@ -199,7 +205,6 @@ route_location <- route_location %>%
   mutate(size_prop = ((n / sum(n)) * 3)) %>%
   collect()
 
-route_location
 
 #Get the airport origin that had top origin and destination
 airport_origin <- top_routes$origin
@@ -217,6 +222,8 @@ airport_routes <- airport_routes %>%
   left_join(airports_tbl, by = c("airport" = "faa"), copy = TRUE) %>%
   mutate(lon = as.double(lon), lat = as.double(lat)) %>%
   select(airport, lon, lat)
+
+airport_routes
 
 #Plot top 10 routes on U.S. map
 usa <- map_data("usa")
@@ -258,13 +265,9 @@ us_airport_routes +
    
   
 
-0. LAX:
-  
-    <p align="center">
-    ![](./lax-by-day-98-08.png)
-    </p>
+**3. LAX:**
 
-    (a). Reproduce above plot. Visualize and explain some prominent features you observe. For example, what happened at points 1-5?
+    (a). Reproduce the plot. Visualize and explain some prominent features you observe. For example, what happened at points 1-5?
 
 ```{r}
   lax_flights <- flights_tbl %>%
@@ -338,10 +341,12 @@ ggplot(lax_seasonal) +
 
 ```
 
+
   From this bar chart, the most flights in LAX happen in the summer consistently within each year. This makes sense because summertime is the most popular time to travel, especially for families and students because summertime is the longest period of break for students. Fall and winter seem to have the least amount of flights. This makes sense because families and students have school and work in the fall season. Winter is not the best time to travel because adverse weather conditions makes traveling more difficult.
   
-    (c). Visualize and explain weekly effects.
   
+  
+    (c). Visualize and explain weekly effects.
 
 ```{r}
 
@@ -387,7 +392,6 @@ lax_top <- flights_tbl %>%
   collect() %>% 
   top_n(10)
 
-lax_top
 
 write_rds(lax_top, "lax_top.rds")
 
@@ -441,11 +445,11 @@ us_map1
     - DFW
     
     
-0. Build a predictive model for the arrival delay (`arrdelay`) of flights flying from LAX. Use the same filtering criteria as in the [lecture notes](http://hua-zhou.github.io/teaching/biostatm280-2018winter/slides/12-sparklyr/sparklyr-flights.html) to construct training and validation sets. You are allowed to use a maximum of 5 predictors. The prediction performance of your model on the validation data set will be an important factor for grading this question.
+**4. Build a predictive model for the arrival delay (`arrdelay`) of flights flying from LAX. Use the same filtering criteria as in the [lecture notes](http://hua-zhou.github.io/teaching/biostatm280-2018winter/slides/12-sparklyr/sparklyr-flights.html) to construct training and validation sets. You are allowed to use a maximum of 5 predictors. The prediction performance of your model on the validation data set will be an important factor for grading this question.**
 
 
 
-```{r}
+```{r, eval = FALSE}
   model_data1 <- flights_tbl %>%
     filter(!is.na(arrdelay) & !is.na(depdelay) & !is.na(distance) &!is.na(deptime) &!is.na(airtime)) %>%
     filter(depdelay > 15 & depdelay < 240) %>%
@@ -457,7 +461,7 @@ us_map1
 model_data1
 ```
 
-```{r}
+```{r, eval = FALSE}
 
 # Summarize data by carrier
 model_data1 %>%
@@ -476,7 +480,7 @@ model_data1
 ```
 
 
-```{r}
+```{r, eval = FALSE}
 model_partition1 <- model_data1 %>% 
   sdf_partition(train = 0.8, valid = 0.2, seed = 5555)
 
@@ -489,148 +493,48 @@ summary(ml2)
 ```
 
 
+```{r, eval = FALSE}
 
-
-
-
-
-
-
-
-
-```{r}
-  model_deciles <- lapplybuild(model_partition1, function(x) {
-    sdf_predict(ml2, x) %>%
-      mutate(decile = ntile(desc(prediction), 10)) %>%
-      group_by(decile) %>%
-      summarize(arrdelay = mean(arrdelay)) %>%
-      select(decile, arrdelay) %>%
-      collect()
-  })
-
-model_deciles
-
-
-```
-
-```{r}
-deciles <- rbind(
-  data.frame(data = 'train', model_deciles$train),
-  data.frame(data = 'valid', model_deciles$valid),
-  make.row.names = FALSE
-)
-deciles
-
-```
-
-
-
-```{r}
-deciles %>%
-  ggplot(aes(factor(decile), gain, fill = data)) +
-  geom_bar(stat = 'identity', position = 'dodge') +
-  labs(title = 'Average Arrival Delay by predicted decile', x = 'Decile', y = 'Minutes')
-
-
-```
-
-
-
-
-
-```{r}
-#Visualize predictions for 2008
+#Test data
 data_2008 <- flights_tbl %>%
-  filter(!is.na(arrdelay) & !is.na(depdelay) & !is.na(distance)) %>%
+    filter(!is.na(arrdelay) & !is.na(depdelay) & !is.na(distance) &!is.na(deptime) &!is.na(airtime)) %>%
   filter(depdelay > 15 & depdelay < 240) %>%
   filter(arrdelay > -60 & arrdelay < 360) %>%
   filter(year == 2008) %>%
   left_join(airlines_tbl, by = c("uniquecarrier" = "code")) %>%
-  mutate(gain = depdelay - arrdelay) %>%
-  select(year, month, arrdelay, depdelay, distance, uniquecarrier, description, gain, origin, dest)
-data_2008
+    select(year, month, arrdelay, depdelay, distance, uniquecarrier, description, deptime, airtime)
+#data_2008
+
+## prediction values
+
+test_data <- sdf_predict(data_2008, ml2)
+test_data
 
 
 ```
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```{r}
-#training data - for cross validation
-#split data into 2. keep 80% of data as training and 20% as validation data. set seed=5555 for reproducibility.
-
-  model_data <- flights_tbl %>%
-    filter(!is.na(arrdelay) & !is.na(depdelay) & !is.na(distance)) %>%
-    filter(depdelay > 15 & depdelay < 240) %>%
-    filter(arrdelay > -60 & arrdelay < 360) %>%
-    filter(year >= 2003 & year <= 2007) %>%
-    left_join(airlines_tbl, by = c("uniquecarrier" = "code")) %>%
-    mutate(gain = depdelay - arrdelay) %>%
-    select(year, month, arrdelay, depdelay, distance, uniquecarrier, description, gain)
-
-model_data
-
-
-
-```
-
-
-
-
-
-```{r}
-# Summarize data by carrier
-model_data %>%
-  group_by(uniquecarrier) %>%
-  summarize(description = min(description), gain = mean(gain), 
-            distance = mean(distance), depdelay = mean(depdelay)) %>%
-  select(description, gain, distance, depdelay) %>%
-  arrange(gain)
-
-
-
-```
-    
-    
-    
-```{r}
-model_partition <- model_data %>% 
-  sdf_partition(train = 0.8, valid = 0.2, seed = 5555)
-
-# Fit a linear model
-  ml1 <- model_partition$train %>%
-    ml_linear_regression(gain ~ distance + depdelay + uniquecarrier)
+```{r, eval = FALSE}
+#calculate rmse by doing sqrt(predicted-observed/n)
+test_data1 <- test_data %>% 
+  select(arrdelay, prediction) %>% 
+  mutate(test_data, mse = (prediction-arrdelay)^2)
   
-# Summarize the linear model
-summary(ml1)
+#%>% 
+#  mutate(test_data, mse = prediction-arrdelay)
+
+head(test_data1)
+  
+#tcsum(mse)/n
+
+
+
+
+
+
 ```
-    
+  
     
     
   
@@ -647,7 +551,7 @@ summary(ml1)
 
 
 
-0. Visualize and explain any other information you want to explore.
+**5. Visualize and explain any other information you want to explore.**
 
 ```{r}
 # top 10 destinations
@@ -659,8 +563,6 @@ msp_top <- flights_tbl %>%
   arrange(desc(n)) %>%
   collect() %>% 
   top_n(10)
-
-msp_top
 
 write_rds(msp_top, "msp_top.rds")
 
@@ -674,6 +576,7 @@ msp_top_dest <- msp_top %>%
     lat = as.double(lat)) %>%
   collect()
 
+msp_top_dest
 
 usa1 <- map_data("usa")
 
