@@ -60,8 +60,6 @@ f_origin <- flights_tbl %>%
   collect() %>% 
   head(10)
 
-f_origin
-
 colnames(f_origin) <- c("origin", "outgoing")
 
 #destination airports
@@ -73,9 +71,6 @@ colnames(f_origin) <- c("origin", "outgoing")
     collect() %>% 
     head(10)
 
-  
-  f_dest
-
 colnames(f_dest) <- c("dest", "incoming")
 
 #combined table (top origin and dest airports)
@@ -85,7 +80,7 @@ combined <- f_origin %>%
             n = outgoing + incoming) %>%
   head(10)
 
-combined 
+ 
 
 #airport longitude and latitude
   location <- combined %>%
@@ -95,9 +90,8 @@ combined
       lon = as.double(lon),
       lat = as.double(lat)) %>%
     collect()
-  
-  head(location)
-  
+
+  location
 
 write_rds(location, "location.rds")
 ```
@@ -109,7 +103,7 @@ write_rds(location, "location.rds")
   
   First, the top 10 origin airports (airports that had the most outgoing flights) were found. Then, the top 10 destination airports (ones that had the most incoming flights) were found. Both results were combined into one table.
 
-  From this table, the top 10 busiest airports in the year 2002 are ORD, DFW, ATL, LAX, PHX, MSP, DTW, STL, LAS and DEN. Total n was calculated by adding the number of flights in these airports as the origin airport as well as as the destination airport.
+  From this table, the top 10 busiest airports in the year 2002 are ORD, DFW, ATL, LAX, PHX, MSP, DTW, STL, LAS and DEN in descending order. Total n was calculated by adding the number of flights in these airports as the origin airport as well as as the destination airport.
   
 
 
@@ -145,208 +139,124 @@ map1
 ```
 
 
-  This map represents the top 10 busiest airports plotted on the U.S. map (size of dot is proportional/scaled to how many flights this airport receives).
+  This map represents the top 10 busiest airports for the year 2002 plotted on the U.S. map (size of dot is proportional/scaled to how many flights this airport receives).
 
 
 
 0. Map the top 10 busiest direct routes. Size of lines should reflect the number of flights through that route.
 
+ 
 ```{r}
 
-routes <- flights_tbl %>% 
-  filter(year == 2002) %>% 
-  group_by(origin, dest) %>% 
-  count() %>% 
-  arrange(desc(n)) %>% 
-  head(30) %>% 
-  collect()
+#Find top routes
+  top_routes <- flights_tbl %>%
+    filter(year == 2002) %>%
+    group_by(origin, dest) %>%
+    count() %>%
+    arrange(desc(n)) %>%
+    ungroup() %>%
+    collect() %>%
+    head(10)
 
-routes
-
-
-
-#combined table (top origin and dest airports)
-combined <- f_origin %>%
-  left_join(f_dest, by = c("origin" = "dest")) %>%
-  transmute(airport = origin,
-            n = outgoing + incoming) %>%
-  head(10)
-
-combined 
-
-#airport longitude and latitude
-  location <- combined %>%
-    left_join(airports_tbl, by = c("airport" = "faa"), copy = TRUE) %>%
-    select(airport, n, lon, lat) %>%
-    mutate(
-      lon = as.double(lon),
-      lat = as.double(lat)) %>%
+#Consolidate top 10 routes into a table. Get longitude and latitude for each route.
+  route_location <- top_routes %>%
+    left_join(airports_tbl, by = c("origin" = "faa"), copy = TRUE) %>%
+    mutate(origin_longitude = lon, origin_latitude = lat) %>%
+    select(origin, dest, origin_longitude, origin_latitude, n) %>%
+    left_join(airports_tbl, by = c("dest" = "faa"), copy = TRUE) %>%
+    mutate(lon_dest = lon, lat_dest = lat) %>%
+    select(origin, dest, origin_longitude, origin_latitude, 
+           lon_dest, lat_dest, n) %>%
+    mutate(origin_longitude = as.double(origin_longitude),
+           origin_latitude = as.double(origin_latitude),
+           lon_dest = as.double(lon_dest),
+           lat_dest = as.double(lat_dest)) %>%
     collect()
-  
+
+  route_location
 ```
-  
+
   
   From this table, the top 10 busiest routes for the year 2002 are:
   
   - LAX to LAS
+  - LAS to LAX
   - MSP to ORD
+  - ORD to MSP
   - BOS to LGA
+  - LGA to BOS
   - LAS to PHX
+  - PHX to LAS
   - LAX to PHX
-  - LGA to DCA
-  - ORD to LGA
-  - EWR to ORD
-  - HOU to DAL
-  - ORD to PHL
+  - PHX to LAX
   
-  Each row in this table represents total number of flights of one specific route (i.e. one specific origin airport to destination airport). Table is arranged in descending order. 
-
-```{r}
-#Make a new dataframe of top 10 busiest routes
-airport1 <- c("LAX", "LAS", #12,733 + 12,256 = 24,989
-              "MSP", "ORD", #12,007 + 11,907 = 23,914
-              "BOS", "LGA", #11,539 + 11,537 = 23,076
-              "LAS", "PHX", #11,143 + 11,091 = 22,234
-              "LAX", "PHX", #11,066 + 11,027 = 22,093
-              "LGA", "DCA", #10,955 + 10,948 = 21,903
-              "ORD", "LGA", #10,639 + 10,566 = 21,205
-              "EWR", "ORD", #10,278 + 10,126 = 20,404
-              "HOU", "DAL", #10,612 + 9,507 = 20,119
-              "ORD", "PHL") #10,109 + 9,954 = 20,063
-              
-n1 <- c(24989, 23914, 23076, 22234, 22093, 21903, 21205, 20404, 20119, 20063)
-sum(n1)
-
-df1 <- data.frame(airport1, n1)
-df1
-```
-  
-  This data frame represents the top 10 busiest routes. A route is defined as having one specific airport as the origin and another airport as the destination. Total n for routes was calculated as adding one specific route + the same route with the same airports, but with the origin and destination airports flipped. For example, the busiest route is LAX to LAS. The total n for this route was calculated as total number of flights from LAX to LAS + total number of flights from LAS to LAX.
-  
+  in descending order. Each row in this table represents total number of flights of one specific route (i.e. one specific origin airport to destination airport). Table is arranged in descending order. A route is defined as having one specific airport as the origin and another airport as the destination. Each route is treated separately i.e. route from LAX to LAS is one route, and route from LAS to LAX is one different route.
   
 ```{r}
-sum(n1)
-labs1 <- data.frame(
-  long1 <- c(-118.41, -115.15),
-  lat1 <- c(33.94, 36.08),
-  names1 <- c("LAX", "LAS"),
-  size1 <- 20*24989/sum(n1),
-  stringsAsFactors = FALSE)
-#24,989/22,000 = 0.11 
 
-labs2 <- data.frame(
-  long2 <- c(-80.192, -87.84),
-  lat2 <- c(25.762, 41.98),
-  names2 <- c("MSP", "ORD"),
-  size2 <- 18*23914/sum(n1),
-  stringsAsFactors = FALSE)
+#Make proportional line sizes
+route_location <- route_location %>%
+  mutate(size_prop = ((n / sum(n)) * 3)) %>%
+  collect()
 
-#23,914/22,000 = 0.1087
+route_location
 
-labs3 <- data.frame(
-  long3 <- c(-71.02, -73.87),
-  lat3 <- c(42.37, 40.78),
-  names3 <- c("BOS", "LGA"),
-  size3 <- 14*23076/sum(n1),
-  stringsAsFactors = FALSE)
+#Get the airport origin that had top origin and destination
+airport_origin <- top_routes$origin
+airport_destination <- top_routes$dest
 
-#23,076/22,000 = 0.104
-
-labs4 <- data.frame(
-  long4 <- c(-115.15, -112.07),
-  lat4 <- c(36.08, 33.45),
-  names4 <- c("LAS", "PHX"),
-  size4 <- 10*22234/sum(n1),
-  stringsAsFactors = FALSE)
-
-#22,234/22,000 = 0.101
-
-labs5 <- data.frame(
-  long5 <- c(-118.41, -112.07),
-  lat5 <- c(33.94, 33.45),
-  names5 <- c("BOS", "LGA"),
-  size5 <- 10*22093/sum(n1),
-  stringsAsFactors = FALSE)
-
-#22,093/22,000 = 0.0996
-
-labs6 <- data.frame(
-  long6 <- c(-73.87, -77.04),
-  lat6 <- c(40.78, 38.85),
-  names6 <- c("LGA", "DCA"),
-  size6 <- 10*21903/sum(n1),
-  stringsAsFactors = FALSE)
-
-#21,093/22,000 = 0.0995
-
-labs7 <- data.frame(
-  long7 <- c(-87.84, -73.87),
-  lat7 <- c(41.98, 40.78),
-  names7 <- c("ORD", "LGA"),
-  size7 <- 10*21205/sum(n1),
-  stringsAsFactors = FALSE)
-
-#21,205/22,000 = 0.0963
-
-labs8 <- data.frame(
-  long8 <- c(-74.17, -87.84),
-  lat8 <- c(40.69, 41.98),
-  names8 <- c("EWR", "ORD"),
-  size8 <- 10*20404/sum(n1),
-  stringsAsFactors = FALSE)
-
-#20,404/22,000 = 0.0927
+#Make a table of the top routes
+airport_routes <- as_tibble(unique(c(airport_origin, airport_destination)))
+colnames(airport_routes) <- c("airport")
 
 
-labs9 <- data.frame(
-  long9 <- c(-95.37, -96.85),
-  lat9 <- c(29.76, 32.85),
-  names9 <- c("HOU", "DAL"),
-  size9 <- 10*20119/sum(n1),
-  stringsAsFactors = FALSE)
-
-#20,119/22,000 = 0.0915
 
 
-labs10 <- data.frame(
-  long10 <- c(-87.84, -75.24),
-  lat10 <- c(41.98, 39.87),
-  names10 <- c("ORD", "PHL"),
-  size10 <- 10*20063/sum(n1),
-  stringsAsFactors = FALSE)
+#Make table of top routes and include longitude and latitude for plotting on US map
+airport_routes <- airport_routes %>%
+  left_join(airports_tbl, by = c("airport" = "faa"), copy = TRUE) %>%
+  mutate(lon = as.double(lon), lat = as.double(lat)) %>%
+  select(airport, lon, lat)
 
-#20,063/22,000 = 0.0912
+#Plot top 10 routes on U.S. map
+usa <- map_data("usa")
 
-
- gg1 + 
-   geom_line(data = labs1, aes(x = long1, y = lat1), size = size1, color = "blue") + 
-   geom_line(data = labs2, aes(x = long2, y = lat2), size = size2, color = "black") + 
-   geom_line(data = labs3, aes(x = long3, y = lat3), size = size3, color = "gray") + 
-   geom_line(data = labs4, aes(x = long4, y = lat4), size = size4, color = "orange") +
-   geom_line(data = labs5, aes(x = long5, y = lat5), size = size5, color = "purple") + 
-   geom_line(data = labs6, aes(x = long6, y = lat6), size = size6, color = "green") +
-   geom_line(data = labs7, aes(x = long7, y = lat7), size = size7, color = "red") + 
-   geom_line(data = labs8, aes(x = long8, y = lat8), size = size8, color = "yellow") +
-   geom_line(data = labs9, aes(x = long9, y = lat9), size = size9, color = "white") + 
-   geom_line(data = labs10, aes(x = long10, y = lat10), size = size10, color = "brown")
-
-```
-
-  It is difficult to distinguish the different sizes of the lines because the total number of flights in each route are close in number (range from 20,000 to 25,000) out of a total of 220,000 flights. So, the proportion of the top 10 busiest routes range from 9% to 11%. Size was scaled so that for every .2% drop, scaling factor was decreased by 2 to try to help better visualize the differences in size of lines.
+us_airport_routes <- ggplot() + 
   
-  Also, note that two of the busiest routes include ORD to LGA and ORD to EWR. ORD is an airport in Chicago, LGA is an airport in Queens, New York and EWR is an airport in New Jersey. The routes for ORD to LGA and ORD to EWR overlap and are difficult to distinguish. The red line (ORD to LGA) overlaps heavily with the yellow line (ORD to EWR).
-   
-   
-   
-   
-```{r}
-#revised
+  geom_polygon(data = usa, aes(x = long, y = lat, group = group), 
+               fill = NA, color = "black") +
+  coord_fixed(1.3) + guides(fill=FALSE) 
 
+#Draw points for the airport origin and destinations. Draw curve for routes
+us_airport_routes +
+  
+  geom_point(data = route_location,
+             aes(x = origin_longitude, y = origin_latitude),
+             colour = "blue", alpha = 0.4) +
+  
+  geom_point(data = route_location,
+             aes(x = lon_dest, y = lat_dest),
+             colour = "green", alpha = 0.4) +
+  
+  geom_curve(data = route_location,
+             aes(x = origin_longitude, y = origin_latitude, xend = lon_dest,
+                 yend = lat_dest), arrow = arrow(angle = 10, ends = "first",
+                 length = unit(0.2, "cm"), type = "closed"),
+                 size = route_location$size_prop, curvature = 0.1, 
+                 inherit.aes = TRUE) +
+  
+  geom_label_repel(data = airport_routes,
+                   aes(x = lon, y = lat, label = airport, 
+                       fill = factor(airport)), 
+                       point.padding = 1, min.segment.length = 0, size = 4)
 
 
 ```
 
-
+  
+  It is difficult to distinguish the different sizes of the lines because the total number of flights in each route are close in number (range from 20,000 to 25,000) out of a total of 220,000 flights. So, the proportion of the top 10 busiest routes range from 9% to 11%, which would be difficult to distinguish.
+   
+  
 
 0. LAX:
   
@@ -366,7 +276,7 @@ labs10 <- data.frame(
 write_rds(lax_flights, "lax_flights.rds")
 
 
-  lax_flights <- lax %>%
+  lax_flights <- lax_flights %>%
     mutate(date = make_date(year, month, dayofmonth)) %>%
     filter(date >= ymd(19980101) & date <= ymd(20081231)) %>%
     collect() 
@@ -399,11 +309,36 @@ write_rds(lax_flights, "lax_flights.rds")
 ```{r}
 
 
+lax_seasonal <- flights_tbl %>%
+  select(origin, dest, year, month, dayofmonth) %>%
+  filter(year >= 1998 && year <= 2008) %>%
+  filter(dest == "LAX" | origin == "LAX") %>%
+  mutate(seasonal = 
+           if_else(month %in% c(9, 10, 11), "fall",
+           if_else(month %in% c(12, 1, 2), "winter", 
+           if_else(month %in% c(3, 4, 5), "spring",
+           if_else(month %in% c(6, 7, 8), "summer", "")
+           )
+        )
+      ) 
+    ) %>% 
+  group_by(year, seasonal) %>%
+  summarise(n = n()) %>%
+  collect()
+
+lax_seasonal
+
+ggplot(lax_seasonal) +
+  geom_col(aes(x = as.factor(year), y = n, fill = seasonal),
+           position = "dodge") +
+  labs(x = "Year", y = "Flights (n)",
+       title = "Seasonal Effects of LAX by Year") 
 
 
 
 ```
 
+  From this bar chart, the most flights in LAX happen in the summer consistently within each year. This makes sense because summertime is the most popular time to travel, especially for families and students because summertime is the longest period of break for students. Fall and winter seem to have the least amount of flights. This makes sense because families and students have school and work in the fall season. Winter is not the best time to travel because adverse weather conditions makes traveling more difficult.
   
     (c). Visualize and explain weekly effects.
   
@@ -411,11 +346,34 @@ write_rds(lax_flights, "lax_flights.rds")
 ```{r}
 
 
+lax_weekly <- flights_tbl %>%
+  select(origin, dest, year, dayofweek) %>%
+  filter(dest == "LAX" | origin == "LAX") %>%
+  filter(year >= 1998 && year <= 2008) %>%
+  group_by(year, dayofweek) %>%
+  summarise(n = n()) %>%
+  arrange(year, dayofweek) %>%
+  collect()
+
+lax_weekly 
+
+lax_weekly$dayofweek <- as.factor(lax_weekly$dayofweek)
+colnames(lax_weekly)[2] <-"weekday"
+ggplot(lax_weekly) +
+  geom_col(aes(x = as.factor(year), y = n, fill = weekday),
+           position = "stack") +
+  scale_fill_brewer(palette = "Pastel2") +
+  labs(x = "Year", y = "Flights (n)",
+       title = "Weekly Effects in LAX") 
 
 
 
 ```
 
+
+  From this stacked bar chart, the most popular time to travel to and from LAX was in the year 2007 and the least popular year was 2002. In the figure legend, 1 represents Sunday, 2 Monday, 3 Tuesday, ... 7 Saturday. It is hard to distinguish which day has the most and least flights, but a guess would be within each year, Sunday has the most flights and Thursday has the least amount of flights. This makes sense because Sunday is likely the day when people are returning home from trips in order to go to work the following Monday. Thursday seems to be an odd day to travel because it is in the middle of the week.
+  
+  
     (d). Map top 10 destinations from LAX. Size of dots should reflect the number of flights from LAX to that destination.
     
 ```{r}
@@ -429,6 +387,7 @@ lax_top <- flights_tbl %>%
   collect() %>% 
   top_n(10)
 
+lax_top
 
 write_rds(lax_top, "lax_top.rds")
 
@@ -442,6 +401,7 @@ lax_top_dest <- lax_top %>%
     lat = as.double(lat)) %>%
   collect()
 
+lax_top_dest
 
 usa <- map_data("usa")
 
@@ -467,16 +427,27 @@ us_map1
 
 ```
     
+    
+    The top 10 destinations from LAX include (in descending order):
+    
+    - SFO
+    - LAS
+    - PHX
+    - OAK
+    - SAN
+    - SJC
+    - SEA
+    - JFK
+    - DFW
+    
+    
 0. Build a predictive model for the arrival delay (`arrdelay`) of flights flying from LAX. Use the same filtering criteria as in the [lecture notes](http://hua-zhou.github.io/teaching/biostatm280-2018winter/slides/12-sparklyr/sparklyr-flights.html) to construct training and validation sets. You are allowed to use a maximum of 5 predictors. The prediction performance of your model on the validation data set will be an important factor for grading this question.
-
-Distance depdelay uniquecarrier deptime airtime
-Sdf_predict(model1, model_partition$valid)
 
 
 
 ```{r}
   model_data1 <- flights_tbl %>%
-    filter(!is.na(arrdelay) & !is.na(depdelay) & !is.na(distance)) %>%
+    filter(!is.na(arrdelay) & !is.na(depdelay) & !is.na(distance) &!is.na(deptime) &!is.na(airtime)) %>%
     filter(depdelay > 15 & depdelay < 240) %>%
     filter(arrdelay > -60 & arrdelay < 360) %>%
     filter(year >= 2003 & year <= 2007) %>%
@@ -501,6 +472,7 @@ model_data1
 
 
 
+
 ```
 
 
@@ -517,8 +489,17 @@ summary(ml2)
 ```
 
 
+
+
+
+
+
+
+
+
+
 ```{r}
-  model_deciles <- lapply(model_partition1, function(x) {
+  model_deciles <- lapplybuild(model_partition1, function(x) {
     sdf_predict(ml2, x) %>%
       mutate(decile = ntile(desc(prediction), 10)) %>%
       group_by(decile) %>%
@@ -679,6 +660,7 @@ msp_top <- flights_tbl %>%
   collect() %>% 
   top_n(10)
 
+msp_top
 
 write_rds(msp_top, "msp_top.rds")
 
@@ -716,4 +698,17 @@ us_map2
 
 ```
 
-  This map represents the top 10 destinations from the airport MSP. I found it interesting how MSP is one of the top 10 busiest airports and so wanted to see what the most popular destinations from MSP are. The map above shows the most popular destinations are on the West coast (i.e. California, Nevada, Arizona and Washington state).
+  This map represents the top 10 destinations from the airport MSP. The top 10 destinations are:
+  
+  - ORD
+  - DEN
+  - DTW
+  - DFW
+  - ATL
+  - STL
+  - PHX
+  - EWR
+  - MDW
+  - MEM
+
+  I found it interesting how MSP is one of the top 10 busiest airports and so wanted to see what the most popular destinations from MSP are. The map above shows the most popular destinations are on the West coast (i.e. California, Nevada, Arizona and Washington state). The top 10 destinations from MSP are 
