@@ -298,12 +298,20 @@ write_rds(lax_flights, "lax_flights.rds")
 
 ```
 
-  Some prominent features include the labelled points 1-5. 
   
-  - The sudden drop in flights in label 1 seems to be around the time of 9/11, where the Twin Towers in NYC were hit by airplanes. Airport security became a lot stricter after this incident, which proably explains why there is a sudden drop in flights. It was not until around 2004 and 2005 that the number of flights increased back to pre-9/11 levels.
-  - Label 2 and label 3 both show sudden, drastic drops in number of flights. This may be due to how in July 2005, employment had fallen 28%, which also affected employment for aircraft carriers. With less aircraft employees, aircraft carriers are inevitably going to have less outgoing flights. (Source: Bureau of Transportation Statistics. https://www.rita.dot.gov/bts/sites/rita.dot.gov.bts/files/publications/special_reports_and_issue_briefs/issue_briefs/number_13/html/entire.html)
-  - In label 4, flights initially decreased around 2008 possibly because around this time, there were plans to renovate the Tom Bradley International section in order to accommodate the growing need and demand for international flights. According to the Bureau of Transportation Statistics, after May 2005, demand in the flight market shifted towards having more international flights. So, while LAX was renovating the Tom Bradley International section, flights from LAX initially decreased because of this huge construction project (as these parts of the airport had to be closed), then flights to and from LAX went back up soon after renovations were finished.
-  - In label 5, there is random fluctuation in flights. This might be because in early 2001s (beginning around March 2001), there was an economic recession in the U.S. due to the dot-com bubble as well as the housing market crash. This may have caused LAX to have fewer flights, and right after the recession ended, there was economic growth in the U.S. so there were more flights from LAX. However, after the 9/11 attacks (shown in point 1), flights dropped drastically again.
+  Some prominent features for patterns in LAX flights include the labelled points 1-5. 
+  
+  - The sudden drop in flights in label 1 seems to be around the time of 9/11, where the Twin Towers in NYC were hit by airplanes. Airport security became a lot stricter after this incident, which proably explains why there is a sudden drop in flights. It was not until around 2004 and 2005 that the number of flights increased back to pre-9/11 levels. 
+  
+  - Label 2 and label 3 have sudden, drastic drops in flights. When looking closer at the data, flights in label 2 are around the time of Thanksgiving and flights in label 3 are around the 4th of July. So, drops in flights are expected for these holidays.
+  -Another explanation for label 2 and 3 is that the drops may be due to how in July 2005, employment had fallen 28%, which also affected employment for aircraft carriers. With less aircraft employees, aircraft carriers are inevitably going to have less outgoing flights. (Source: Bureau of Transportation Statistics. https://www.rita.dot.gov/bts/sites/rita.dot.gov.bts/files/publications/special_reports_and_issue_briefs/issue_briefs/number_13/html/entire.html)
+  
+  - Label 4 has a drop in flights because label 4 is around the time of Christmas and New Years, so a drop in flights is expected. People are at their desired destinations celebrating the holidays instead of flying.
+  
+  - Another possible explanation for label 4 is around this time, there were plans to renovate the Tom Bradley International section in order to accommodate the growing need and demand for international flights. According to the Bureau of Transportation Statistics, after May 2005, demand in the flight market shifted towards having more international flights. So, while LAX was renovating the Tom Bradley International section, flights from LAX initially decreased because of this huge construction project (as these parts of the airport had to be closed), then flights to and from LAX went back up soon after renovations were finished.
+  
+   - Label 5 has a similar phenomenon as label 4. There is an increase in flights before the holidays (Christmas and New Years), but flights drop back down during Christmas and New Years.
+  - Another possible explanation for the random fluctuation in flights is that in early 2001s (beginning around March 2001), there was an economic recession in the U.S. due to the dot-com bubble as well as the housing market crash. This may have caused LAX to have fewer flights, and right after the recession ended, there was economic growth in the U.S. so there were more flights from LAX. However, after the 9/11 attacks (shown in point 1), flights dropped drastically again.
   
   
   
@@ -342,7 +350,7 @@ ggplot(lax_seasonal) +
 ```
 
 
-  From this bar chart, the most flights in LAX happen in the summer consistently within each year. This makes sense because summertime is the most popular time to travel, especially for families and students because summertime is the longest period of break for students. Fall and winter seem to have the least amount of flights. This makes sense because families and students have school and work in the fall season. Winter is not the best time to travel because adverse weather conditions makes traveling more difficult.
+  From this bar chart, the most flights in LAX happen in the summer consistently within each year. This makes sense because summertime is the most popular time to travel, especially for families and students because summertime is the longest period of break for students. Fall and winter seem to have the least amount of flights. This makes sense because families and students have school and work in the fall season. Winter has relatively less flights because this is not the best time to travel as adverse weather conditions makes traveling/flying more difficult.
   
   
   
@@ -470,7 +478,8 @@ model_data1 %>%
   select(description, distance, arrdelay, depdelay, airtime, deptime)
 
 model_data1
-# 
+
+
 # Distance depdelay uniquecarrier deptime airtime
 # Sdf_predict(model1, model_partition$valid)
 
@@ -516,21 +525,14 @@ test_data
 
 
 ```{r, eval = FALSE}
-#calculate rmse by doing sqrt(predicted-observed/n)
-test_data1 <- test_data %>% 
-  select(arrdelay, prediction) %>% 
-  mutate(test_data, mse = (prediction-arrdelay)^2)
+#calculate root mse by doing sqrt(sum(predicted-observed)^2/n)
+
+  test_data <- sdf_predict(test_data, ml2) %>%
+    mutate(mse_sum = (prediction - arrdelay)^2) %>%
+    collect
   
-#%>% 
-#  mutate(test_data, mse = prediction-arrdelay)
-
-head(test_data1)
-  
-#tcsum(mse)/n
-
-
-
-
+  root_mse <- sqrt(sum(test_data$mse_sum)/count(test_data))
+  root_mse
 
 
 ```
@@ -540,14 +542,6 @@ head(test_data1)
   
   
   
-
-
-
-
-
-
-
-
 
 
 
