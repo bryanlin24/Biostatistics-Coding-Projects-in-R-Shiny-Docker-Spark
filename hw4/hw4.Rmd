@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 Our Apache Yarn cluster hosts the [flights](http://stat-computing.org/dataexpo/2009/the-data.html) data representing 123 million flights over 22 years. Read the [lecture notes](http://hua-zhou.github.io/teaching/biostatm280-2018winter/slides/12-sparklyr/sparklyr-flights.html) on how to access the Yarn cluster. Connect to the database using `sparklyr` and answer following questions. You can base your answers on a specific year or the whole data set.
 
 ```{r}
-# spark_disconnect_all()
+#spark_disconnect_all()
 library(tidyverse)
 library(sparklyr)
 library(ggplot2)
@@ -29,20 +29,20 @@ library(olsrr)
 Sys.setenv(SPARK_HOME="/usr/lib/spark")
 config <- spark_config()
 sc <- spark_connect(master = "yarn-client", config = config)
-sc
+#sc
 ```
 
 
 ```{r}
 
 flights_tbl <- tbl(sc, 'flights')
-#head(flights_tbl)
+head(flights_tbl)
 
 airlines_tbl <- tbl(sc, 'airlines')
-#head(airlines_tbl)
+head(airlines_tbl)
 
 airports_tbl <- tbl(sc, 'airports')
-#head(airports_tbl)
+head(airports_tbl)
 
 ```
 
@@ -470,8 +470,10 @@ us_map1
 
 
 
-```{r, eval = FALSE}
+```{r}
+
   model_data1 <- flights_tbl %>%
+  filter(origin == "LAX") %>% 
     filter(!is.na(arrdelay) & !is.na(depdelay) & !is.na(distance) &!is.na(deptime) &!is.na(airtime)) %>%
     filter(depdelay > 15 & depdelay < 240) %>%
     filter(arrdelay > -60 & arrdelay < 360) %>%
@@ -482,83 +484,130 @@ us_map1
 model_data1
 ```
 
-```{r, eval = FALSE}
+```{r}
 
 # Summarize data by carrier
 model_data1 %>%
+  filter(origin == "LAX") %>% 
   group_by(uniquecarrier) %>%
-  summarize(description = min(description), distance = mean(distance), arrdelay = mean(arrdelay), depdelay = mean(depdelay), airtime = mean(airtime), deptime = mean(deptime)) %>%
-  select(description, distance, arrdelay, depdelay, airtime, deptime)
+  summarize(description = min(description), distance = mean(distance), arrdelay = mean(arrdelay), depdelay = mean(depdelay)) %>%
+  select(description, distance, arrdelay, depdelay)
 
 model_data1
-
-
-# Distance depdelay uniquecarrier deptime airtime
-# Sdf_predict(model1, model_partition$valid)
-
-
 
 
 ```
   
   
 
-```{r, eval = FALSE}
+```{r}
 model_partition1 <- model_data1 %>% 
   sdf_partition(train = 0.8, valid = 0.2, seed = 5555)
 
 # Fit a linear model
   ml2 <- model_partition1$train %>%
-    ml_linear_regression(arrdelay ~ distance + depdelay + deptime + airtime + uniquecarrier)
+    ml_linear_regression(arrdelay ~ distance + depdelay + uniquecarrier)
   
 # Summarize the linear model
 summary(ml2)
 ```
 
 
-  80% of the flight data was used for training and 20% of the data was set aside for testing (prediction). Five predictor variables (distance, departure delay, air time, departure time and unique carrier) were used to predict the outcome variable (arrival delay).  Output shows values of coefficients. *I did not run this code because I could not knit it into my Hw4 RMD file (it was taking too long and I would run into errors in connecting to Sparklyr database).
+  80% of the flight data was used for training and 20% of the data was set aside for testing (prediction). Three predictor variables (distance, departure delay and unique carrier) were used to predict the outcome variable (arrival delay).  Output shows values of coefficients.
   
 
-```{r, eval = FALSE}
+```{r}
 
 #Test data
 test_flights_2008 <- flights_tbl %>%
-    filter(!is.na(arrdelay) & !is.na(depdelay) & !is.na(distance) &!is.na(deptime) &!is.na(airtime)) %>%
+  filter(origin == "LAX") %>% 
+    filter(!is.na(arrdelay) & !is.na(depdelay) & !is.na(distance)) %>%
   filter(depdelay > 15 & depdelay < 240) %>%
   filter(arrdelay > -60 & arrdelay < 360) %>%
   filter(year == 2008) %>%
   left_join(airlines_tbl, by = c("uniquecarrier" = "code")) %>%
     select(year, month, arrdelay, depdelay, 
-           distance, uniquecarrier, description, deptime, airtime)
+           distance, uniquecarrier, description)
 
-test_flights_2008
+head(test_flights_2008)
 
 #prediction values
 
-test_data <- sdf_predict(test_flights_2008, ml2)
-test_data
-
-
-```
-
-
-```{r, eval = FALSE}
-#calculate root mse by calculating sqrt(sum(y(predicted) - y(observed))^2/n)
-
-  test_data <- sdf_predict(test_data, ml2) %>%
+  test_flights_2008 <- sdf_predict(test_flights_2008, ml2) %>%
     mutate(mse_sum = (prediction - arrdelay)^2) %>%
     collect
+
+#calculate root mse by calculating sqrt(sum(y(predicted) - y(observed))^2/n)
   
-  root_mse <- sqrt(sum(test_data$mse_sum)/count(test_data))
+  root_mse <- sqrt(sum(test_flights_2008$mse_sum) / count(test_flights_2008))
   root_mse
 
 
 ```
 
- 
-  Here, the model obtained from the training set is applied to the test set (predicting arrival delay for flights in 2008). Root mean squared error (RMSE) was calculated to assess model performance. Smaller RMSE values are better because it means the model has less error in its prediction performance. *Again, I did not run this code because I could not knit it into my Hw4 RMD file (it was taking too long and I would run into errors in connecting to Sparklyr database).
   
-    
+  The model from the training dataset is applied onto the test dataset. The test dataset is applying the model developed from the training dataset onto flights in 2008 in LAX. 
+  - The root mean squared error (RMSE) of applying the model from the training dataset onto the test dataset is 14.25. A small RMSE is better because this means the model has less "error" in prediction.
+  
+  
+```{r}
+model_deciles <- lapply(model_partition1, function(x) {
+  sdf_predict(ml2, x) %>%
+    mutate(decile = ntile(desc(prediction), 10)) %>%
+    group_by(decile) %>%
+    summarize(arrdelay = mean(arrdelay)) %>%
+    select(decile, arrdelay) %>%
+    collect()
+})
+
+
+deciles <- rbind(
+  data.frame(data = 'train', model_deciles$train),
+  data.frame(data = 'valid', model_deciles$valid),
+  make.row.names = FALSE
+)
+
+deciles %>%
+  ggplot(aes(factor(decile), arrdelay, fill = data)) +
+  geom_bar(stat = 'identity', position = 'dodge') +
+  labs(title = 'Average arrival delay by predicted decile for LAX', x = 'Decile', 
+       y = 'Minutes')
+
+
+```
+
+```{r}
+
+
+test_flights_2008 <- flights_tbl %>%
+  filter(origin == "LAX") %>% 
+    filter(!is.na(arrdelay) & !is.na(depdelay) & !is.na(distance)) %>%
+  filter(depdelay > 15 & depdelay < 240) %>%
+  filter(arrdelay > -60 & arrdelay < 360) %>%
+  filter(year == 2008) %>%
+  left_join(airlines_tbl, by = c("uniquecarrier" = "code")) %>%
+    select(year, month, arrdelay, depdelay, 
+           distance, uniquecarrier, description)
+
+
+carrier <- sdf_predict(ml2, test_flights_2008) %>%
+  group_by(description) %>% 
+  summarize(arrdelay = mean(arrdelay), prediction = mean(prediction), freq = n()) %>%
+  filter(freq > 1000) %>%
+  collect()
+
+```
+
+```{r}
+ggplot(carrier, aes(arrdelay, prediction)) + 
+  geom_point(alpha = 0.75, color = 'red', shape = 3) +
+  geom_abline(intercept = 0, slope = 1, alpha = 0.15, color = 'blue') +
+  geom_text(aes(label = substr(description, 1, 20)), size = 3, alpha = 0.75, vjust = -1) +
+  labs(title='Average Arrival Delay Forecast', x = 'Actual', y = 'Predicted')
+
+```
+  
+  This plot shows the average arrival delay forecast. The regression line represents the predicted arrival delays and the points are the actual arrival delays.
     
 
 **5. Visualize and explain any other information you want to explore.**
