@@ -1,6 +1,6 @@
 *Bryan Lin*
 
-### Overall Grade: /100
+### Overall Grade: 98/100
 
 ### Quality of report: 10/10
 
