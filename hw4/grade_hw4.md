@@ -1,6 +1,6 @@
 *Bryan Lin*
 
-### Overall Grade: 95/100
+### Overall Grade: 96/100
 
 ### Quality of report: 9/10
 
@@ -20,11 +20,11 @@
 
     Yes. Good job!
 
-### Correctness and efficiency of solution: 48/50
+### Correctness and efficiency of solution: 49/50
 
 -   Q1 (10/10)
 
--   Q2 (8/10)
+-   Q2 (9/10)
     -   Thickness didn't reflect the volume of routes. I see that you acknowledge that it's difficult to distinguish the different sizes of the lines, though.
 -   Q3 (10/10)
 
